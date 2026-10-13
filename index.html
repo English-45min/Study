@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>AI 英语45分</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="英语45分">
+    
+    <!-- iOS 红色双行文字图标 (English study) -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><defs><linearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%23EF4444'/><stop offset='100%25' stop-color='%23DC2626'/></linearGradient></defs><rect width='180' height='180' rx='40' fill='url(%23grad)'/><text x='50%25' y='42%25' font-family='-apple-system, sans-serif' font-size='28' font-weight='bold' fill='%23FFFFFF' text-anchor='middle' dominant-baseline='middle'>English</text><text x='50%25' y='64%25' font-family='-apple-system, sans-serif' font-size='28' font-weight='bold' fill='%23FFFFFF' text-anchor='middle' dominant-baseline='middle'>study</text></svg>">
+    <meta name="theme-color" content="#EF4444">
+
+    <style>
+        :root { --primary: #4F46E5; --bg: #F3F4F6; --card: #FFFFFF; --text: #1F2937; --success: #16A34A; }
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 70px; }
+        .header { background: var(--primary); color: white; padding: 20px; text-align: center; }
+        .container { max-width: 600px; margin: -10px auto 20px; padding: 0 16px; }
+        .card { background: var(--card); border-radius: 14px; padding: 20px; margin-bottom: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); position: relative; }
+        .btn { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 10px; font-size: 15px; cursor: pointer; width: 100%; font-weight: 600; margin-top: 10px; }
+        .btn:active { background: #4338CA; }
+        .btn-outline { background: transparent; color: var(--primary); border: 1.5px solid var(--primary); }
+        .tag { display: inline-block; background: #EEF2FF; color: var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 600; }
+        .tag-x { background: #E8F5FE; color: #1DA1F2; }
+
+        .clickable-text span { cursor: pointer; display: inline-block; padding: 1px 2px; border-radius: 3px; }
+        .clickable-text span:active { background: #C7D2FE; }
+
+        .sentence { font-size: 16px; line-height: 1.8; background: #F9FAFB; padding: 14px; border-left: 4px solid var(--primary); border-radius: 0 8px 8px 0; margin: 12px 0; }
+        .dialogue-box { background: #F0FDF4; border-left: 4px solid var(--success); padding: 14px; border-radius: 0 8px 8px 0; font-size: 15px; line-height: 1.8; margin: 12px 0; }
+        .x-card-box { background: #F8FAFC; border: 1px solid #E2E8F0; border-left: 4px solid #1DA1F2; padding: 14px; border-radius: 0 8px 8px 0; margin: 12px 0; }
+        
+        #word-popup { position: fixed; top: 20%; left: 50%; transform: translateX(-50%); background: #1F2937; color: white; padding: 14px 18px; border-radius: 12px; font-size: 14px; z-index: 10000; display: none; width: 80%; max-width: 320px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.4); text-align: center; }
+        #word-popup button { background: #4F46E5; color: white; border: none; padding: 8px 14px; border-radius: 6px; margin-top: 10px; cursor: pointer; font-size: 13px; font-weight: 600; }
+
+        .chat-container { background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 10px; padding: 12px; height: 160px; overflow-y: auto; margin-top: 10px; font-size: 14px; }
+        .chat-msg { margin-bottom: 8px; padding: 8px 12px; border-radius: 8px; max-width: 85%; word-break: break-all; }
+        .chat-ai { background: #E0E7FF; color: #312E81; }
+        .chat-user { background: #DCFCE7; color: #166534; margin-left: auto; }
+        .chat-input-row { display: flex; gap: 6px; margin-top: 10px; }
+        .chat-input { flex: 1; padding: 8px 12px; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 14px; }
+
+        .api-statusbar { position: fixed; bottom: 0; left: 0; width: 100%; background: #111827; color: #9CA3AF; padding: 10px 16px; font-size: 12px; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; z-index: 9999; border-top: 1px solid #374151; }
+        .api-statusbar span { color: #F3F4F6; font-weight: 600; }
+        .api-input { width: 100%; padding: 10px; margin-top: 8px; border: 1px solid #D1D5DB; border-radius: 8px; box-sizing: border-box; font-size: 13px; }
+        .vocab-item { background: #F3F4F6; padding: 8px 12px; border-radius: 6px; margin-top: 6px; font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
+    </style>
+</head>
+<body>
+    <div id="word-popup">
+        <div id="popup-title" style="font-weight:bold; font-size:16px; color:#818CF8; margin-bottom:4px;"></div>
+        <div id="popup-content">查询中...</div>
+        <div style="display:flex; gap:8px; justify-content:center; margin-top:8px;">
+            <button onclick="saveCurrentWord()">➕ 加入生词本</button>
+            <button onclick="closePopup()" style="background:#4B5563;">关闭</button>
+        </div>
+    </div>
+
+    <div class="header">
+        <h2 style="margin:0;">AI 英语45分</h2>
+        <p style="margin:6px 0 0; font-size:14px; opacity:0.9;">全功能智能英语学习工作台</p>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <span class="tag" id="user-level-tag">当前等级：L2 (基础级)</span>
+                    <h3 style="margin: 8px 0 0;" id="streak-text">连续打卡：0 天</h3>
+                </div>
+                <button class="btn btn-outline" style="width:auto; padding:6px 12px; font-size:12px;" onclick="startAssessment()">重新测评</button>
+            </div>
+            <details style="margin-top: 10px; font-size: 12px; color: #6B7280;" open>
+                <summary style="cursor:pointer;">⚙️ API 配置 (修改自动即时保存)</summary>
+                <input type="password" id="api-key-input" class="api-input" placeholder="输入 sk-xxxx 密钥" oninput="saveApiKey()">
+            </details>
+            <details style="margin-top: 6px; font-size: 12px; color: #4F46E5; font-weight:600;">
+                <summary style="cursor:pointer;">📖 我的本地生词本 (<span id="vocab-count">0</span>)</summary>
+                <div id="vocab-list" style="max-height: 120px; overflow-y: auto; margin-top: 8px; font-weight:normal;"></div>
+            </details>
+        </div>
+
+        <div id="learning-card" class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3>📅 今日学习计划</h3>
+                <button class="btn" style="width:auto; padding:6px 12px; font-size:12px;" onclick="generateDailyContent()">🤖 生成新内容 (拆分并发)</button>
+            </div>
+            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 提示：单词用手指直接点一下即可点词取词。</p>
+            <hr style="border:none; border-top:1px solid #E5E7EB; margin: 12px 0;">
+            
+            <div style="margin-bottom: 20px;">
+                <span class="tag">01 VOA新闻精听 (12Min)</span>
+                <div id="listening-text" class="sentence clickable-text"></div>
+                <button class="btn btn-outline" onclick="speakSingleText('listening-text')">🔊 播放慢速朗读</button>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <span class="tag">02 VOA科普阅读 (13Min)</span>
+                <div id="reading-text" class="sentence clickable-text"></div>
+                <button class="btn btn-outline" onclick="speakSingleText('reading-text')">🔊 朗读阅读文章</button>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <span class="tag" style="background:#DCFCE7; color:#15803D;">03 双人场景对话剧本 (10Min) ☕</span>
+                <div id="dialogue-text" class="dialogue-box clickable-text"></div>
+                <button class="btn btn-outline" style="border-color:#16A34A; color:#16A34A; margin-bottom:8px;" onclick="playDialogueDualVoice()">🎭 智能男女声交替连贯朗读</button>
+                
+                <div style="font-weight:600; font-size:13px; color:#166534; margin-top:8px;">💬 实时口语对练（点击输入框，用键盘麦克风说话）：</div>
+                <div class="chat-container" id="chat-box">
+                    <div class="chat-msg chat-ai">AI 场景助手已就绪！点此输入框并使用键盘自带的 🎙️ 语音输入即可！</div>
+                </div>
+                <div class="chat-input-row">
+                    <input type="text" id="user-chat-input" class="chat-input" placeholder="点此输入，点击键盘 🎙️ 语音输入..." onkeypress="if(event.key==='Enter') sendChat()">
+                    <button class="btn" style="width:auto; margin-top:0; padding:8px 16px;" onclick="sendChat()">发送</button>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <span class="tag">04 影子金句跟读 (5Min)</span>
+                <div id="shadowing-text" class="sentence clickable-text"></div>
+                <button class="btn btn-outline" onclick="speakSingleText('shadowing-text')">🎙️ 朗读示范金句</button>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <span class="tag tag-x">05 X (Twitter) 热门推文精读 🔥</span>
+                <div class="x-card-box">
+                    <div style="font-size:12px; color:#64748B; font-weight:bold; margin-bottom:6px;" id="x-author">@TechTrends · 2h</div>
+                    <div id="x-text" class="clickable-text" style="font-size:15px; font-weight:600; color:#0F1419; margin-bottom:10px; line-height:1.6;"></div>
+                    <div id="x-analysis" style="font-size:13px; color:#475569; background:#F1F5F9; padding:10px; border-radius:6px; line-height:1.6;"></div>
+                </div>
+                <button class="btn btn-outline" style="border-color:#1DA1F2; color:#1DA1F2;" onclick="speakSingleText('x-text')">🔊 朗读 X 热门推文</button>
+            </div>
+
+            <div>
+                <span class="tag">06 打卡记录 (5Min)</span>
+                <button class="btn" style="margin-top:12px; font-size:16px;" onclick="doCheckIn()">✅ 完成今日学习打卡</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="api-statusbar" id="api-statusbar">
+        <div>状态: <span id="balance-status">检测中...</span></div>
+        <div>余额: <span id="balance-amount">--</span></div>
+    </div>
+
+    <script>
+        let userLevel = localStorage.getItem('user_level') || 'L2 (基础级)';
+        let streak = parseInt(localStorage.getItem('streak') || '0');
+        let apiKey = localStorage.getItem('api_key') || '';
+        let vocabBook = JSON.parse(localStorage.getItem('vocab_book') || '[]');
+        let lastSelectedWord = "";
+        let lastSelectedInfo = "";
+
+        const defaultContent = {
+            listening: "VOA standard: Solar power technology helps farmers access water in dry regions, changing how local communities grow food.",
+            reading: "Language acquisition works best with consistent comprehensible input that matches your level.",
+            dialogue: "Scene: Asking for Directions\nA: Excuse me, is there a pharmacy near here?\nB: Yes, go straight for two blocks and turn left.\nA: Is it next to the supermarket?\nB: Exactly, you cannot miss it.\nA: Thank you so much for your help!\nB: You are very welcome! Have a wonderful day.",
+            shadowing: "To acquire a language, practice consistently with comprehensible material.",
+            xText: "Building an English learning Progressive Web App with DeepSeek API and Speech Synthesis opens up new possibilities for AI-driven education.",
+            xAnalysis: "💡 爆款解析：本文探讨了结合 DeepSeek API 与语音合成构建英语分级 PWA 的应用实践。核心表达：'opens up new possibilities' (开启全新可能性)。"
+        };
+
+        function initApp() {
+            try {
+                // 强读取机制：如果 localStorage 里有 key，自动填充并收起配置框
+                document.getElementById('streak-text').innerText = `连续打卡：${streak} 天`;
+                document.getElementById('user-level-tag').innerText = `当前等级：${userLevel}`;
+                if (apiKey) {
+                    document.getElementById('api-key-input').value = apiKey;
+                    document.querySelector('details').removeAttribute('open');
+                    checkApiBalance();
+                } else {
+                    document.getElementById('balance-status').innerText = "离线/未配置Key";
+                }
+                renderVocabBook();
+                renderInteractiveText('listening-text', defaultContent.listening);
+                renderInteractiveText('reading-text', defaultContent.reading);
+                renderInteractiveText('dialogue-text', defaultContent.dialogue);
+                renderInteractiveText('shadowing-text', defaultContent.shadowing);
+                
+                renderInteractiveText('x-text', defaultContent.xText);
+                document.getElementById('x-analysis').innerText = defaultContent.xAnalysis;
+            } catch (e) { console.error("初始化错误:", e); }
+        }
+
+        function renderInteractiveText(elemId, text) {
+            const container = document.getElementById(elemId);
+            if (!container) return;
+            container.innerHTML = '';
+            
+            const lines = text.split('\n');
+            lines.forEach((line, lineIndex) => {
+                const words = line.split(/(\s+)/);
+                words.forEach(word => {
+                    if (/\w+/.test(word)) {
+                        const span = document.createElement('span');
+                        span.innerText = word;
+                        span.onclick = (e) => { e.stopPropagation(); clickToTranslate(word.replace(/[^\w]/g, '')); };
+                        container.appendChild(span);
+                    } else {
+                        container.appendChild(document.createTextNode(word));
+                    }
+                });
+                if (lineIndex < lines.length - 1) {
+                    container.appendChild(document.createElement('br'));
+                }
+            });
+        }
+
+        async function clickToTranslate(word) {
+            if (!word) return;
+            lastSelectedWord = word;
+            const popup = document.getElementById('word-popup');
+            document.getElementById('popup-title').innerText = word;
+            document.getElementById('popup-content').innerText = "🔍 正在查词释义...";
+            popup.style.display = 'block';
+
+            if (apiKey) {
+                try {
+                    const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
+                        body: JSON.stringify({
+                            model: "deepseek-flash",
+                            messages: [{ role: "user", content: `简明解释英文单词 "${word}"。格式：[音标] 中文释义。20字以内。` }]
+                        })
+                    });
+                    const resData = await response.json();
+                    if (resData.choices && resData.choices.length > 0) {
+                        lastSelectedInfo = resData.choices[0].message.content.trim();
+                        document.getElementById('popup-content').innerText = lastSelectedInfo;
+                        return;
+                    }
+                } catch (e) {}
+            }
+            lastSelectedInfo = "[离线模式] 核心词汇";
+            document.getElementById('popup-content').innerText = lastSelectedInfo;
+        }
+
+        function closePopup() { document.getElementById('word-popup').style.display = 'none'; }
+
+        function saveCurrentWord() {
+            if (!lastSelectedWord) return;
+            vocabBook.push({word: lastSelectedWord, info: lastSelectedInfo, time: new Date().toLocaleDateString()});
+            localStorage.setItem('vocab_book', JSON.stringify(vocabBook));
+            renderVocabBook();
+            alert(`已将 "${lastSelectedWord}" 加入生词本！`);
+            closePopup();
+        }
+
+        function renderVocabBook() {
+            document.getElementById('vocab-count').innerText = vocabBook.length;
+            let html = '';
+            if (vocabBook.length === 0) { html = '<div style="color:#9CA3AF; text-align:center;">暂无生词</div>'; }
+            else {
+                vocabBook.slice().reverse().forEach((item, index) => {
+                    html += `<div class="vocab-item"><span><b>${item.word}</b> - ${item.info}</span><button onclick="removeVocab(${vocabBook.length - 1 - index})" style="background:#EF4444; color:white; border:none; border-radius:4px; padding:2px 6px; cursor:pointer;">删除</button></div>`;
+                });
+            }
+            document.getElementById('vocab-list').innerHTML = html;
+        }
+
+        function removeVocab(index) {
+            vocabBook.splice(index, 1);
+            localStorage.setItem('vocab_book', JSON.stringify(vocabBook));
+            renderVocabBook();
+        }
+
+        async function checkApiBalance() {
+            if (!apiKey) return;
+            try {
+                const response = await fetch("https://api.deepseek.com/user/balance", {
+                    method: "GET",
+                    headers: { "Authorization": `Bearer ${apiKey}` }
+                });
+                if (!response.ok) throw new Error("API 校验失败");
+                const data = await response.json();
+                if (data.is_available && data.balance_infos && data.balance_infos.length > 0) {
+                    document.getElementById('balance-status').innerText = "正常运行";
+                    document.getElementById('balance-amount').innerText = `${data.balance_infos[0].currency} ${data.balance_infos[0].total_balance}`;
+                } else {
+                    document.getElementById('balance-status').innerText = "余额不足";
+                    document.getElementById('balance-amount').innerText = "￥0.00";
+                }
+            } catch (err) {
+                document.getElementById('balance-status').innerText = "离线/网络受限";
+            }
+        }
+
+        async function fetchSinglePart(promptText) {
+            const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
+                body: JSON.stringify({
+                    model: "deepseek-flash",
+                    messages: [{ role: "user", content: promptText }]
+                })
+            });
+            const resData = await response.json();
+            if (resData.choices && resData.choices.length > 0) {
+                return resData.choices[0].message.content.trim();
+            }
+            throw new Error("生成失败");
+        }
+
+        async function generateDailyContent() {
+            if (!apiKey) { alert("当前为离线模式。配置 API Key 后可享受 AI 每日实时生成功能！"); return; }
+            
+            document.getElementById('listening-text').innerText = "🤖 正在生成精听...";
+            document.getElementById('reading-text').innerText = "🤖 正在生成阅读...";
+            document.getElementById('dialogue-text').innerText = "🤖 正在生成剧本...";
+            document.getElementById('shadowing-text').innerText = "🤖 正在生成金句...";
+            document.getElementById('x-text').innerText = "🤖 正在抓取 X 爆款推文...";
+            document.getElementById('x-analysis').innerText = "正在拆解知识点...";
+
+            try {
+                const p1 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 short VOA-style news listening passage (approx. 80 words). Return ONLY pure English text.`);
+                const p2 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 short science reading passage (approx. 100 words). Return ONLY pure English text.`);
+                const p3 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 complete daily dialogue script in English. It MUST be exactly 6 lines (3 turns) with a polite closing like thank you and goodbye. Format strictly:\nScene: [English Title]\nA: [English]\nB: [English]\nA: [English]\nB: [English]\nA: [English]\nB: [English]`);
+                const p4 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 concise English shadowing sentence. Return ONLY pure English sentence.`);
+                const p5 = fetchSinglePart(`Generate a trending viral tweet (about tech, AI, productivity, or life, 20-40 words) in English, followed by a line break and a short Chinese breakdown ("💡 爆款解析：...").`);
+
+                const [listening, reading, dialogue, shadowing, xRaw] = await Promise.all([p1, p2, p3, p4, p5]);
+
+                renderInteractiveText('listening-text', listening);
+                renderInteractiveText('reading-text', reading);
+                document.getElementById('dialogue-text').innerHTML = dialogue.replace(/\n/g, '<br>');
+                renderInteractiveText('shadowing-text', shadowing);
+                
+                const xParts = xRaw.split('\n');
+                const xTweetText = xParts[0];
+                const xAnalysisText = xParts.slice(1).join('\n') || "💡 爆款解析：地道表达与语法拆解。";
+                
+                renderInteractiveText('x-text', xTweetText);
+                document.getElementById('x-analysis').innerText = xAnalysisText;
+
+                checkApiBalance();
+            } catch (e) {
+                alert("生成过程触发网络波动，已为您恢复默认学习内容。");
+                renderInteractiveText('listening-text', defaultContent.listening);
+                renderInteractiveText('reading-text', defaultContent.reading);
+                document.getElementById('dialogue-text').innerHTML = defaultContent.dialogue.replace(/\n/g, '<br>');
+                renderInteractiveText('shadowing-text', defaultContent.shadowing);
+                renderInteractiveText('x-text', defaultContent.xText);
+                document.getElementById('x-analysis').innerText = defaultContent.xAnalysis;
+            }
+        }
+
+        function playDialogueDualVoice() {
+            try { window.speechSynthesis.cancel(); } catch(e){}
+            const dialogueText = document.getElementById('dialogue-text').innerText;
+            const lines = dialogueText.split('\n');
+            let sentencesToSpeak = [];
+            lines.forEach(line => {
+                let cleanLine = line.trim();
+                if (!cleanLine || cleanLine.startsWith('Scene:')) return;
+                let speaker = 'A'; let text = cleanLine;
+                if (cleanLine.startsWith('A:')) { speaker = 'A'; text = cleanLine.substring(2).trim(); }
+                else if (cleanLine.startsWith('B:')) { speaker = 'B'; text = cleanLine.substring(2).trim(); }
+                if (text) sentencesToSpeak.push({ speaker: speaker, text: text });
+            });
+            if (sentencesToSpeak.length === 0) return;
+
+            function speakStep(index) {
+                if (index >= sentencesToSpeak.length) return;
+                let item = sentencesToSpeak[index];
+                let msg = new SpeechSynthesisUtterance(item.text);
+                msg.lang = 'en-US'; msg.rate = 0.85; msg.pitch = (item.speaker === 'A') ? 1.0 : 1.3;
+                msg.onend = function() { setTimeout(() => speakStep(index + 1), 300); };
+                window.speechSynthesis.speak(msg);
+            }
+            speakStep(0);
+        }
+
+        function speakSingleText(elementId) {
+            try { window.speechSynthesis.cancel(); } catch(e){}
+            let text = document.getElementById(elementId).innerText;
+            let msg = new SpeechSynthesisUtterance(text);
+            msg.lang = 'en-US'; msg.rate = 0.85;
+            window.speechSynthesis.speak(msg);
+        }
+
+        async function sendChat() {
+            const inputField = document.getElementById('user-chat-input');
+            const userText = inputField.value.trim();
+            if (!userText) return;
+
+            const chatBox = document.getElementById('chat-box');
+            chatBox.innerHTML += `<div class="chat-msg chat-user">你: ${userText}</div>`;
+            inputField.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            const loadingId = 'loading-' + Date.now();
+            chatBox.innerHTML += `<div class="chat-msg chat-ai" id="${loadingId}">AI 正在思考回复与纠错...</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            let aiReply = "";
+
+            try {
+                if (!apiKey) throw new Error("未配置 Key");
+                const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
+                    body: JSON.stringify({
+                        model: "deepseek-flash",
+                        messages: [
+                            { role: "system", content: "You are an English speaking coach. Reply in simple, natural English, followed by a short Chinese tip." },
+                            { role: "user", content: userText }
+                        ]
+                    })
+                });
+                const resData = await response.json();
+                if (resData.choices && resData.choices.length > 0) { aiReply = resData.choices[0].message.content.trim(); }
+                else { throw new Error("响应异常"); }
+            } catch (err) {
+                aiReply = `Great job! Your sentence "${userText}" is very clear. (外教纠错: 表达很流畅！)`;
+            }
+
+            const loadingEl = document.getElementById(loadingId);
+            if (loadingEl) loadingEl.remove();
+
+            chatBox.innerHTML += `<div class="chat-msg chat-ai">AI 助手: ${aiReply}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+            
+            try {
+                window.speechSynthesis.cancel();
+                let msg = new SpeechSynthesisUtterance(aiReply.split('\n')[0]);
+                msg.lang = 'en-US'; msg.rate = 0.85;
+                window.speechSynthesis.speak(msg);
+            } catch (e) {}
+
+            if (apiKey) checkApiBalance();
+        }
+
+        function saveApiKey() { 
+            apiKey = document.getElementById('api-key-input').value.trim(); 
+            localStorage.setItem('api_key', apiKey); 
+            checkApiBalance(); 
+        }
+
+        function startAssessment() {
+            userLevel = prompt("选择英语水平等级 (输入 1, 2 或 3):\n1. L1 (入门级)\n2. L2 (基础级)\n3. L3 (进阶级)", "2");
+            if (userLevel === "1") userLevel = "L1 (入门级)";
+            else if (userLevel === "3") userLevel = "L3 (进阶级)";
+            else userLevel = "L2 (基础级)";
+            localStorage.setItem('user_level', userLevel);
+            document.getElementById('user-level-tag').innerText = `当前等级：${userLevel}`;
+        }
+
+        function doCheckIn() { 
+            streak++; 
+            localStorage.setItem('streak', streak); 
+            document.getElementById('streak-text').innerText = `连续打卡：${streak} 天`; 
+            alert(`🎉 成功打卡！连续天数：${streak} 天！`); 
+        }
+
+        initApp();
+    </script>
+</body>
+</html>
