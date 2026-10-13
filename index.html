@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <link rel="apple-touch-icon" href="./icon.png?v=2">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>AI 英语45分</title>
@@ -78,7 +77,7 @@
             </details>
             <details style="margin-top: 6px; font-size: 12px; color: #4F46E5; font-weight:600;">
                 <summary style="cursor:pointer;">📖 我的本地生词本 (<span id="vocab-count">0</span>)</summary>
-                <div id="vocab-list" style="max-height: 120px; overflow-y: auto; margin-top: 8px; font-weight:normal;"></div>
+                <div id="vocab-list" style="max-height: 140px; overflow-y: auto; margin-top: 8px; font-weight:normal;"></div>
             </details>
         </div>
 
@@ -87,7 +86,7 @@
                 <h3>📅 今日学习计划</h3>
                 <button class="btn" style="width:auto; padding:6px 12px; font-size:12px;" onclick="generateDailyContent()">🤖 生成新内容 (拆分并发)</button>
             </div>
-            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 提示：单词用手指直接点一下即可点词取词。</p>
+            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 提示：单词用手指直接点一下即可取词并查看释义。</p>
             <hr style="border:none; border-top:1px solid #E5E7EB; margin: 12px 0;">
             
             <div style="margin-bottom: 20px;">
@@ -248,16 +247,41 @@
             closePopup();
         }
 
+        // 生词本渲染（含发音朗读与删除）
         function renderVocabBook() {
             document.getElementById('vocab-count').innerText = vocabBook.length;
             let html = '';
-            if (vocabBook.length === 0) { html = '<div style="color:#9CA3AF; text-align:center;">暂无生词</div>'; }
-            else {
+            if (vocabBook.length === 0) { 
+                html = '<div style="color:#9CA3AF; text-align:center;">暂无生词</div>'; 
+            } else {
                 vocabBook.slice().reverse().forEach((item, index) => {
-                    html += `<div class="vocab-item"><span><b>${item.word}</b> - ${item.info}</span><button onclick="removeVocab(${vocabBook.length - 1 - index})" style="background:#EF4444; color:white; border:none; border-radius:4px; padding:2px 6px; cursor:pointer;">删除</button></div>`;
+                    let actualIndex = vocabBook.length - 1 - index;
+                    html += `
+                        <div class="vocab-item">
+                            <div style="flex:1; cursor:pointer;" onclick="speakWord('${item.word}')" title="点击朗读发音">
+                                <b>${item.word}</b> <span style="font-size:11px; color:#4F46E5;">🔊</span> - ${item.info}
+                            </div>
+                            <div style="display:flex; gap:6px;">
+                                <button onclick="speakWord('${item.word}')" style="background:#E0E7FF; color:#4F46E5; border:none; border-radius:4px; padding:2px 6px; cursor:pointer; font-size:11px;">发音</button>
+                                <button onclick="removeVocab(${actualIndex})" style="background:#EF4444; color:white; border:none; border-radius:4px; padding:2px 6px; cursor:pointer; font-size:11px;">删除</button>
+                            </div>
+                        </div>`;
                 });
             }
             document.getElementById('vocab-list').innerHTML = html;
+        }
+
+        // 单词独立发音朗读函数
+        function speakWord(word) {
+            try {
+                window.speechSynthesis.cancel();
+                let msg = new SpeechSynthesisUtterance(word);
+                msg.lang = 'en-US';
+                msg.rate = 0.85; // 稍微放慢，听得更清晰
+                window.speechSynthesis.speak(msg);
+            } catch (e) {
+                console.error("语音合成出错", e);
+            }
         }
 
         function removeVocab(index) {
@@ -304,7 +328,7 @@
         }
 
         async function generateDailyContent() {
-            if (!apiKey) { alert("当前为离线模式。配置 API Key 后可享受 AI 每日实时生成功能！"); return; }
+            if (!apiKey) { alert("当前为离线模式。配置 API Key 后可享受 AI 实时生成功能！"); return; }
             
             document.getElementById('listening-text').innerText = "🤖 正在生成精听...";
             document.getElementById('reading-text').innerText = "🤖 正在生成阅读...";
