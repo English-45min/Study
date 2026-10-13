@@ -7,10 +7,11 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="英语45分">
-
-    <!-- 关联根目录下的物理图标文件 -->
+    
+    <!-- 物理图标外链，完美解决 iOS 图标缓存与回转问题 -->
     <link rel="apple-touch-icon" href="./icon.png">
     <link rel="icon" type="image/png" href="./icon.png">
+    <meta name="theme-color" content="#EF4444">
 
     <style>
         :root { --primary: #4F46E5; --bg: #F3F4F6; --card: #FFFFFF; --text: #1F2937; --success: #16A34A; }
@@ -249,35 +250,44 @@
 
         // 生词本渲染（含发音朗读与删除）
         function renderVocabBook() {
-            document.getElementById('vocab-count').innerText = vocabBook.length;
+            const countEl = document.getElementById('vocab-count');
+            if (countEl) countEl.innerText = vocabBook.length;
+            
             let html = '';
             if (vocabBook.length === 0) { 
                 html = '<div style="color:#9CA3AF; text-align:center;">暂无生词</div>'; 
             } else {
                 vocabBook.slice().reverse().forEach((item, index) => {
                     let actualIndex = vocabBook.length - 1 - index;
+                    let safeWord = item.word.replace(/'/g, "\\'");
                     html += `
                         <div class="vocab-item">
-                            <div style="flex:1; cursor:pointer;" onclick="speakWord('${item.word}')" title="点击朗读发音">
+                            <div style="flex:1; cursor:pointer;" onclick="speakWord('${safeWord}')" title="点击朗读发音">
                                 <b>${item.word}</b> <span style="font-size:11px; color:#4F46E5;">🔊</span> - ${item.info}
                             </div>
                             <div style="display:flex; gap:6px;">
-                                <button onclick="speakWord('${item.word}')" style="background:#E0E7FF; color:#4F46E5; border:none; border-radius:4px; padding:2px 6px; cursor:pointer; font-size:11px;">发音</button>
+                                <button onclick="speakWord('${safeWord}')" style="background:#E0E7FF; color:#4F46E5; border:none; border-radius:4px; padding:2px 6px; cursor:pointer; font-size:11px;">发音</button>
                                 <button onclick="removeVocab(${actualIndex})" style="background:#EF4444; color:white; border:none; border-radius:4px; padding:2px 6px; cursor:pointer; font-size:11px;">删除</button>
                             </div>
                         </div>`;
                 });
             }
-            document.getElementById('vocab-list').innerHTML = html;
+            const listEl = document.getElementById('vocab-list');
+            if (listEl) listEl.innerHTML = html;
         }
 
         // 单词独立发音朗读函数
         function speakWord(word) {
+            if (!word) return;
             try {
+                if (!('speechSynthesis' in window)) {
+                    alert("当前浏览器不支持语音朗读功能");
+                    return;
+                }
                 window.speechSynthesis.cancel();
                 let msg = new SpeechSynthesisUtterance(word);
                 msg.lang = 'en-US';
-                msg.rate = 0.85; // 稍微放慢，听得更清晰
+                msg.rate = 0.85;
                 window.speechSynthesis.speak(msg);
             } catch (e) {
                 console.error("语音合成出错", e);
