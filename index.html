@@ -109,7 +109,7 @@
                 <h3>📅 今日学习计划</h3>
                 <button class="btn" style="width:auto; padding:6px 12px; font-size:12px;" onclick="generateDailyContent()">🤖 生成新内容 (并发)</button>
             </div>
-            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 提示：单词点击可取词。新增语境测验与跟读测评！</p>
+            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 提示：单词点击可取词。应用会自动记住您上次的学习进度！</p>
             <hr style="border:none; border-top:1px solid #E5E7EB; margin: 12px 0;">
             
             <div style="margin-bottom: 20px;">
@@ -176,7 +176,6 @@
     </div>
 
     <script>
-        // 健壮的数据初始化，确保防止任何情况下的空指针与清零
         let userLevel = localStorage.getItem('user_level') || 'L2 (基础级)';
         let streak = parseInt(localStorage.getItem('streak') || '0', 10);
         if (isNaN(streak)) streak = 0;
@@ -190,9 +189,7 @@
                 vocabBook = JSON.parse(savedVocab);
                 if (!Array.isArray(vocabBook)) vocabBook = [];
             }
-        } catch (e) {
-            vocabBook = [];
-        }
+        } catch (e) { vocabBook = []; }
 
         let lastSelectedWord = "";
         let lastSelectedInfo = "";
@@ -203,7 +200,6 @@
             listening: "VOA standard: Solar power technology helps farmers access water in dry regions, changing how local communities grow food.",
             reading: "Language acquisition works best with consistent comprehensible input that matches your level.",
             dialogue: "Scene: Asking for Directions\nA: Excuse me, is there a pharmacy near here?\nB: Yes, go straight for two blocks and turn left.\nA: Is it next to the supermarket?\nB: Exactly, you cannot miss it.\nA: Thank you so much for your help!\nB: You are very welcome! Have a wonderful day.",
-            shadowing: "To acquire a language, practice consistently with comprehensible material.",
             xText: "Building an English learning Progressive Web App with DeepSeek API and Speech Synthesis opens up new possibilities for AI-driven education.",
             xAnalysis: "💡 爆款解析：本文探讨了结合 DeepSeek API 与语音合成构建英语分级 PWA 的应用实践。核心表达：'opens up new possibilities' (开启全新可能性)。"
         };
@@ -222,11 +218,20 @@
                 }
                 
                 renderVocabBook();
-                renderInteractiveText('listening-text', defaultContent.listening);
-                renderInteractiveText('reading-text', defaultContent.reading);
-                renderInteractiveText('dialogue-text', defaultContent.dialogue);
-                renderInteractiveText('x-text', defaultContent.xText);
-                document.getElementById('x-analysis').innerText = defaultContent.xAnalysis;
+
+                // 优先从 localStorage 读取上一次退出的学习内容，如果没有则使用默认内容
+                let savedListening = localStorage.getItem('saved_listening') || defaultContent.listening;
+                let savedReading = localStorage.getItem('saved_reading') || defaultContent.reading;
+                let savedDialogue = localStorage.getItem('saved_dialogue') || defaultContent.dialogue;
+                let savedXText = localStorage.getItem('saved_xText') || defaultContent.xText;
+                let savedXAnalysis = localStorage.getItem('saved_xAnalysis') || defaultContent.xAnalysis;
+
+                renderInteractiveText('listening-text', savedListening);
+                renderInteractiveText('reading-text', savedReading);
+                document.getElementById('dialogue-text').innerHTML = savedDialogue.replace(/\n/g, '<br>');
+                renderInteractiveText('x-text', savedXText);
+                document.getElementById('x-analysis').innerText = savedXAnalysis;
+
             } catch (e) { console.error("初始化错误:", e); }
         }
 
@@ -505,22 +510,29 @@
 
                 const [listening, reading, dialogue, xRaw] = await Promise.all([p1, p2, p3, p5]);
 
+                // 实时渲染并持久化保存到 localStorage
                 renderInteractiveText('listening-text', listening);
+                localStorage.setItem('saved_listening', listening);
+
                 renderInteractiveText('reading-text', reading);
+                localStorage.setItem('saved_reading', reading);
+
                 document.getElementById('dialogue-text').innerHTML = dialogue.replace(/\n/g, '<br>');
+                localStorage.setItem('saved_dialogue', dialogue);
                 
                 const xParts = xRaw.split('\n');
-                renderInteractiveText('x-text', xParts[0]);
-                document.getElementById('x-analysis').innerText = xParts.slice(1).join('\n') || "💡 爆款解析：地道表达与语法拆解。";
+                let xTweetText = xParts[0];
+                let xAnalysisText = xParts.slice(1).join('\n') || "💡 爆款解析：地道表达与语法拆解。";
+
+                renderInteractiveText('x-text', xTweetText);
+                localStorage.setItem('saved_xText', xTweetText);
+
+                document.getElementById('x-analysis').innerText = xAnalysisText;
+                localStorage.setItem('saved_xAnalysis', xAnalysisText);
 
                 checkApiBalance();
             } catch (e) {
                 alert("生成过程触发网络波动，已为您恢复默认学习内容。");
-                renderInteractiveText('listening-text', defaultContent.listening);
-                renderInteractiveText('reading-text', defaultContent.reading);
-                document.getElementById('dialogue-text').innerHTML = defaultContent.dialogue.replace(/\n/g, '<br>');
-                renderInteractiveText('x-text', defaultContent.xText);
-                document.getElementById('x-analysis').innerText = defaultContent.xAnalysis;
             }
         }
 
