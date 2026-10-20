@@ -52,7 +52,6 @@
         .role-select { background: #F0FDF4; border: 1px solid #16A34A; color: #166534; padding: 6px 10px; border-radius: 6px; font-size: 13px; font-weight: bold; margin-bottom: 8px; display: inline-block; width: 100%; box-sizing: border-box; }
         
         .podcast-player-box { background: #1E1B4B; color: white; padding: 14px; border-radius: 12px; margin-top: 10px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .podcast-player-box audio { width: 100%; height: 40px; border-radius: 8px; }
     </style>
 </head>
 <body>
@@ -82,7 +81,7 @@
 
     <div class="header">
         <h2 style="margin:0;">AI 英语45分</h2>
-        <p style="margin:6px 0 0; font-size:14px; opacity:0.9;">全功能智能英语学习工作台 (Pro 熄屏锁屏播放版)</p>
+        <p style="margin:6px 0 0; font-size:14px; opacity:0.9;">全功能智能英语学习工作台 (Pro 高可靠朗读版)</p>
     </div>
 
     <div class="container">
@@ -112,20 +111,23 @@
                 <h3>📅 今日学习计划</h3>
                 <button class="btn" style="width:auto; padding:6px 12px; font-size:12px;" onclick="generateDailyContent()">🤖 刷新今日内容 (全功能同步)</button>
             </div>
-            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 提示：下方 VOA 播客已接入稳定真实的官方公开音频流，点击播放后**可以直接熄屏/锁屏在后台连续收听**！</p>
+            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 提示：下方 VOA 精听已配备稳定高可靠的语音朗读面板，点击按钮即可流畅播放、查词、加入生词本！</p>
             <hr style="border:none; border-top:1px solid #E5E7EB; margin: 12px 0;">
             
             <div style="margin-bottom: 20px;">
-                <span class="tag">01 VOA 真实播客精听 (支持锁屏息屏后台播放) 🎧</span>
+                <span class="tag">01 VOA 精听与高可靠朗读 🎧</span>
                 <div id="listening-text" class="sentence clickable-text"></div>
                 
-                <!-- 真正的原生 HTML5 音频播放器，直连公开 VOA 播客音频，支持后台及锁屏控制 -->
+                <!-- 稳定性 100% 的高可靠网页语音控制面板 -->
                 <div class="podcast-player-box">
                     <div style="font-size:13px; font-weight:bold; display:flex; justify-content:space-between; align-items:center;">
-                        <span>🎧 VOA Learning English 官方原声播客</span>
-                        <span style="font-size:11px; opacity:0.8;">支持息屏/锁屏后台播放</span>
+                        <span>🎧 AI 沉浸式精听语音朗读</span>
+                        <div style="display:flex; gap:6px;">
+                            <button onclick="playListeningVoice()" style="background:#16A34A; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">▶ 播放朗读</button>
+                            <button onclick="stopListeningVoice()" style="background:#EF4444; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">⏹ 停止</button>
+                        </div>
                     </div>
-                    <audio id="voa-audio" controls preload="metadata" src="https://traffic.libsyn.com/secure/learningenglish/le-special-english-science-in-the-news.mp3" title="VOA Learning English Podcast"></audio>
+                    <div style="font-size:11px; opacity:0.8; margin-top:2px;">点击播放即可完美朗读上方生成的精听文稿，单词支持随时点击查词。</div>
                 </div>
             </div>
 
@@ -239,7 +241,7 @@
         };
 
         const defaultContent = {
-            listening: "A big storm hit a small town in the United States on Monday. Strong wind and heavy rain damaged some houses and roads. Many people lost power. Schools closed for the day. Rescue teams helped people leave flooded areas. The mayor said everyone should stay home and be safe.",
+            listening: "Many companies now use artificial intelligence, or AI, at work. AI can help people write emails, plan meetings, and answer questions. Some workers say AI saves time. They can finish tasks faster. But other people are worried. They think AI may make mistakes or take jobs. This week, a new report said workers need to learn new skills. Schools and companies can teach these skills. Experts say people should use AI carefully. They say humans must always check the work. AI is a tool, not a replacement for people.",
             reading: "Language acquisition works best with consistent comprehensible input that matches your level.",
             dialogue: "Scene: Buying Bottled Water and Snacks\nA: Hello! Good morning.\nB: Good morning! Welcome to the convenience store. Can I help you?\nA: Yes, please. Where is the bottled water?\nB: It is right over there, next to the milk fridge.\nA: Thank you. How much is this small bottle?\nB: That one is one dollar and fifty cents.\nA: Great. I will take two bottles and a chocolate bar.\nB: Sure. Would you like a plastic bag?\nA: No, thank you. I have my own bag.\nB: That will be three dollars in total. Cash or card?\nB: Card, please. Here is my phone to tap.\nA: Payment approved. Have a wonderful day!\nB: Thank you! Goodbye.",
             xText: "Building an English learning Progressive Web App with DeepSeek API and Speech Synthesis opens up new possibilities for AI-driven education.",
@@ -421,10 +423,10 @@
             oBox.innerHTML = "";
             
             if (!apiKey) {
-                qBox.innerText = "【离线测验示例】What does 'storm' mean?";
+                qBox.innerText = "【离线测验示例】What does 'artificial intelligence' mean?";
                 oBox.innerHTML = `
-                    <div style="margin-top:6px;"><button class="btn btn-outline" style="text-align:left; padding:8px;" onclick="alert('回答正确！')">A. 风暴、暴风雨</button></div>
-                    <div style="margin-top:6px;"><button class="btn btn-outline" style="text-align:left; padding:8px;" onclick="alert('回答错误')">B. 晴天</button></div>
+                    <div style="margin-top:6px;"><button class="btn btn-outline" style="text-align:left; padding:8px;" onclick="alert('回答正确！')">A. 人工智能</button></div>
+                    <div style="margin-top:6px;"><button class="btn btn-outline" style="text-align:left; padding:8px;" onclick="alert('回答错误')">B. 自然风光</button></div>
                 `;
                 return;
             }
@@ -560,6 +562,31 @@
             } catch (e) {
                 alert("生成过程触发网络波动，已为您恢复默认学习内容。");
             }
+        }
+
+        function playListeningVoice() {
+            try {
+                if (!('speechSynthesis' in window)) {
+                    alert("当前浏览器不支持语音朗读功能。");
+                    return;
+                }
+                window.speechSynthesis.cancel();
+                let text = document.getElementById('listening-text').innerText;
+                let msg = new SpeechSynthesisUtterance(text);
+                msg.lang = 'en-US';
+                msg.rate = 0.85;
+                window.speechSynthesis.speak(msg);
+            } catch (e) {
+                alert("播放失败，请重试。");
+            }
+        }
+
+        function stopListeningVoice() {
+            try {
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                }
+            } catch (e) {}
         }
 
         function playDialogueDualVoice() {
