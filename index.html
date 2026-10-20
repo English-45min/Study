@@ -50,6 +50,7 @@
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10001; display: none; justify-content: center; align-items: center; }
         .modal-card { background: white; width: 90%; max-width: 400px; border-radius: 16px; padding: 20px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); text-align: center; }
         .flashcard-box { background: #EEF2FF; border: 2px dashed #4F46E5; border-radius: 12px; padding: 30px 20px; margin: 15px 0; cursor: pointer; min-height: 100px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .role-select { background: #F0FDF4; border: 1px solid #16A34A; color: #166534; padding: 6px 10px; border-radius: 6px; font-size: 13px; font-weight: bold; margin-bottom: 8px; display: inline-block; width: 100%; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -109,7 +110,7 @@
                 <h3>📅 今日学习计划</h3>
                 <button class="btn" style="width:auto; padding:6px 12px; font-size:12px;" onclick="generateDailyContent()">🤖 刷新今日内容 (含旅游实战)</button>
             </div>
-            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 提示：单词点击可取词。情景对话已加入随机旅游实战场景！</p>
+            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 提示：单词点击可取词。新增角色扮演口语实战！</p>
             <hr style="border:none; border-top:1px solid #E5E7EB; margin: 12px 0;">
             
             <div style="margin-bottom: 20px;">
@@ -132,12 +133,23 @@
                 <div id="dialogue-text" class="dialogue-box clickable-text"></div>
                 <button class="btn btn-outline" style="border-color:#16A34A; color:#16A34A; margin-bottom:8px;" onclick="playDialogueDualVoice()">🎭 智能男女声交替朗读</button>
                 
-                <div style="font-weight:600; font-size:13px; color:#166534; margin-top:8px;">💬 实时口语对练：</div>
+                <!-- 🎭 角色扮演选择模块 -->
+                <div style="margin-top:12px;">
+                    <label class="role-select">
+                        🎭 角色扮演模式选择：
+                        <select id="role-select-box" style="margin-left:8px; padding:4px; border-radius:4px; border:1px solid #16A34A;" onchange="updateRolePlay()">
+                            <option value="A">我扮演角色 A (发起方/乘客/顾客)</option>
+                            <option value="B">我扮演角色 B (响应方/店员/海关)</option>
+                        </select>
+                    </label>
+                </div>
+
+                <div style="font-weight:600; font-size:13px; color:#166534; margin-top:8px;">💬 角色扮演口语实战（点击输入框，用键盘自带 🎙️ 说话）：</div>
                 <div class="chat-container" id="chat-box">
-                    <div class="chat-msg chat-ai">AI 场景助手已就绪！点此输入框并使用键盘自带的 🎙️ 语音输入即可！</div>
+                    <div class="chat-msg chat-ai" id="chat-welcome-msg">🎭 角色扮演已就绪！您当前扮演【角色 A】，AI 扮演【角色 B】。请根据上方剧本或直接用英语向 AI 发起对话！</div>
                 </div>
                 <div class="chat-input-row">
-                    <input type="text" id="user-chat-input" class="chat-input" placeholder="点此输入，点击键盘 🎙️ 语音输入..." onkeypress="if(event.key==='Enter') sendChat()">
+                    <input type="text" id="user-chat-input" class="chat-input" placeholder="输入您的角色台词，或点键盘 🎙️ 语音输入..." onkeypress="if(event.key==='Enter') sendChat()">
                     <button class="btn" style="width:auto; margin-top:0; padding:8px 16px;" onclick="sendChat()">发送</button>
                 </div>
             </div>
@@ -176,7 +188,6 @@
     </div>
 
     <script>
-        // 🛡️ 防清零持久化逻辑
         let userLevel = localStorage.getItem('user_level') || 'L2 (基础级)';
         
         let streak = 0;
@@ -201,7 +212,6 @@
         let currentFlashcardIndex = 0;
         let isCardFlipped = false;
 
-        // ✈️ 预设真实旅游与高频生活场景词库（AI 每次生成时随机抽取）
         const travelTopics = [
             "Airport Customs & Immigration Questions (海关入境问答)",
             "Hotel Check-in & Requesting Late Check-out (酒店入住与延迟退房)",
@@ -238,7 +248,6 @@
                 
                 renderVocabBook();
 
-                // 读取上次保存的内容（确保断网或重启也能回到上次进度）
                 let savedListening = localStorage.getItem('saved_listening') || defaultContent.listening;
                 let savedReading = localStorage.getItem('saved_reading') || defaultContent.reading;
                 let savedDialogue = localStorage.getItem('saved_dialogue') || defaultContent.dialogue;
@@ -515,7 +524,6 @@
         async function generateDailyContent() {
             if (!apiKey) { alert("当前为离线模式。配置 API Key 后可享受 AI 实时生成功能！"); return; }
             
-            // 随机抽取一个旅游实战主题
             const randomTravelTopic = travelTopics[Math.floor(Math.random() * travelTopics.length)];
 
             document.getElementById('listening-text').innerText = "🤖 正在生成新闻...";
@@ -527,7 +535,6 @@
             try {
                 const p1 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 short VOA-style news listening passage (approx. 80 words). Return ONLY pure English text.`);
                 const p2 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 short science reading passage (approx. 100 words). Return ONLY pure English text.`);
-                // 强制围绕随机旅游场景生成双人对话
                 const p3 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 realistic, practical English dialogue script in the scenario of: "${randomTravelTopic}". It MUST be exactly 6 lines (3 turns) with authentic travel expressions. Format strictly:\nScene: ${randomTravelTopic}\nA: [English]\nB: [English]\nA: [English]\nB: [English]\nA: [English]\nB: [English]`);
                 const p5 = fetchSinglePart(`Generate a trending viral tweet (about tech, AI, productivity, or life, 20-40 words) in English, followed by a line break and a short Chinese breakdown ("💡 爆款解析：...").`);
 
@@ -592,18 +599,32 @@
             window.speechSynthesis.speak(msg);
         }
 
+        function updateRolePlay() {
+            const role = document.getElementById('role-select-box').value;
+            const welcomeMsg = document.getElementById('chat-welcome-msg');
+            if (role === 'A') {
+                welcomeMsg.innerText = "🎭 角色扮演切换：您当前扮演【角色 A】，AI 扮演【角色 B】。请用英语向 AI 发起对话！";
+            } else {
+                welcomeMsg.innerText = "🎭 角色扮演切换：您当前扮演【角色 B】，AI 扮演【角色 A】。请等待 AI 发起第一句，或直接用英语回应 AI！";
+            }
+        }
+
         async function sendChat() {
             const inputField = document.getElementById('user-chat-input');
             const userText = inputField.value.trim();
             if (!userText) return;
 
+            const userRole = document.getElementById('role-select-box').value;
+            const aiRole = userRole === 'A' ? 'B' : 'A';
+            const dialogueContext = document.getElementById('dialogue-text').innerText;
+
             const chatBox = document.getElementById('chat-box');
-            chatBox.innerHTML += `<div class="chat-msg chat-user">你: ${userText}</div>`;
+            chatBox.innerHTML += `<div class="chat-msg chat-user">你 (角色 ${userRole}): ${userText}</div>`;
             inputField.value = '';
             chatBox.scrollTop = chatBox.scrollHeight;
 
             const loadingId = 'loading-' + Date.now();
-            chatBox.innerHTML += `<div class="chat-msg chat-ai" id="${loadingId}">AI 正在思考回复与纠错...</div>`;
+            chatBox.innerHTML += `<div class="chat-msg chat-ai" id="${loadingId}">AI (角色 ${aiRole}) 正在根据情景回复与纠错...</div>`;
             chatBox.scrollTop = chatBox.scrollHeight;
 
             let aiReply = "";
@@ -615,7 +636,10 @@
                     body: JSON.stringify({
                         model: "deepseek-flash",
                         messages: [
-                            { role: "system", content: "You are an English speaking coach and travel guide. Reply in simple, natural English, followed by a short Chinese tip." },
+                            { 
+                                role: "system", 
+                                content: `You are an interactive English roleplay partner and travel coach. Current dialogue context/scenario:\n${dialogueContext}\nThe user is playing Role ${userRole}, and you must play Role ${aiRole} to reply naturally in English. After your English reply, add a short Chinese tip/correction for the user ("💡 外教纠错/建议: ...").` 
+                            },
                             { role: "user", content: userText }
                         ]
                     })
@@ -624,13 +648,13 @@
                 if (resData.choices && resData.choices.length > 0) aiReply = resData.choices[0].message.content.trim();
                 else throw new Error("响应异常");
             } catch (err) {
-                aiReply = `Great job! Your sentence "${userText}" is very clear. (外教纠错: 表达很流畅！)`;
+                aiReply = `Sounds good! Let's continue our conversation. (💡 外教纠错: 表达很地道！)`;
             }
 
             const loadingEl = document.getElementById(loadingId);
             if (loadingEl) loadingEl.remove();
 
-            chatBox.innerHTML += `<div class="chat-msg chat-ai">AI 助手: ${aiReply}</div>`;
+            chatBox.innerHTML += `<div class="chat-msg chat-ai">AI (角色 ${aiRole}): ${aiReply}</div>`;
             chatBox.scrollTop = chatBox.scrollHeight;
             
             try {
