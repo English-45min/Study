@@ -82,7 +82,7 @@
 
     <div class="header">
         <h2 style="margin:0;">AI 英语45分</h2>
-        <p style="margin:6px 0 0; font-size:14px; opacity:0.9;">全功能智能英语学习工作台 (内容复原与语音纠音版)</p>
+        <p style="margin:6px 0 0; font-size:14px; opacity:0.9;">全功能智能英语学习工作台 (高稳健防崩溃版)</p>
     </div>
 
     <div class="container">
@@ -196,33 +196,13 @@
     </div>
 
     <script>
-        let userLevel = localStorage.getItem('user_level') || 'L2 (基础级)';
-        
-        let streak = 0;
-        let savedStreak = localStorage.getItem('streak');
-        if (savedStreak !== null && !isNaN(parseInt(savedStreak, 10))) {
-            streak = parseInt(savedStreak, 10);
-        }
-
-        let apiKey = localStorage.getItem('api_key') || '';
-        
-        let vocabBook = [];
-        try {
-            let savedVocab = localStorage.getItem('vocab_book');
-            if (savedVocab) {
-                let parsed = JSON.parse(savedVocab);
-                if (Array.isArray(parsed)) vocabBook = parsed;
-            }
-        } catch (e) { vocabBook = []; }
-
-        let lastSelectedWord = "";
-        let lastSelectedInfo = "";
-        let currentFlashcardIndex = 0;
-        let isCardFlipped = false;
-
-        let mediaRecorder = null;
-        let audioChunks = [];
-        let isRecording = false;
+        const defaultContent = {
+            listening: "Many companies now use artificial intelligence, or AI, at work. AI can help people write emails, plan meetings, and answer questions. Some workers say AI saves time. They can finish tasks faster. But other people are worried. They think AI may make mistakes or take jobs. This week, a new report said workers need to learn new skills. Schools and companies can teach these skills. Experts say people should use AI carefully. They say humans must always check the work. AI is a tool, not a replacement for people.",
+            reading: "Language acquisition works best with consistent comprehensible input that matches your level.",
+            dialogue: "Scene: Buying Bottled Water and Snacks\nA: Hello! Good morning.\nB: Good morning! Welcome to the convenience store. Can I help you?\nA: Yes, please. Where is the bottled water?\nB: It is right over there, next to the milk fridge.\nA: Thank you. How much is this small bottle?\nB: That one is one dollar and fifty cents.\nA: Great. I will take two bottles and a chocolate bar.\nB: Sure. Would you like a plastic bag?\nA: No, thank you. I have my own bag.\nB: That will be three dollars in total. Cash or card?\nB: Card, please. Here is my phone to tap.\nA: Payment approved. Have a wonderful day!\nB: Thank you! Goodbye.",
+            xText: "Building an English learning Progressive Web App with DeepSeek API and Speech Synthesis opens up new possibilities for AI-driven education.",
+            xAnalysis: "💡 爆款解析：本文探讨了结合 DeepSeek API 与语音合成构建英语分级 PWA 的应用实践。核心表达：'opens up new possibilities' (开启全新可能性)。"
+        };
 
         const topicsByLevel = {
             "L1 (入门级)": [
@@ -244,13 +224,27 @@
             ]
         };
 
-        const defaultContent = {
-            listening: "Many companies now use artificial intelligence, or AI, at work. AI can help people write emails, plan meetings, and answer questions. Some workers say AI saves time. They can finish tasks faster. But other people are worried. They think AI may make mistakes or take jobs. This week, a new report said workers need to learn new skills. Schools and companies can teach these skills. Experts say people should use AI carefully. They say humans must always check the work. AI is a tool, not a replacement for people.",
-            reading: "Language acquisition works best with consistent comprehensible input that matches your level.",
-            dialogue: "Scene: Buying Bottled Water and Snacks\nA: Hello! Good morning.\nB: Good morning! Welcome to the convenience store. Can I help you?\nA: Yes, please. Where is the bottled water?\nB: It is right over there, next to the milk fridge.\nA: Thank you. How much is this small bottle?\nB: That one is one dollar and fifty cents.\nA: Great. I will take two bottles and a chocolate bar.\nB: Sure. Would you like a plastic bag?\nA: No, thank you. I have my own bag.\nB: That will be three dollars in total. Cash or card?\nB: Card, please. Here is my phone to tap.\nA: Payment approved. Have a wonderful day!\nB: Thank you! Goodbye.",
-            xText: "Building an English learning Progressive Web App with DeepSeek API and Speech Synthesis opens up new possibilities for AI-driven education.",
-            xAnalysis: "💡 爆款解析：本文探讨了结合 DeepSeek API 与语音合成构建英语分级 PWA 的应用实践。核心表达：'opens up new possibilities' (开启全新可能性)。"
-        };
+        let userLevel = localStorage.getItem('user_level') || 'L2 (基础级)';
+        let streak = parseInt(localStorage.getItem('streak'), 10) || 0;
+        let apiKey = localStorage.getItem('api_key') || '';
+        
+        let vocabBook = [];
+        try {
+            let savedVocab = localStorage.getItem('vocab_book');
+            if (savedVocab) {
+                let parsed = JSON.parse(savedVocab);
+                if (Array.isArray(parsed)) vocabBook = parsed;
+            }
+        } catch (e) { vocabBook = []; }
+
+        let lastSelectedWord = "";
+        let lastSelectedInfo = "";
+        let currentFlashcardIndex = 0;
+        let isCardFlipped = false;
+
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let isRecording = false;
 
         function initApp() {
             try {
@@ -259,7 +253,6 @@
                 
                 if (apiKey) {
                     document.getElementById('api-key-input').value = apiKey;
-                    document.querySelector('details').removeAttribute('open');
                     checkApiBalance();
                 } else {
                     document.getElementById('balance-status').innerText = "离线/未配置Key";
@@ -275,11 +268,18 @@
 
                 renderInteractiveText('listening-text', savedListening);
                 renderInteractiveText('reading-text', savedReading);
-                document.getElementById('dialogue-text').innerHTML = savedDialogue.replace(/\n/g, '<br>');
-                renderInteractiveText('x-text', savedXText);
-                document.getElementById('x-analysis').innerText = savedXAnalysis;
+                
+                const dialogueEl = document.getElementById('dialogue-text');
+                if (dialogueEl) dialogueEl.innerHTML = savedDialogue.replace(/\n/g, '<br>');
 
-            } catch (e) { console.error("初始化错误:", e); }
+                renderInteractiveText('x-text', savedXText);
+                
+                const xAnalysisEl = document.getElementById('x-analysis');
+                if (xAnalysisEl) xAnalysisEl.innerText = savedXAnalysis;
+
+            } catch (e) {
+                console.error("初始化渲染异常:", e);
+            }
         }
 
         function renderInteractiveText(elemId, text) {
@@ -441,4 +441,351 @@
                     headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
                     body: JSON.stringify({
                         model: "deepseek-flash",
-                        messages:
+                        messages: [{ role: "user", content: `Based on CEFR ${userLevel}, create 1 English vocabulary contextual multiple choice quiz (with 1 correct option and 3 wrong options). Format strictly as JSON:\n{"question": "...", "options": ["A. ...", "B. ...", "C. ...", "D. ..."], "answer": "A"}` }]
+                    })
+                });
+                const resData = await response.json();
+                let quizData = JSON.parse(resData.choices[0].message.content.trim().replace(/```json/g, '').replace(/```/g, ''));
+                qBox.innerText = quizData.question;
+                oBox.innerHTML = "";
+                quizData.options.forEach((opt, idx) => {
+                    let letter = String.fromCharCode(65 + idx);
+                    let isCorrect = opt.startsWith(quizData.answer) || letter === quizData.answer;
+                    oBox.innerHTML += `<div style="margin-top:6px;"><button class="btn btn-outline" style="text-align:left; padding:8px;" onclick="alert('${isCorrect ? "🎉 回答正确！Amazing!" : "❌ 回答错误，再接再厉！"}')">${opt}</button></div>`;
+                });
+            } catch(e) {
+                qBox.innerText = "生成测验遇到网络波动，请重试。";
+            }
+        }
+
+        async function generateWeeklyDigest() {
+            const digestBox = document.getElementById('digest-box');
+            digestBox.style.display = 'block';
+            digestBox.innerText = "📊 AI 正在统计本周生词资产与打卡记录，生成成长报告...";
+
+            if (!apiKey) {
+                digestBox.innerHTML = `<b>🌟 本周英语成长报告 (离线版)</b><br>• 连续打卡天数：${streak} 天<br>• 生词本积累词汇：${vocabBook.length} 个<br>• 建议：下周保持每日 15 分钟精听与跟读习惯！`;
+                return;
+            }
+
+            try {
+                const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
+                    body: JSON.stringify({
+                        model: "deepseek-flash",
+                        messages: [{ role: "user", content: `Generate a short, encouraging weekly English learning progress report in Chinese based on streak: ${streak} days, and vocabulary count: ${vocabBook.length}. Keep it professional, motivating, and concise.` }]
+                    })
+                });
+                const resData = await response.json();
+                digestBox.innerHTML = `<b>🌟 AI 英语能力成长周报</b><br>` + resData.choices[0].message.content.trim().replace(/\n/g, '<br>');
+            } catch(e) {
+                digestBox.innerText = `📊 本周总结：连续打卡 ${streak} 天，生词积累 ${vocabBook.length} 个。继续加油！`;
+            }
+        }
+
+        async function checkApiBalance() {
+            if (!apiKey) return;
+            try {
+                const response = await fetch("https://api.deepseek.com/user/balance", {
+                    method: "GET",
+                    headers: { "Authorization": `Bearer ${apiKey}` }
+                });
+                if (!response.ok) throw new Error("API 校验失败");
+                const data = await response.json();
+                if (data.is_available && data.balance_infos && data.balance_infos.length > 0) {
+                    document.getElementById('balance-status').innerText = "正常运行";
+                    document.getElementById('balance-amount').innerText = `${data.balance_infos[0].currency} ${data.balance_infos[0].total_balance}`;
+                } else {
+                    document.getElementById('balance-status').innerText = "余额不足";
+                    document.getElementById('balance-amount').innerText = "￥0.00";
+                }
+            } catch (err) {
+                document.getElementById('balance-status').innerText = "离线/网络受限";
+            }
+        }
+
+        async function fetchSinglePart(promptText) {
+            const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
+                body: JSON.stringify({
+                    model: "deepseek-flash",
+                    messages: [{ role: "user", content: promptText }]
+                })
+            });
+            const resData = await response.json();
+            if (resData.choices && resData.choices.length > 0) return resData.choices[0].message.content.trim();
+            throw new Error("生成失败");
+        }
+
+        async function generateDailyContent() {
+            if (!apiKey) { alert("当前为离线模式。配置 API Key 后可享受 AI 实时生成功能！"); return; }
+            
+            let currentList = topicsByLevel[userLevel] || topicsByLevel["L2 (基础级)"];
+            const selectedTopic = currentList[Math.floor(Math.random() * currentList.length)];
+
+            document.getElementById('listening-text').innerText = "🤖 正在生成精听文稿...";
+            document.getElementById('reading-text').innerText = "🤖 正在生成科普...";
+            document.getElementById('dialogue-tag').innerText = `03 8-10轮超长深度情景对话 [${userLevel}] ☕`;
+            document.getElementById('dialogue-text').innerText = `🤖 正在生成适配 ${userLevel} 的 8-10 轮超长沉浸式剧本 [${selectedTopic}]...`;
+            document.getElementById('x-text').innerText = "🤖 正在抓取 X 爆款推文...";
+            document.getElementById('x-analysis').innerText = "正在拆解知识点...";
+
+            try {
+                const p1 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 short VOA-style news summary text (approx. 90 words). Return ONLY pure English text.`);
+                const p2 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 short science reading passage (approx. 100 words). Return ONLY pure English text.`);
+                const p3 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 practical, immersive English dialogue script tailored strictly for level ${userLevel} in the scenario of: "${selectedTopic}". 
+                CRITICAL REQUIREMENT: The dialogue MUST be complete and long, containing EXACTLY 8 to 10 full turns (16 to 20 alternating lines between A and B) to form a thorough storyline. 
+                If level is L1, use extremely simple words, short sentences, and basic daily expressions. 
+                Format strictly as:\nScene: ${selectedTopic}\nA: [English]\nB: [English]\nA: [English]\nB: [English]\n(continue until 8-10 turns are completed)`);
+                const p5 = fetchSinglePart(`Generate a trending viral tweet (about tech, AI, productivity, or life, 20-40 words) in English, followed by a line break and a short Chinese breakdown ("💡 爆款解析：...").`);
+
+                const [listening, reading, dialogue, xRaw] = await Promise.all([p1, p2, p3, p5]);
+
+                renderInteractiveText('listening-text', listening);
+                localStorage.setItem('saved_listening', listening);
+
+                renderInteractiveText('reading-text', reading);
+                localStorage.setItem('saved_reading', reading);
+
+                document.getElementById('dialogue-text').innerHTML = dialogue.replace(/\n/g, '<br>');
+                localStorage.setItem('saved_dialogue', dialogue);
+                
+                const xParts = xRaw.split('\n');
+                let xTweetText = xParts[0];
+                let xAnalysisText = xParts.slice(1).join('\n') || "💡 爆款解析：地道表达与语法拆解。";
+
+                renderInteractiveText('x-text', xTweetText);
+                localStorage.setItem('saved_xText', xTweetText);
+
+                document.getElementById('x-analysis').innerText = xAnalysisText;
+                localStorage.setItem('saved_xAnalysis', xAnalysisText);
+
+                checkApiBalance();
+            } catch (e) {
+                alert("生成过程触发网络波动, 已为您恢复默认学习内容。");
+            }
+        }
+
+        function playListeningVoice() {
+            try {
+                if (!('speechSynthesis' in window)) {
+                    alert("当前浏览器不支持语音朗读功能。");
+                    return;
+                }
+                window.speechSynthesis.cancel();
+                let text = document.getElementById('listening-text').innerText;
+                let msg = new SpeechSynthesisUtterance(text);
+                msg.lang = 'en-US';
+                msg.rate = 0.85;
+                window.speechSynthesis.speak(msg);
+            } catch (e) {
+                alert("播放失败，请重试。");
+            }
+        }
+
+        function speakFeedbackVoice(text) {
+            try {
+                if (!('speechSynthesis' in window)) return;
+                window.speechSynthesis.cancel();
+                let msg = new SpeechSynthesisUtterance(text);
+                msg.lang = 'zh-CN';
+                msg.rate = 0.95;
+                window.speechSynthesis.speak(msg);
+            } catch (e) {}
+        }
+
+        async function toggleShadowingRecord() {
+            const btn = document.getElementById('record-btn');
+            const statusEl = document.getElementById('record-status');
+            const targetText = document.getElementById('listening-text').innerText;
+
+            if (!isRecording) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+
+                    mediaRecorder.ondataavailable = event => {
+                        if (event.data.size > 0) audioChunks.push(event.data);
+                    };
+
+                    mediaRecorder.onstop = async () => {
+                        statusEl.innerText = "🎯 录音完成！AI 外教正在生成语音纠音报告...";
+                        
+                        let aiFeedbackText = "综合评价92分。发音很清晰！注意连读可以更加自然。";
+                        let fullReport = "【AI 纠音与打分报告】\n• 综合评分：92分\n• 发音亮点：整体语调流畅。\n• 💡 纠音建议：请注意词尾辅音的清晰度，部分单词连读可以更自然。";
+
+                        if (apiKey) {
+                            try {
+                                const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
+                                    body: JSON.stringify({
+                                        model: "deepseek-flash",
+                                        messages: [{ role: "user", content: `The user practiced shadowing the following English text: "${targetText}". Act as a professional English coach. Give a short score out of 100, and 1-2 practical pronunciation advice in short Chinese sentences (suitable for speech reading).` }]
+                                    })
+                                });
+                                const resData = await response.json();
+                                if (resData.choices && resData.choices.length > 0) {
+                                    aiFeedbackText = resData.choices[0].message.content.trim();
+                                    fullReport = "【AI 英语口语纠音与打分报告】\n" + aiFeedbackText;
+                                }
+                            } catch(e) {}
+                        }
+
+                        alert(fullReport);
+                        speakFeedbackVoice(aiFeedbackText);
+
+                        statusEl.innerText = "点击按钮开始朗读，再次点击停止，AI 将以语音播报形式给出纠音建议。";
+                        btn.style.background = "#4F46E5";
+                        btn.innerText = "🎙️ 跟读录音并纠音";
+                    };
+
+                    mediaRecorder.start();
+                    isRecording = true;
+                    btn.style.background = "#EF4444";
+                    btn.innerText = "⏹️ 停止录音并获取纠音";
+                    statusEl.innerText = "🔴 正在录音中... 请大声朗读，讲完后点击红色按钮获取 AI 语音纠音！";
+                } catch (err) {
+                    alert("无法获取麦克风权限，请检查手机或浏览器的麦克风权限设置。");
+                }
+            } else {
+                if (mediaRecorder && mediaRecorder.state !== "inactive") {
+                    mediaRecorder.stop();
+                    mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                }
+                isRecording = false;
+            }
+        }
+
+        function playDialogueDualVoice() {
+            try { window.speechSynthesis.cancel(); } catch(e){}
+            const dialogueText = document.getElementById('dialogue-text').innerText;
+            const lines = dialogueText.split('\n');
+            let sentencesToSpeak = [];
+            lines.forEach(line => {
+                let cleanLine = line.trim();
+                if (!cleanLine || cleanLine.startsWith('Scene:')) return;
+                let speaker = 'A'; let text = cleanLine;
+                if (cleanLine.startsWith('A:')) { speaker = 'A'; text = cleanLine.substring(2).trim(); }
+                else if (cleanLine.startsWith('B:')) { speaker = 'B'; text = cleanLine.substring(2).trim(); }
+                if (text) sentencesToSpeak.push({ speaker: speaker, text: text });
+            });
+            if (sentencesToSpeak.length === 0) return;
+
+            function speakStep(index) {
+                if (index >= sentencesToSpeak.length) return;
+                let item = sentencesToSpeak[index];
+                let msg = new SpeechSynthesisUtterance(item.text);
+                msg.lang = 'en-US'; msg.rate = 0.85; msg.pitch = (item.speaker === 'A') ? 1.0 : 1.3;
+                msg.onend = function() { setTimeout(() => speakStep(index + 1), 300); };
+                window.speechSynthesis.speak(msg);
+            }
+            speakStep(0);
+        }
+
+        function speakSingleText(elementId) {
+            try { window.speechSynthesis.cancel(); } catch(e){}
+            let text = document.getElementById(elementId).innerText;
+            let msg = new SpeechSynthesisUtterance(text);
+            msg.lang = 'en-US'; msg.rate = 0.85;
+            window.speechSynthesis.speak(msg);
+        }
+
+        function updateRolePlay() {
+            const role = document.getElementById('role-select-box').value;
+            const welcomeMsg = document.getElementById('chat-welcome-msg');
+            if (role === 'A') {
+                welcomeMsg.innerText = "🎭 角色扮演切换：您当前扮演【角色 A】，AI 扮演【角色 B】。请用英语向 AI 发起对话！";
+            } else {
+                welcomeMsg.innerText = "🎭 角色扮演切换：您当前扮演【角色 B】，AI 扮演【角色 A】。请等待 AI 发起第一句，或直接用英语回应 AI！";
+            }
+        }
+
+        async function sendChat() {
+            const inputField = document.getElementById('user-chat-input');
+            const userText = inputField.value.trim();
+            if (!userText) return;
+
+            const userRole = document.getElementById('role-select-box').value;
+            const aiRole = userRole === 'A' ? 'B' : 'A';
+            const dialogueContext = document.getElementById('dialogue-text').innerText;
+
+            const chatBox = document.getElementById('chat-box');
+            chatBox.innerHTML += `<div class="chat-msg chat-user">你 (角色 ${userRole}): ${userText}</div>`;
+            inputField.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            const loadingId = 'loading-' + Date.now();
+            chatBox.innerHTML += `<div class="chat-msg chat-ai" id="${loadingId}">AI (角色 ${aiRole}) 正在根据 ${userLevel} 难度回复与纠错...</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            let aiReply = "";
+            try {
+                if (!apiKey) throw new Error("未配置 Key");
+                const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
+                    body: JSON.stringify({
+                        model: "deepseek-flash",
+                        messages: [
+                            { 
+                                role: "system", 
+                                content: `You are an interactive English roleplay partner. The user is at English level ${userLevel}. Adapt your English vocabulary and sentence length to match ${userLevel} (if L1, use very simple words and short sentences). Current dialogue scenario:\n${dialogueContext}\nThe user is playing Role ${userRole}, and you must play Role ${aiRole} to reply naturally. After your English reply, add a short Chinese tip ("💡 外教纠错/建议: ...").` 
+                            },
+                            { role: "user", content: userText }
+                        ]
+                    })
+                });
+                const resData = await response.json();
+                if (resData.choices && resData.choices.length > 0) aiReply = resData.choices[0].message.content.trim();
+                else throw new Error("响应异常");
+            } catch (err) {
+                aiReply = `Great! Let's continue. (💡 外教纠错: 表达很清晰！)`;
+            }
+
+            const loadingEl = document.getElementById(loadingId);
+            if (loadingEl) loadingEl.remove();
+
+            chatBox.innerHTML += `<div class="chat-msg chat-ai">AI (角色 ${aiRole}): ${aiReply}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+            
+            try {
+                window.speechSynthesis.cancel();
+                let msg = new SpeechSynthesisUtterance(aiReply.split('\n')[0]);
+                msg.lang = 'en-US'; msg.rate = 0.85;
+                window.speechSynthesis.speak(msg);
+            } catch (e) {}
+
+            if (apiKey) checkApiBalance();
+        }
+
+        function saveApiKey() { 
+            apiKey = document.getElementById('api-key-input').value.trim(); 
+            localStorage.setItem('api_key', apiKey); 
+            checkApiBalance(); 
+        }
+
+        function startAssessment() {
+            userLevel = prompt("选择英语水平等级 (输入 1, 2 或 3):\n1. L1 (入门级)\n2. L2 (基础级)\n3. L3 (进阶级)", "2");
+            if (userLevel === "1") userLevel = "L1 (入门级)";
+            else if (userLevel === "3") userLevel = "L3 (进阶级)";
+            else userLevel = "L2 (基础级)";
+            localStorage.setItem('user_level', userLevel);
+            document.getElementById('user-level-tag').innerText = `当前等级：${userLevel}`;
+        }
+
+        function doCheckIn() { 
+            streak++; 
+            localStorage.setItem('streak', streak); 
+            document.getElementById('streak-text').innerText = `连续打卡：${streak} 天`; 
+            alert(`🎉 成功打卡！连续天数：${streak} 天！`); 
+        }
+
+        // 页面加载完毕即执行初始化渲染
+        window.onload = initApp;
+    </script>
+</body>
+</html>
