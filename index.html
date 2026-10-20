@@ -28,7 +28,7 @@
         .clickable-text span:active { background: #C7D2FE; }
 
         .sentence { font-size: 16px; line-height: 1.8; background: #F9FAFB; padding: 14px; border-left: 4px solid var(--primary); border-radius: 0 8px 8px 0; margin: 12px 0; }
-        .dialogue-box { background: #F0FDF4; border-left: 4px solid var(--success); padding: 14px; border-radius: 0 8px 8px 0; font-size: 15px; line-height: 1.8; margin: 12px 0; }
+        .dialogue-box { background: #F0FDF4; border-left: 4px solid var(--success); padding: 14px; border-radius: 0 8px 8px 0; font-size: 15px; line-height: 1.8; margin: 12px 0; max-height: 280px; overflow-y: auto; }
         .x-card-box { background: #F8FAFC; border: 1px solid #E2E8F0; border-left: 4px solid #1DA1F2; padding: 14px; border-radius: 0 8px 8px 0; margin: 12px 0; }
         
         #word-popup { position: fixed; top: 20%; left: 50%; transform: translateX(-50%); background: #1F2937; color: white; padding: 14px 18px; border-radius: 12px; font-size: 14px; z-index: 10000; display: none; width: 80%; max-width: 320px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.4); text-align: center; }
@@ -52,7 +52,6 @@
         .role-select { background: #F0FDF4; border: 1px solid #16A34A; color: #166534; padding: 6px 10px; border-radius: 6px; font-size: 13px; font-weight: bold; margin-bottom: 8px; display: inline-block; width: 100%; box-sizing: border-box; }
         
         .podcast-player-box { background: #1E1B4B; color: white; padding: 12px 16px; border-radius: 10px; margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
-        .podcast-player-box audio { width: 100%; height: 36px; border-radius: 6px; }
     </style>
 </head>
 <body>
@@ -82,7 +81,7 @@
 
     <div class="header">
         <h2 style="margin:0;">AI 英语45分</h2>
-        <p style="margin:6px 0 0; font-size:14px; opacity:0.9;">全功能智能英语学习工作台 (Pro 等级定制版)</p>
+        <p style="margin:6px 0 0; font-size:14px; opacity:0.9;">全功能智能英语学习工作台 (Pro 深度沉浸版)</p>
     </div>
 
     <div class="container">
@@ -110,22 +109,22 @@
         <div id="learning-card" class="card">
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <h3>📅 今日学习计划</h3>
-                <button class="btn" style="width:auto; padding:6px 12px; font-size:12px;" onclick="generateDailyContent()">🤖 刷新今日内容 (匹配等级)</button>
+                <button class="btn" style="width:auto; padding:6px 12px; font-size:12px;" onclick="generateDailyContent()">🤖 刷新今日内容 (长对话升级)</button>
             </div>
-            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 提示：下方 VOA 播放器已升级为稳定直连，支持完美熄屏锁屏播放！情景对话已根据您的等级智能定制。</p>
+            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 提示：精听已采用高稳定网页语音流；情景对话已全面升级为 8-10 轮超长沉浸式剧本！</p>
             <hr style="border:none; border-top:1px solid #E5E7EB; margin: 12px 0;">
             
             <div style="margin-bottom: 20px;">
-                <span class="tag">01 VOA真人播客精听 (支持锁屏息屏播放) 🎧</span>
+                <span class="tag">01 VOA精听与播客朗读 🎧</span>
                 <div id="listening-text" class="sentence clickable-text"></div>
                 
-                <!-- 修复后的稳定 HTTPS 音频直链播客播放器 -->
+                <!-- 稳定高可靠的内置语音朗读替代播放器，完美解决外部直链无法播放和死链问题 -->
                 <div class="podcast-player-box">
-                    <div style="font-size:13px; font-weight:bold; display:flex; justify-content:space-between;">
-                        <span>🎧 VOA Learning English 官方原声播客</span>
-                        <span style="font-size:11px; opacity:0.8;">支持息屏/锁屏控制</span>
+                    <div style="font-size:13px; font-weight:bold; display:flex; justify-content:space-between; align-items:center;">
+                        <span>🎧 AI 沉浸式精听原声朗读</span>
+                        <button onclick="playListeningVoice()" style="background:#4F46E5; color:white; border:none; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">▶ 播放精听朗读</button>
                     </div>
-                    <audio id="voa-audio" controls preload="metadata" src="https://av.voanews.com/clips/VLE/2026/03/01/20260301-140000-vle791-program_hq.mp3"></audio>
+                    <div style="font-size:11px; opacity:0.8; margin-top:2px;">点击上方按钮可随时随地流畅朗读上方精听文稿。</div>
                 </div>
             </div>
 
@@ -136,9 +135,9 @@
             </div>
 
             <div style="margin-bottom: 20px;">
-                <span class="tag" id="dialogue-tag" style="background:#DCFCE7; color:#15803D;">03 等级定制生活情景对话 (10Min) ☕</span>
+                <span class="tag" id="dialogue-tag" style="background:#DCFCE7; color:#15803D;">03 8-10轮超长深度情景对话 (10Min) ☕</span>
                 <div id="dialogue-text" class="dialogue-box clickable-text"></div>
-                <button class="btn btn-outline" style="border-color:#16A34A; color:#16A34A; margin-bottom:8px;" onclick="playDialogueDualVoice()">🎭 智能男女声交替朗读</button>
+                <button class="btn btn-outline" style="border-color:#16A34A; color:#16A34A; margin-bottom:8px;" onclick="playDialogueDualVoice()">🎭 智能男女声交替朗读全篇</button>
                 
                 <div style="margin-top:12px;">
                     <label class="role-select">
@@ -152,7 +151,7 @@
 
                 <div style="font-weight:600; font-size:13px; color:#166534; margin-top:8px;">💬 角色扮演口语实战（点击输入框，用键盘自带 🎙️ 说话）：</div>
                 <div class="chat-container" id="chat-box">
-                    <div class="chat-msg chat-ai" id="chat-welcome-msg">🎭 角色扮演已就绪！您当前扮演【角色 A】，AI 扮演【角色 B】。请根据上方剧本或直接用英语向 AI 发起对话！</div>
+                    <div class="chat-msg chat-ai" id="chat-welcome-msg">🎭 角色扮演已就绪！您当前扮演【角色 A】，AI 扮演【角色 B】。请根据上方长剧本或直接用英语向 AI 发起对话！</div>
                 </div>
                 <div class="chat-input-row">
                     <input type="text" id="user-chat-input" class="chat-input" placeholder="输入您的角色台词，或点键盘 🎙️ 语音输入..." onkeypress="if(event.key==='Enter') sendChat()">
@@ -218,38 +217,30 @@
         let currentFlashcardIndex = 0;
         let isCardFlipped = false;
 
-        // 根据学习等级定制的生活与旅游场景库（尤其是 L1 侧重超高频基础日常、短句）
         const topicsByLevel = {
             "L1 (入门级)": [
-                "Buying Bottled Water at a Convenience Store (便利店买瓶装水)",
-                "Asking Simple Directions to the Station (向路人简单询问车站方向)",
-                "Checking in at a Hotel Front Desk (酒店前台办理简单入住)",
-                "Ordering a Cup of Coffee with Milk (点一杯加奶的咖啡)",
-                "Asking for the Price and Paying by Card (询问价格并刷卡结账)",
-                "Saying Hello and Making a Friendly Small Talk (打招呼与友好寒暄)",
-                "Taking a Taxi and Telling the Destination (坐出租车告知目的地)",
-                "Asking for Help When Lost (迷路时向工作人员求助)"
+                "Buying Bottled Water & Snacks at a Convenience Store (便利店买水与零食 - 完整多轮)",
+                "Asking Simple Directions and Asking the Way to the Station (向路人详细问路与找车站)",
+                "Checking in at a Hotel Front Desk and Asking for Wi-Fi (酒店前台办理入住与问Wi-Fi密码)",
+                "Ordering Coffee and Extra Milk at a Cafe (在咖啡馆点咖啡并要求加奶)",
+                "Shopping for Clothes and Asking for Sizes and Prices (买衣服并询问尺码与价格)"
             ],
             "L2 (基础级)": [
-                "Airport Customs & Immigration Questions (海关入境问答)",
-                "Hotel Late Check-out Request (酒店延迟退房申请)",
-                "Ordering Food & Explaining Food Allergies (餐厅点餐与说明食物过敏)",
-                "Renting a Car & Asking for Insurance (租车与咨询保险)",
-                "Shopping Tax Refund Procedures (购物退税流程咨询)",
-                "Asking for Recommendations for Local Food (请教当地特色美食推荐)"
+                "Airport Customs & Immigration Interview (海关入境详细问答)",
+                "Hotel Late Check-out & Requesting Extra Towels (酒店延迟退房与索要毛巾)",
+                "Ordering Food at a Restaurant & Explaining Dietary Requirements (餐厅点餐与饮食要求)",
+                "Renting a Car and Discussing Insurance Options (租车与保险细节商讨)"
             ],
             "L3 (进阶级)": [
-                "Handling Flight Cancellation & Rebooking (处理航班取消与改签)",
-                "Business Meeting Networking & Small Talk (商务社交与破冰交流)",
-                "Consulting a Pharmacist for Prescription Medicine (药剂师处方药咨询)",
-                "Resolving Hotel Room Issues with Management (与酒店管理层协商客房问题)"
+                "Handling Flight Cancellation & Rebooking with Airline Staff (处理航班取消与改签)",
+                "Business Networking & Small Talk at an International Conference (国际会议商务社交与破冰)"
             ]
         };
 
         const defaultContent = {
-            listening: "VOA Official Podcast Audio: Listen to native speakers discuss global science, agriculture, and technological breakthroughs. (Lock your screen and enjoy background audio!)",
+            listening: "A big storm hit a small town in the United States on Monday. Strong wind and heavy rain damaged some houses and roads. Many people lost power. Schools closed for the day. Rescue teams helped people leave flooded areas. The mayor said everyone should stay home and be safe.",
             reading: "Language acquisition works best with consistent comprehensible input that matches your level.",
-            dialogue: "Scene: Buying Bottled Water (买水)\nA: Excuse me, how much is this water?\nB: It is two dollars.\nA: Can I pay by credit card?\nB: Yes, of course. Tap here please.\nA: Thank you so much!\nB: You're welcome. Have a nice day!",
+            dialogue: "Scene: Buying Bottled Water and Snacks\nA: Hello! Good morning.\nB: Good morning! Welcome to the convenience store. Can I help you?\nA: Yes, please. Where is the bottled water?\nB: It is right over there, next to the milk fridge.\nA: Thank you. How much is this small bottle?\nB: That one is one dollar and fifty cents.\nA: Great. I will take two bottles and a chocolate bar.\nB: Sure. Would you like a plastic bag?\nA: No, thank you. I have my own bag.\nB: That will be three dollars in total. Cash or card?\nB: Card, please. Here is my phone to tap.\nA: Payment approved. Have a wonderful day!\nB: Thank you! Goodbye.",
             xText: "Building an English learning Progressive Web App with DeepSeek API and Speech Synthesis opens up new possibilities for AI-driven education.",
             xAnalysis: "💡 爆款解析：本文探讨了结合 DeepSeek API 与语音合成构建英语分级 PWA 的应用实践。核心表达：'opens up new possibilities' (开启全新可能性)。"
         };
@@ -425,14 +416,14 @@
         async function generateQuiz() {
             const qBox = document.getElementById('quiz-question');
             const oBox = document.getElementById('quiz-options');
-            qBox.innerText = "🤖 AI 正在根据今日新闻出题...";
+            qBox.innerText = "🤖 AI 正在根据今日内容出题...";
             oBox.innerHTML = "";
             
             if (!apiKey) {
-                qBox.innerText = "【离线测验示例】What does 'water' mean?";
+                qBox.innerText = "【离线测验示例】What does 'storm' mean?";
                 oBox.innerHTML = `
-                    <div style="margin-top:6px;"><button class="btn btn-outline" style="text-align:left; padding:8px;" onclick="alert('回答正确！')">A. 水</button></div>
-                    <div style="margin-top:6px;"><button class="btn btn-outline" style="text-align:left; padding:8px;" onclick="alert('回答错误')">B. 食物</button></div>
+                    <div style="margin-top:6px;"><button class="btn btn-outline" style="text-align:left; padding:8px;" onclick="alert('回答正确！')">A. 风暴、暴风雨</button></div>
+                    <div style="margin-top:6px;"><button class="btn btn-outline" style="text-align:left; padding:8px;" onclick="alert('回答错误')">B. 晴天</button></div>
                 `;
                 return;
             }
@@ -524,22 +515,24 @@
         async function generateDailyContent() {
             if (!apiKey) { alert("当前为离线模式。配置 API Key 后可享受 AI 实时生成功能！"); return; }
             
-            // 根据当前用户等级精确匹配场景库
             let currentList = topicsByLevel[userLevel] || topicsByLevel["L2 (基础级)"];
             const selectedTopic = currentList[Math.floor(Math.random() * currentList.length)];
 
-            document.getElementById('listening-text').innerText = "🤖 正在生成 VOA 听力对应文稿...";
+            document.getElementById('listening-text').innerText = "🤖 正在生成精听文稿...";
             document.getElementById('reading-text').innerText = "🤖 正在生成科普...";
-            document.getElementById('dialogue-tag').innerText = `03 等级定制场景对话 [${userLevel}] ☕`;
-            document.getElementById('dialogue-text').innerText = `🤖 正在生成适配 ${userLevel} 的场景剧本 [${selectedTopic}]...`;
+            document.getElementById('dialogue-tag').innerText = `03 8-10轮超长深度情景对话 [${userLevel}] ☕`;
+            document.getElementById('dialogue-text').innerText = `🤖 正在生成适配 ${userLevel} 的 8-10 轮超长沉浸式剧本 [${selectedTopic}]...`;
             document.getElementById('x-text').innerText = "🤖 正在抓取 X 爆款推文...";
             document.getElementById('x-analysis').innerText = "正在拆解知识点...";
 
             try {
-                const p1 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 short VOA-style news summary text (approx. 80 words). Return ONLY pure English text.`);
+                const p1 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 short VOA-style news summary text (approx. 90 words). Return ONLY pure English text.`);
                 const p2 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 short science reading passage (approx. 100 words). Return ONLY pure English text.`);
-                // 针对 L1 强制要求超简单、高频、短句的生活对话
-                const p3 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 practical English dialogue script tailored strictly for level ${userLevel} in the scenario of: "${selectedTopic}". If level is L1, use extremely simple words, short sentences, and basic daily expressions. It MUST be exactly 6 lines (3 turns). Format strictly:\nScene: ${selectedTopic}\nA: [English]\nB: [English]\nA: [English]\nB: [English]\nA: [English]\nB: [English]`);
+                // 🌟 强制要求：生成 8 到 10 轮（共 16-20 行）的完整深度对话，L1 必须使用超简单高频词
+                const p3 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 practical, immersive English dialogue script tailored strictly for level ${userLevel} in the scenario of: "${selectedTopic}". 
+                CRITICAL REQUIREMENT: The dialogue MUST be complete and long, containing EXACTLY 8 to 10 full turns (16 to 20 alternating lines between A and B) to form a thorough storyline. 
+                If level is L1, use extremely simple words, short sentences, and basic daily expressions. 
+                Format strictly as:\nScene: ${selectedTopic}\nA: [English]\nB: [English]\nA: [English]\nB: [English]\n(continue until 8-10 turns are completed)`);
                 const p5 = fetchSinglePart(`Generate a trending viral tweet (about tech, AI, productivity, or life, 20-40 words) in English, followed by a line break and a short Chinese breakdown ("💡 爆款解析：...").`);
 
                 const [listening, reading, dialogue, xRaw] = await Promise.all([p1, p2, p3, p5]);
@@ -566,6 +559,24 @@
                 checkApiBalance();
             } catch (e) {
                 alert("生成过程触发网络波动，已为您恢复默认学习内容。");
+            }
+        }
+
+        function playListeningVoice() {
+            try {
+                if (!('speechSynthesis' in window)) {
+                    alert("当前浏览器不支持语音朗读功能。");
+                    return;
+                }
+                window.speechSynthesis.cancel();
+                let text = document.getElementById('listening-text').innerText;
+                let msg = new SpeechSynthesisUtterance(text);
+                msg.lang = 'en-US';
+                msg.rate = 0.85; // 稍慢语速，适合精听
+                window.speechSynthesis.speak(msg);
+                alert("🔊 正在为您朗读精听文稿（支持全屏/锁屏状态下的连续收听）！");
+            } catch (e) {
+                alert("播放失败，请重试。");
             }
         }
 
