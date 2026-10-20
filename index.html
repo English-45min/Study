@@ -107,9 +107,9 @@
         <div id="learning-card" class="card">
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <h3>📅 今日学习计划</h3>
-                <button class="btn" style="width:auto; padding:6px 12px; font-size:12px;" onclick="generateDailyContent()">🤖 生成新内容 (并发)</button>
+                <button class="btn" style="width:auto; padding:6px 12px; font-size:12px;" onclick="generateDailyContent()">🤖 刷新今日内容 (含旅游实战)</button>
             </div>
-            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 提示：单词点击可取词。应用会自动记住您上次的学习进度！</p>
+            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 提示：单词点击可取词。情景对话已加入随机旅游实战场景！</p>
             <hr style="border:none; border-top:1px solid #E5E7EB; margin: 12px 0;">
             
             <div style="margin-bottom: 20px;">
@@ -128,7 +128,7 @@
             </div>
 
             <div style="margin-bottom: 20px;">
-                <span class="tag" style="background:#DCFCE7; color:#15803D;">03 双人场景对话剧本 (10Min) ☕</span>
+                <span class="tag" style="background:#DCFCE7; color:#15803D;">03 真实旅游与生活情景对话 (10Min) ✈️</span>
                 <div id="dialogue-text" class="dialogue-box clickable-text"></div>
                 <button class="btn btn-outline" style="border-color:#16A34A; color:#16A34A; margin-bottom:8px;" onclick="playDialogueDualVoice()">🎭 智能男女声交替朗读</button>
                 
@@ -176,18 +176,23 @@
     </div>
 
     <script>
+        // 🛡️ 防清零持久化逻辑
         let userLevel = localStorage.getItem('user_level') || 'L2 (基础级)';
-        let streak = parseInt(localStorage.getItem('streak') || '0', 10);
-        if (isNaN(streak)) streak = 0;
         
+        let streak = 0;
+        let savedStreak = localStorage.getItem('streak');
+        if (savedStreak !== null && !isNaN(parseInt(savedStreak, 10))) {
+            streak = parseInt(savedStreak, 10);
+        }
+
         let apiKey = localStorage.getItem('api_key') || '';
         
         let vocabBook = [];
         try {
             let savedVocab = localStorage.getItem('vocab_book');
             if (savedVocab) {
-                vocabBook = JSON.parse(savedVocab);
-                if (!Array.isArray(vocabBook)) vocabBook = [];
+                let parsed = JSON.parse(savedVocab);
+                if (Array.isArray(parsed)) vocabBook = parsed;
             }
         } catch (e) { vocabBook = []; }
 
@@ -196,10 +201,24 @@
         let currentFlashcardIndex = 0;
         let isCardFlipped = false;
 
+        // ✈️ 预设真实旅游与高频生活场景词库（AI 每次生成时随机抽取）
+        const travelTopics = [
+            "Airport Customs & Immigration Questions (海关入境问答)",
+            "Hotel Check-in & Requesting Late Check-out (酒店入住与延迟退房)",
+            "Ordering Food at a Restaurant & Handling Food Allergy (餐厅点餐与食物过敏要求)",
+            "Asking for Directions & Renting a Car at Airport (询问路线与机场租车)",
+            "Shopping Tax Refund & Asking for Discounts (购物退税与询问折扣)",
+            "Flight Delay & Baggage Claim Assistance (航班延误与行李找回询问)",
+            "Coffee Shop Ordering Special Coffee Customizations (咖啡馆特殊定制点单)",
+            "Asking Locals for Hidden Sightseeing Recommendations (向当地人请教小众景点)",
+            "Pharmacy Purchasing Cold Medicine & Doctor Consultation (药店买感冒药与问诊)",
+            "Calling Rideshare or Taxi Drivers for Pick-up Spot (网约车与出租车司机沟通上车点)"
+        ];
+
         const defaultContent = {
             listening: "VOA standard: Solar power technology helps farmers access water in dry regions, changing how local communities grow food.",
             reading: "Language acquisition works best with consistent comprehensible input that matches your level.",
-            dialogue: "Scene: Asking for Directions\nA: Excuse me, is there a pharmacy near here?\nB: Yes, go straight for two blocks and turn left.\nA: Is it next to the supermarket?\nB: Exactly, you cannot miss it.\nA: Thank you so much for your help!\nB: You are very welcome! Have a wonderful day.",
+            dialogue: "Scene: Airport Customs (海关入境)\nA: Good morning. What is the purpose of your visit?\nB: Good morning! I am here for sightseeing and vacation.\nA: How long are you planning to stay in the country?\nB: I will be staying for two weeks at the Grand Hotel.\nA: Great. Enjoy your trip and have a wonderful time!\nB: Thank you so much!",
             xText: "Building an English learning Progressive Web App with DeepSeek API and Speech Synthesis opens up new possibilities for AI-driven education.",
             xAnalysis: "💡 爆款解析：本文探讨了结合 DeepSeek API 与语音合成构建英语分级 PWA 的应用实践。核心表达：'opens up new possibilities' (开启全新可能性)。"
         };
@@ -219,7 +238,7 @@
                 
                 renderVocabBook();
 
-                // 优先从 localStorage 读取上一次退出的学习内容，如果没有则使用默认内容
+                // 读取上次保存的内容（确保断网或重启也能回到上次进度）
                 let savedListening = localStorage.getItem('saved_listening') || defaultContent.listening;
                 let savedReading = localStorage.getItem('saved_reading') || defaultContent.reading;
                 let savedDialogue = localStorage.getItem('saved_dialogue') || defaultContent.dialogue;
@@ -496,21 +515,24 @@
         async function generateDailyContent() {
             if (!apiKey) { alert("当前为离线模式。配置 API Key 后可享受 AI 实时生成功能！"); return; }
             
-            document.getElementById('listening-text').innerText = "🤖 正在生成精听...";
-            document.getElementById('reading-text').innerText = "🤖 正在生成阅读...";
-            document.getElementById('dialogue-text').innerText = "🤖 正在生成剧本...";
+            // 随机抽取一个旅游实战主题
+            const randomTravelTopic = travelTopics[Math.floor(Math.random() * travelTopics.length)];
+
+            document.getElementById('listening-text').innerText = "🤖 正在生成新闻...";
+            document.getElementById('reading-text').innerText = "🤖 正在生成科普...";
+            document.getElementById('dialogue-text').innerText = `🤖 正在生成旅游场景剧本 [${randomTravelTopic}]...`;
             document.getElementById('x-text').innerText = "🤖 正在抓取 X 爆款推文...";
             document.getElementById('x-analysis').innerText = "正在拆解知识点...";
 
             try {
                 const p1 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 short VOA-style news listening passage (approx. 80 words). Return ONLY pure English text.`);
                 const p2 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 short science reading passage (approx. 100 words). Return ONLY pure English text.`);
-                const p3 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 complete daily dialogue script in English. It MUST be exactly 6 lines (3 turns) with a polite closing. Format strictly:\nScene: [English Title]\nA: [English]\nB: [English]\nA: [English]\nB: [English]\nA: [English]\nB: [English]`);
+                // 强制围绕随机旅游场景生成双人对话
+                const p3 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 realistic, practical English dialogue script in the scenario of: "${randomTravelTopic}". It MUST be exactly 6 lines (3 turns) with authentic travel expressions. Format strictly:\nScene: ${randomTravelTopic}\nA: [English]\nB: [English]\nA: [English]\nB: [English]\nA: [English]\nB: [English]`);
                 const p5 = fetchSinglePart(`Generate a trending viral tweet (about tech, AI, productivity, or life, 20-40 words) in English, followed by a line break and a short Chinese breakdown ("💡 爆款解析：...").`);
 
                 const [listening, reading, dialogue, xRaw] = await Promise.all([p1, p2, p3, p5]);
 
-                // 实时渲染并持久化保存到 localStorage
                 renderInteractiveText('listening-text', listening);
                 localStorage.setItem('saved_listening', listening);
 
@@ -593,7 +615,7 @@
                     body: JSON.stringify({
                         model: "deepseek-flash",
                         messages: [
-                            { role: "system", content: "You are an English speaking coach. Reply in simple, natural English, followed by a short Chinese tip." },
+                            { role: "system", content: "You are an English speaking coach and travel guide. Reply in simple, natural English, followed by a short Chinese tip." },
                             { role: "user", content: userText }
                         ]
                     })
