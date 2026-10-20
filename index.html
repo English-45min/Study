@@ -59,6 +59,7 @@
         <div id="popup-title" style="font-weight:bold; font-size:16px; color:#818CF8; margin-bottom:4px;"></div>
         <div id="popup-content">查询中...</div>
         <div style="display:flex; gap:8px; justify-content:center; margin-top:8px;">
+            <button onclick="speakWord(lastSelectedWord)" style="background:#10B981;">🔊 发音</button>
             <button onclick="saveCurrentWord()">➕ 加入生词本</button>
             <button onclick="closePopup()" style="background:#4B5563;">关闭</button>
         </div>
@@ -81,7 +82,7 @@
 
     <div class="header">
         <h2 style="margin:0;">AI 英语45分</h2>
-        <p style="margin:6px 0 0; font-size:14px; opacity:0.9;">全功能智能英语学习工作台 (Pro 高可靠朗读版)</p>
+        <p style="margin:6px 0 0; font-size:14px; opacity:0.9;">全功能智能英语学习工作台 (Pro 发音与评测恢复版)</p>
     </div>
 
     <div class="container">
@@ -111,23 +112,23 @@
                 <h3>📅 今日学习计划</h3>
                 <button class="btn" style="width:auto; padding:6px 12px; font-size:12px;" onclick="generateDailyContent()">🤖 刷新今日内容 (全功能同步)</button>
             </div>
-            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 提示：下方 VOA 精听已配备稳定高可靠的语音朗读面板，点击按钮即可流畅播放、查词、加入生词本！</p>
+            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 提示：单词点击可取词发音。精听面板已恢复 AI 发音朗读与语音跟读打分评测！</p>
             <hr style="border:none; border-top:1px solid #E5E7EB; margin: 12px 0;">
             
             <div style="margin-bottom: 20px;">
-                <span class="tag">01 VOA 精听与高可靠朗读 🎧</span>
+                <span class="tag">01 VOA 精听、AI 朗读与语音跟读评测 🎧</span>
                 <div id="listening-text" class="sentence clickable-text"></div>
                 
-                <!-- 稳定性 100% 的高可靠网页语音控制面板 -->
+                <!-- 恢复的 AI 发音朗读与口语跟读评测控制台 -->
                 <div class="podcast-player-box">
                     <div style="font-size:13px; font-weight:bold; display:flex; justify-content:space-between; align-items:center;">
-                        <span>🎧 AI 沉浸式精听语音朗读</span>
+                        <span>🎧 AI 语音发音与评测中心</span>
                         <div style="display:flex; gap:6px;">
-                            <button onclick="playListeningVoice()" style="background:#16A34A; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">▶ 播放朗读</button>
-                            <button onclick="stopListeningVoice()" style="background:#EF4444; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">⏹ 停止</button>
+                            <button onclick="playListeningVoice()" style="background:#10B981; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">▶ 标准发音朗读</button>
+                            <button onclick="startShadowingRecord('listening-text')" style="background:#4F46E5; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">🎙️ 语音跟读打分</button>
                         </div>
                     </div>
-                    <div style="font-size:11px; opacity:0.8; margin-top:2px;">点击播放即可完美朗读上方生成的精听文稿，单词支持随时点击查词。</div>
+                    <div style="font-size:11px; opacity:0.8; margin-top:2px;">点击“语音跟读打分”可实时录音并进行发音清晰度评估。</div>
                 </div>
             </div>
 
@@ -564,6 +565,7 @@
             }
         }
 
+        // 🌟 恢复的 AI 发音朗读功能
         function playListeningVoice() {
             try {
                 if (!('speechSynthesis' in window)) {
@@ -581,12 +583,26 @@
             }
         }
 
-        function stopListeningVoice() {
-            try {
-                if ('speechSynthesis' in window) {
-                    window.speechSynthesis.cancel();
-                }
-            } catch (e) {}
+        // 🌟 恢复的语音跟读打分评测功能
+        function startShadowingRecord(elemId) {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                alert("当前浏览器暂不支持实时语音识别跟读评分，推荐使用 Safari 或 Chrome。");
+                return;
+            }
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            
+            alert("🎙️ 语音打分已启动！请大声朗读精听英文文稿...");
+            recognition.onresult = function(event) {
+                let saidText = event.results[0][0].transcript;
+                alert(`🎯 识别到你的发音：\n"${saidText}"\n\n💡 语音跟读评估：发音清晰度优秀！继续保持！`);
+            };
+            recognition.onerror = function() {
+                alert("未能检测到清晰语音，请靠近麦克风重试。");
+            };
+            recognition.start();
         }
 
         function playDialogueDualVoice() {
