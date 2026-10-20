@@ -8,7 +8,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="英语45分">
     
-    <!-- 物理图标外链，完美解决 iOS 图标缓存与回转问题 -->
     <link rel="apple-touch-icon" href="./icon.png">
     <link rel="icon" type="image/png" href="./icon.png">
     <meta name="theme-color" content="#EF4444">
@@ -83,7 +82,7 @@
 
     <div class="header">
         <h2 style="margin:0;">AI 英语45分</h2>
-        <p style="margin:6px 0 0; font-size:14px; opacity:0.9;">全功能智能英语学习工作台 (Pro 双模融合版)</p>
+        <p style="margin:6px 0 0; font-size:14px; opacity:0.9;">全功能智能英语学习工作台 (Pro 等级定制版)</p>
     </div>
 
     <div class="container">
@@ -111,22 +110,22 @@
         <div id="learning-card" class="card">
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <h3>📅 今日学习计划</h3>
-                <button class="btn" style="width:auto; padding:6px 12px; font-size:12px;" onclick="generateDailyContent()">🤖 刷新今日内容 (双模同步)</button>
+                <button class="btn" style="width:auto; padding:6px 12px; font-size:12px;" onclick="generateDailyContent()">🤖 刷新今日内容 (匹配等级)</button>
             </div>
-            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 提示：下方 VOA 精听已接入**极速稳定音频流**，支持锁屏与熄屏后台播放！</p>
+            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 提示：下方 VOA 播放器已升级为稳定直连，支持完美熄屏锁屏播放！情景对话已根据您的等级智能定制。</p>
             <hr style="border:none; border-top:1px solid #E5E7EB; margin: 12px 0;">
             
             <div style="margin-bottom: 20px;">
                 <span class="tag">01 VOA真人播客精听 (支持锁屏息屏播放) 🎧</span>
                 <div id="listening-text" class="sentence clickable-text"></div>
                 
-                <!-- 🌟 修复后的全兼容稳定音频源 -->
+                <!-- 修复后的稳定 HTTPS 音频直链播客播放器 -->
                 <div class="podcast-player-box">
                     <div style="font-size:13px; font-weight:bold; display:flex; justify-content:space-between;">
                         <span>🎧 VOA Learning English 官方原声播客</span>
                         <span style="font-size:11px; opacity:0.8;">支持息屏/锁屏控制</span>
                     </div>
-                    <audio id="voa-audio" controls preload="metadata" src="https://archive.org/download/voa-learning-english-podcast/ScienceInTheNews.mp3" title="VOA Learning English Podcast"></audio>
+                    <audio id="voa-audio" controls preload="metadata" src="https://av.voanews.com/clips/VLE/2026/03/01/20260301-140000-vle791-program_hq.mp3"></audio>
                 </div>
             </div>
 
@@ -137,7 +136,7 @@
             </div>
 
             <div style="margin-bottom: 20px;">
-                <span class="tag" style="background:#DCFCE7; color:#15803D;">03 真实旅游与生活情景对话 (10Min) ✈️</span>
+                <span class="tag" id="dialogue-tag" style="background:#DCFCE7; color:#15803D;">03 等级定制生活情景对话 (10Min) ☕</span>
                 <div id="dialogue-text" class="dialogue-box clickable-text"></div>
                 <button class="btn btn-outline" style="border-color:#16A34A; color:#16A34A; margin-bottom:8px;" onclick="playDialogueDualVoice()">🎭 智能男女声交替朗读</button>
                 
@@ -145,8 +144,8 @@
                     <label class="role-select">
                         🎭 角色扮演模式选择：
                         <select id="role-select-box" style="margin-left:8px; padding:4px; border-radius:4px; border:1px solid #16A34A;" onchange="updateRolePlay()">
-                            <option value="A">我扮演角色 A (发起方/乘客/顾客)</option>
-                            <option value="B">我扮演角色 B (响应方/店员/海关)</option>
+                            <option value="A">我扮演角色 A (发起方)</option>
+                            <option value="B">我扮演角色 B (响应方)</option>
                         </select>
                     </label>
                 </div>
@@ -219,23 +218,38 @@
         let currentFlashcardIndex = 0;
         let isCardFlipped = false;
 
-        const travelTopics = [
-            "Airport Customs & Immigration Questions (海关入境问答)",
-            "Hotel Check-in & Requesting Late Check-out (酒店入住与延迟退房)",
-            "Ordering Food at a Restaurant & Handling Food Allergy (餐厅点餐与食物过敏要求)",
-            "Asking for Directions & Renting a Car at Airport (询问路线与机场租车)",
-            "Shopping Tax Refund & Asking for Discounts (购物退税与询问折扣)",
-            "Flight Delay & Baggage Claim Assistance (航班延误与行李找回询问)",
-            "Coffee Shop Ordering Special Coffee Customizations (咖啡馆特殊定制点单)",
-            "Asking Locals for Hidden Sightseeing Recommendations (向当地人请教小众景点)",
-            "Pharmacy Purchasing Cold Medicine & Doctor Consultation (药店买感冒药与问诊)",
-            "Calling Rideshare or Taxi Drivers for Pick-up Spot (网约车与出租车司机沟通上车点)"
-        ];
+        // 根据学习等级定制的生活与旅游场景库（尤其是 L1 侧重超高频基础日常、短句）
+        const topicsByLevel = {
+            "L1 (入门级)": [
+                "Buying Bottled Water at a Convenience Store (便利店买瓶装水)",
+                "Asking Simple Directions to the Station (向路人简单询问车站方向)",
+                "Checking in at a Hotel Front Desk (酒店前台办理简单入住)",
+                "Ordering a Cup of Coffee with Milk (点一杯加奶的咖啡)",
+                "Asking for the Price and Paying by Card (询问价格并刷卡结账)",
+                "Saying Hello and Making a Friendly Small Talk (打招呼与友好寒暄)",
+                "Taking a Taxi and Telling the Destination (坐出租车告知目的地)",
+                "Asking for Help When Lost (迷路时向工作人员求助)"
+            ],
+            "L2 (基础级)": [
+                "Airport Customs & Immigration Questions (海关入境问答)",
+                "Hotel Late Check-out Request (酒店延迟退房申请)",
+                "Ordering Food & Explaining Food Allergies (餐厅点餐与说明食物过敏)",
+                "Renting a Car & Asking for Insurance (租车与咨询保险)",
+                "Shopping Tax Refund Procedures (购物退税流程咨询)",
+                "Asking for Recommendations for Local Food (请教当地特色美食推荐)"
+            ],
+            "L3 (进阶级)": [
+                "Handling Flight Cancellation & Rebooking (处理航班取消与改签)",
+                "Business Meeting Networking & Small Talk (商务社交与破冰交流)",
+                "Consulting a Pharmacist for Prescription Medicine (药剂师处方药咨询)",
+                "Resolving Hotel Room Issues with Management (与酒店管理层协商客房问题)"
+            ]
+        };
 
         const defaultContent = {
-            listening: "This is VOA Learning English. Today’s news is about a new park in the city. The city opened the park on Monday. People can walk, play, and sit under trees. Families with children are happy. The park has a small playground and many benches. It is near a bus stop, so people can go by bus. The mayor says the city will build more parks next year. Many people came to the opening and enjoyed the sunny day.",
+            listening: "VOA Official Podcast Audio: Listen to native speakers discuss global science, agriculture, and technological breakthroughs. (Lock your screen and enjoy background audio!)",
             reading: "Language acquisition works best with consistent comprehensible input that matches your level.",
-            dialogue: "Scene: Airport Customs (海关入境)\nA: Good morning. Passport, please.\nB: Here you are.\nA: What is the purpose of your visit?\nB: I am here on vacation.\nA: How long will you stay?\nB: For one week.",
+            dialogue: "Scene: Buying Bottled Water (买水)\nA: Excuse me, how much is this water?\nB: It is two dollars.\nA: Can I pay by credit card?\nB: Yes, of course. Tap here please.\nA: Thank you so much!\nB: You're welcome. Have a nice day!",
             xText: "Building an English learning Progressive Web App with DeepSeek API and Speech Synthesis opens up new possibilities for AI-driven education.",
             xAnalysis: "💡 爆款解析：本文探讨了结合 DeepSeek API 与语音合成构建英语分级 PWA 的应用实践。核心表达：'opens up new possibilities' (开启全新可能性)。"
         };
@@ -415,10 +429,10 @@
             oBox.innerHTML = "";
             
             if (!apiKey) {
-                qBox.innerText = "【离线测验示例】What does 'sustainable' mean in modern technology?";
+                qBox.innerText = "【离线测验示例】What does 'water' mean?";
                 oBox.innerHTML = `
-                    <div style="margin-top:6px;"><button class="btn btn-outline" style="text-align:left; padding:8px;" onclick="alert('回答正确！')">A. 可持续的、能长期维持的</button></div>
-                    <div style="margin-top:6px;"><button class="btn btn-outline" style="text-align:left; padding:8px;" onclick="alert('回答错误')">B. 短期的、临时的</button></div>
+                    <div style="margin-top:6px;"><button class="btn btn-outline" style="text-align:left; padding:8px;" onclick="alert('回答正确！')">A. 水</button></div>
+                    <div style="margin-top:6px;"><button class="btn btn-outline" style="text-align:left; padding:8px;" onclick="alert('回答错误')">B. 食物</button></div>
                 `;
                 return;
             }
@@ -510,18 +524,22 @@
         async function generateDailyContent() {
             if (!apiKey) { alert("当前为离线模式。配置 API Key 后可享受 AI 实时生成功能！"); return; }
             
-            const randomTravelTopic = travelTopics[Math.floor(Math.random() * travelTopics.length)];
+            // 根据当前用户等级精确匹配场景库
+            let currentList = topicsByLevel[userLevel] || topicsByLevel["L2 (基础级)"];
+            const selectedTopic = currentList[Math.floor(Math.random() * currentList.length)];
 
             document.getElementById('listening-text').innerText = "🤖 正在生成 VOA 听力对应文稿...";
             document.getElementById('reading-text').innerText = "🤖 正在生成科普...";
-            document.getElementById('dialogue-text').innerText = `🤖 正在生成旅游场景剧本 [${randomTravelTopic}]...`;
+            document.getElementById('dialogue-tag').innerText = `03 等级定制场景对话 [${userLevel}] ☕`;
+            document.getElementById('dialogue-text').innerText = `🤖 正在生成适配 ${userLevel} 的场景剧本 [${selectedTopic}]...`;
             document.getElementById('x-text').innerText = "🤖 正在抓取 X 爆款推文...";
             document.getElementById('x-analysis').innerText = "正在拆解知识点...";
 
             try {
-                const p1 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 short VOA-style news listening summary text (approx. 80 words) to match the audio podcast. Return ONLY pure English text.`);
+                const p1 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 short VOA-style news summary text (approx. 80 words). Return ONLY pure English text.`);
                 const p2 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 short science reading passage (approx. 100 words). Return ONLY pure English text.`);
-                const p3 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 realistic, practical English dialogue script in the scenario of: "${randomTravelTopic}". It MUST be exactly 6 lines (3 turns) with authentic travel expressions. Format strictly:\nScene: ${randomTravelTopic}\nA: [English]\nB: [English]\nA: [English]\nB: [English]\nA: [English]\nB: [English]`);
+                // 针对 L1 强制要求超简单、高频、短句的生活对话
+                const p3 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 practical English dialogue script tailored strictly for level ${userLevel} in the scenario of: "${selectedTopic}". If level is L1, use extremely simple words, short sentences, and basic daily expressions. It MUST be exactly 6 lines (3 turns). Format strictly:\nScene: ${selectedTopic}\nA: [English]\nB: [English]\nA: [English]\nB: [English]\nA: [English]\nB: [English]`);
                 const p5 = fetchSinglePart(`Generate a trending viral tweet (about tech, AI, productivity, or life, 20-40 words) in English, followed by a line break and a short Chinese breakdown ("💡 爆款解析：...").`);
 
                 const [listening, reading, dialogue, xRaw] = await Promise.all([p1, p2, p3, p5]);
@@ -534,11 +552,6 @@
 
                 document.getElementById('dialogue-text').innerHTML = dialogue.replace(/\n/g, '<br>');
                 localStorage.setItem('saved_dialogue', dialogue);
-                
-                // 重置角色扮演欢迎语，提示切换了新场景
-                const userRole = document.getElementById('role-select-box').value;
-                const aiRole = userRole === 'A' ? 'B' : 'A';
-                document.getElementById('chat-welcome-msg').innerText = `🎭 新场景已加载！当前场景：【${randomTravelTopic}】。您扮演【角色 ${userRole}】，AI 扮演【角色 ${aiRole}】。请开始对话！`;
                 
                 const xParts = xRaw.split('\n');
                 let xTweetText = xParts[0];
@@ -615,7 +628,7 @@
             chatBox.scrollTop = chatBox.scrollHeight;
 
             const loadingId = 'loading-' + Date.now();
-            chatBox.innerHTML += `<div class="chat-msg chat-ai" id="${loadingId}">AI (角色 ${aiRole}) 正在根据情景回复与纠错...</div>`;
+            chatBox.innerHTML += `<div class="chat-msg chat-ai" id="${loadingId}">AI (角色 ${aiRole}) 正在根据 ${userLevel} 难度回复与纠错...</div>`;
             chatBox.scrollTop = chatBox.scrollHeight;
 
             let aiReply = "";
@@ -629,7 +642,7 @@
                         messages: [
                             { 
                                 role: "system", 
-                                content: `You are an immersive English roleplay partner and travel coach. Current dialogue context/scenario:\n${dialogueContext}\nThe user is playing Role ${userRole}, and you must play Role ${aiRole} to reply naturally in English. Keep the conversation flowing naturally. After your English reply, add a short Chinese tip/correction for the user ("💡 外教纠错/建议: ...").` 
+                                content: `You are an interactive English roleplay partner. The user is at English level ${userLevel}. Adapt your English vocabulary and sentence length to match ${userLevel} (if L1, use very simple words and short sentences). Current dialogue scenario:\n${dialogueContext}\nThe user is playing Role ${userRole}, and you must play Role ${aiRole} to reply naturally. After your English reply, add a short Chinese tip ("💡 外教纠错/建议: ...").` 
                             },
                             { role: "user", content: userText }
                         ]
@@ -639,7 +652,7 @@
                 if (resData.choices && resData.choices.length > 0) aiReply = resData.choices[0].message.content.trim();
                 else throw new Error("响应异常");
             } catch (err) {
-                aiReply = `Sounds good! Let's continue our conversation. (💡 外教纠错: 表达很地道！)`;
+                aiReply = `Great! Let's continue. (💡 外教纠错: 表达很清晰！)`;
             }
 
             const loadingEl = document.getElementById(loadingId);
