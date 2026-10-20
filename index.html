@@ -52,7 +52,6 @@
         .flashcard-box { background: #EEF2FF; border: 2px dashed #4F46E5; border-radius: 12px; padding: 30px 20px; margin: 15px 0; cursor: pointer; min-height: 100px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .role-select { background: #F0FDF4; border: 1px solid #16A34A; color: #166534; padding: 6px 10px; border-radius: 6px; font-size: 13px; font-weight: bold; margin-bottom: 8px; display: inline-block; width: 100%; box-sizing: border-box; }
         
-        /* 真实播客音频播放器样式 */
         .podcast-player-box { background: #1E1B4B; color: white; padding: 12px 16px; border-radius: 10px; margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
         .podcast-player-box audio { width: 100%; height: 36px; border-radius: 6px; }
     </style>
@@ -114,20 +113,20 @@
                 <h3>📅 今日学习计划</h3>
                 <button class="btn" style="width:auto; padding:6px 12px; font-size:12px;" onclick="generateDailyContent()">🤖 刷新今日内容 (双模同步)</button>
             </div>
-            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 提示：下方 VOA 精听已接入**真实播客音频流**，支持手机**完全熄屏锁屏后台播放**！</p>
+            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 提示：下方 VOA 精听已接入**极速稳定音频流**，支持锁屏与熄屏后台播放！</p>
             <hr style="border:none; border-top:1px solid #E5E7EB; margin: 12px 0;">
             
             <div style="margin-bottom: 20px;">
                 <span class="tag">01 VOA真人播客精听 (支持锁屏息屏播放) 🎧</span>
                 <div id="listening-text" class="sentence clickable-text"></div>
                 
-                <!-- 🌟 核心升级：原生 HTML5 音频播放器（支持锁屏后台播放与控制中心控件） -->
+                <!-- 🌟 修复后的全兼容稳定音频源 -->
                 <div class="podcast-player-box">
                     <div style="font-size:13px; font-weight:bold; display:flex; justify-content:space-between;">
                         <span>🎧 VOA Learning English 官方原声播客</span>
                         <span style="font-size:11px; opacity:0.8;">支持息屏/锁屏控制</span>
                     </div>
-                    <audio id="voa-audio" controls preload="none" src="https://traffic.libsyn.com/secure/learningenglish/le-special-english-science-in-the-news.mp3" title="VOA Learning English Podcast"></audio>
+                    <audio id="voa-audio" controls preload="metadata" src="https://archive.org/download/voa-learning-english-podcast/ScienceInTheNews.mp3" title="VOA Learning English Podcast"></audio>
                 </div>
             </div>
 
@@ -234,9 +233,9 @@
         ];
 
         const defaultContent = {
-            listening: "VOA Official Podcast Audio: Listen to native speakers discuss global science, agriculture, and technological breakthroughs. (Lock your screen and enjoy background audio!)",
+            listening: "This is VOA Learning English. Today’s news is about a new park in the city. The city opened the park on Monday. People can walk, play, and sit under trees. Families with children are happy. The park has a small playground and many benches. It is near a bus stop, so people can go by bus. The mayor says the city will build more parks next year. Many people came to the opening and enjoyed the sunny day.",
             reading: "Language acquisition works best with consistent comprehensible input that matches your level.",
-            dialogue: "Scene: Airport Customs (海关入境)\nA: Good morning. What is the purpose of your visit?\nB: Good morning! I am here for sightseeing and vacation.\nA: How long are you planning to stay in the country?\nB: I will be staying for two weeks at the Grand Hotel.\nA: Great. Enjoy your trip and have a wonderful time!\nB: Thank you so much!",
+            dialogue: "Scene: Airport Customs (海关入境)\nA: Good morning. Passport, please.\nB: Here you are.\nA: What is the purpose of your visit?\nB: I am here on vacation.\nA: How long will you stay?\nB: For one week.",
             xText: "Building an English learning Progressive Web App with DeepSeek API and Speech Synthesis opens up new possibilities for AI-driven education.",
             xAnalysis: "💡 爆款解析：本文探讨了结合 DeepSeek API 与语音合成构建英语分级 PWA 的应用实践。核心表达：'opens up new possibilities' (开启全新可能性)。"
         };
@@ -536,6 +535,11 @@
                 document.getElementById('dialogue-text').innerHTML = dialogue.replace(/\n/g, '<br>');
                 localStorage.setItem('saved_dialogue', dialogue);
                 
+                // 重置角色扮演欢迎语，提示切换了新场景
+                const userRole = document.getElementById('role-select-box').value;
+                const aiRole = userRole === 'A' ? 'B' : 'A';
+                document.getElementById('chat-welcome-msg').innerText = `🎭 新场景已加载！当前场景：【${randomTravelTopic}】。您扮演【角色 ${userRole}】，AI 扮演【角色 ${aiRole}】。请开始对话！`;
+                
                 const xParts = xRaw.split('\n');
                 let xTweetText = xParts[0];
                 let xAnalysisText = xParts.slice(1).join('\n') || "💡 爆款解析：地道表达与语法拆解。";
@@ -625,7 +629,7 @@
                         messages: [
                             { 
                                 role: "system", 
-                                content: `You are an interactive English roleplay partner and travel coach. Current dialogue context/scenario:\n${dialogueContext}\nThe user is playing Role ${userRole}, and you must play Role ${aiRole} to reply naturally in English. After your English reply, add a short Chinese tip/correction for the user ("💡 外教纠错/建议: ...").` 
+                                content: `You are an immersive English roleplay partner and travel coach. Current dialogue context/scenario:\n${dialogueContext}\nThe user is playing Role ${userRole}, and you must play Role ${aiRole} to reply naturally in English. Keep the conversation flowing naturally. After your English reply, add a short Chinese tip/correction for the user ("💡 外教纠错/建议: ...").` 
                             },
                             { role: "user", content: userText }
                         ]
