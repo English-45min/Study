@@ -51,6 +51,10 @@
         .modal-card { background: white; width: 90%; max-width: 400px; border-radius: 16px; padding: 20px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); text-align: center; }
         .flashcard-box { background: #EEF2FF; border: 2px dashed #4F46E5; border-radius: 12px; padding: 30px 20px; margin: 15px 0; cursor: pointer; min-height: 100px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .role-select { background: #F0FDF4; border: 1px solid #16A34A; color: #166534; padding: 6px 10px; border-radius: 6px; font-size: 13px; font-weight: bold; margin-bottom: 8px; display: inline-block; width: 100%; box-sizing: border-box; }
+        
+        /* 真实播客音频播放器样式 */
+        .podcast-player-box { background: #1E1B4B; color: white; padding: 12px 16px; border-radius: 10px; margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+        .podcast-player-box audio { width: 100%; height: 36px; border-radius: 6px; }
     </style>
 </head>
 <body>
@@ -80,7 +84,7 @@
 
     <div class="header">
         <h2 style="margin:0;">AI 英语45分</h2>
-        <p style="margin:6px 0 0; font-size:14px; opacity:0.9;">全功能智能英语学习工作台 (Pro 增强版)</p>
+        <p style="margin:6px 0 0; font-size:14px; opacity:0.9;">全功能智能英语学习工作台 (Pro 双模融合版)</p>
     </div>
 
     <div class="container">
@@ -108,24 +112,29 @@
         <div id="learning-card" class="card">
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <h3>📅 今日学习计划</h3>
-                <button class="btn" style="width:auto; padding:6px 12px; font-size:12px;" onclick="generateDailyContent()">🤖 刷新今日内容 (含旅游实战)</button>
+                <button class="btn" style="width:auto; padding:6px 12px; font-size:12px;" onclick="generateDailyContent()">🤖 刷新今日内容 (双模同步)</button>
             </div>
-            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 提示：单词点击可取词。新增角色扮演口语实战！</p>
+            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 提示：下方 VOA 精听已接入**真实播客音频流**，支持手机**完全熄屏锁屏后台播放**！</p>
             <hr style="border:none; border-top:1px solid #E5E7EB; margin: 12px 0;">
             
             <div style="margin-bottom: 20px;">
-                <span class="tag">01 VOA新闻精听 (12Min)</span>
+                <span class="tag">01 VOA真人播客精听 (支持锁屏息屏播放) 🎧</span>
                 <div id="listening-text" class="sentence clickable-text"></div>
-                <div style="display:flex; gap:8px;">
-                    <button class="btn btn-outline" style="flex:1;" onclick="speakSingleText('listening-text')">🔊 播放朗读</button>
-                    <button class="btn btn-outline" style="flex:1; border-color:#16A34A; color:#16A34A;" onclick="startShadowingRecord('listening-text')">🎙️ 语音跟读打分</button>
+                
+                <!-- 🌟 核心升级：原生 HTML5 音频播放器（支持锁屏后台播放与控制中心控件） -->
+                <div class="podcast-player-box">
+                    <div style="font-size:13px; font-weight:bold; display:flex; justify-content:space-between;">
+                        <span>🎧 VOA Learning English 官方原声播客</span>
+                        <span style="font-size:11px; opacity:0.8;">支持息屏/锁屏控制</span>
+                    </div>
+                    <audio id="voa-audio" controls preload="none" src="https://traffic.libsyn.com/secure/learningenglish/le-special-english-science-in-the-news.mp3" title="VOA Learning English Podcast"></audio>
                 </div>
             </div>
 
             <div style="margin-bottom: 20px;">
                 <span class="tag">02 VOA科普阅读 (13Min)</span>
                 <div id="reading-text" class="sentence clickable-text"></div>
-                <button class="btn btn-outline" onclick="speakSingleText('reading-text')">🔊 朗读阅读文章</button>
+                <button class="btn btn-outline" onclick="speakSingleText('reading-text')">🔊 AI 朗读阅读文章</button>
             </div>
 
             <div style="margin-bottom: 20px;">
@@ -133,7 +142,6 @@
                 <div id="dialogue-text" class="dialogue-box clickable-text"></div>
                 <button class="btn btn-outline" style="border-color:#16A34A; color:#16A34A; margin-bottom:8px;" onclick="playDialogueDualVoice()">🎭 智能男女声交替朗读</button>
                 
-                <!-- 🎭 角色扮演选择模块 -->
                 <div style="margin-top:12px;">
                     <label class="role-select">
                         🎭 角色扮演模式选择：
@@ -226,7 +234,7 @@
         ];
 
         const defaultContent = {
-            listening: "VOA standard: Solar power technology helps farmers access water in dry regions, changing how local communities grow food.",
+            listening: "VOA Official Podcast Audio: Listen to native speakers discuss global science, agriculture, and technological breakthroughs. (Lock your screen and enjoy background audio!)",
             reading: "Language acquisition works best with consistent comprehensible input that matches your level.",
             dialogue: "Scene: Airport Customs (海关入境)\nA: Good morning. What is the purpose of your visit?\nB: Good morning! I am here for sightseeing and vacation.\nA: How long are you planning to stay in the country?\nB: I will be staying for two weeks at the Grand Hotel.\nA: Great. Enjoy your trip and have a wonderful time!\nB: Thank you so much!",
             xText: "Building an English learning Progressive Web App with DeepSeek API and Speech Synthesis opens up new possibilities for AI-driven education.",
@@ -439,27 +447,6 @@
             }
         }
 
-        function startShadowingRecord(elemId) {
-            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert("当前浏览器暂不支持实时语音识别跟读评分，推荐使用 Safari 或 Chrome。");
-                return;
-            }
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'en-US';
-            recognition.interimResults = false;
-            
-            alert("🎙️ 语音打分已启动！请大声朗读对应的精听英文句子...");
-            recognition.onresult = function(event) {
-                let saidText = event.results[0][0].transcript;
-                alert(`🎯 识别到你的发音：\n"${saidText}"\n\n💡 语音跟读评估：发音清晰度优秀！继续保持！`);
-            };
-            recognition.onerror = function() {
-                alert("未能检测到清晰语音，请靠近麦克风重试。");
-            };
-            recognition.start();
-        }
-
         async function generateWeeklyDigest() {
             const digestBox = document.getElementById('digest-box');
             digestBox.style.display = 'block';
@@ -526,14 +513,14 @@
             
             const randomTravelTopic = travelTopics[Math.floor(Math.random() * travelTopics.length)];
 
-            document.getElementById('listening-text').innerText = "🤖 正在生成新闻...";
+            document.getElementById('listening-text').innerText = "🤖 正在生成 VOA 听力对应文稿...";
             document.getElementById('reading-text').innerText = "🤖 正在生成科普...";
             document.getElementById('dialogue-text').innerText = `🤖 正在生成旅游场景剧本 [${randomTravelTopic}]...`;
             document.getElementById('x-text').innerText = "🤖 正在抓取 X 爆款推文...";
             document.getElementById('x-analysis').innerText = "正在拆解知识点...";
 
             try {
-                const p1 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 short VOA-style news listening passage (approx. 80 words). Return ONLY pure English text.`);
+                const p1 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 short VOA-style news listening summary text (approx. 80 words) to match the audio podcast. Return ONLY pure English text.`);
                 const p2 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 short science reading passage (approx. 100 words). Return ONLY pure English text.`);
                 const p3 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 realistic, practical English dialogue script in the scenario of: "${randomTravelTopic}". It MUST be exactly 6 lines (3 turns) with authentic travel expressions. Format strictly:\nScene: ${randomTravelTopic}\nA: [English]\nB: [English]\nA: [English]\nB: [English]\nA: [English]\nB: [English]`);
                 const p5 = fetchSinglePart(`Generate a trending viral tweet (about tech, AI, productivity, or life, 20-40 words) in English, followed by a line break and a short Chinese breakdown ("💡 爆款解析：...").`);
