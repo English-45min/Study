@@ -82,7 +82,7 @@
 
     <div class="header">
         <h2 style="margin:0;">AI 英语45分</h2>
-        <p style="margin:6px 0 0; font-size:14px; opacity:0.9;">全功能智能英语学习工作台 (高稳健防崩溃版)</p>
+        <p style="margin:6px 0 0; font-size:14px; opacity:0.9;">全功能智能英语学习工作台 (实时语音识别与纠音版)</p>
     </div>
 
     <div class="container">
@@ -112,22 +112,22 @@
                 <h3>📅 今日学习计划</h3>
                 <button class="btn" style="width:auto; padding:6px 12px; font-size:12px;" onclick="generateDailyContent()">🤖 刷新今日内容 (全功能同步)</button>
             </div>
-            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 提示：单词点击可取词发音。录音完成后，AI 会自动**语音播报**纠音指导！</p>
+            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 提示：单词点击可取词发音。点击跟读后大声朗读，AI 将实时识别您的语音并提供智能打分与语音纠音播报！</p>
             <hr style="border:none; border-top:1px solid #E5E7EB; margin: 12px 0;">
             
             <div style="margin-bottom: 20px;">
-                <span class="tag">01 VOA 精听、AI 朗读与语音播报纠音 🎧</span>
+                <span class="tag">01 VOA 精听、AI 朗读与实时语音纠音 🎧</span>
                 <div id="listening-text" class="sentence clickable-text"></div>
                 
                 <div class="podcast-player-box">
                     <div style="font-size:13px; font-weight:bold; display:flex; justify-content:space-between; align-items:center;">
-                        <span>🎧 AI 发音打分与语音纠音中心</span>
+                        <span>🎧 AI 发音打分与实时纠音中心</span>
                         <div style="display:flex; gap:6px;">
                             <button onclick="playListeningVoice()" style="background:#10B981; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">▶ 标准发音朗读</button>
-                            <button id="record-btn" onclick="toggleShadowingRecord()" style="background:#4F46E5; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">🎙️ 跟读录音并纠音</button>
+                            <button id="record-btn" onclick="toggleShadowingRecord()" style="background:#4F46E5; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">🎙️ 实时跟读打分</button>
                         </div>
                     </div>
-                    <div id="record-status" style="font-size:11px; opacity:0.9; margin-top:2px;">点击按钮开始朗读，再次点击停止，AI 将以语音播报形式给出纠音建议。</div>
+                    <div id="record-status" style="font-size:11px; opacity:0.9; margin-top:2px;">点击按钮开始朗读，讲完后再次点击停止，AI 实时识别并进行语音纠音播报。</div>
                 </div>
             </div>
 
@@ -241,10 +241,8 @@
         let lastSelectedInfo = "";
         let currentFlashcardIndex = 0;
         let isCardFlipped = false;
-
-        let mediaRecorder = null;
-        let audioChunks = [];
         let isRecording = false;
+        let shadowRecognition = null;
 
         function initApp() {
             try {
@@ -596,67 +594,88 @@
             } catch (e) {}
         }
 
-        async function toggleShadowingRecord() {
+        // 🌟 方案一：真正的浏览器实时语音识别 + AI 纠音和播报
+        function toggleShadowingRecord() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                alert("当前浏览器暂不支持实时语音识别，推荐使用 Chrome 或 Safari 浏览器。");
+                return;
+            }
+
             const btn = document.getElementById('record-btn');
             const statusEl = document.getElementById('record-status');
             const targetText = document.getElementById('listening-text').innerText;
 
             if (!isRecording) {
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    mediaRecorder = new MediaRecorder(stream);
-                    audioChunks = [];
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                shadowRecognition = new SpeechRecognition();
+                shadowRecognition.lang = 'en-US';
+                shadowRecognition.interimResults = false;
 
-                    mediaRecorder.ondataavailable = event => {
-                        if (event.data.size > 0) audioChunks.push(event.data);
-                    };
+                statusEl.innerText = "🔴 正在听您朗读... 请大声读出上方文稿！";
+                btn.style.background = "#EF4444";
+                btn.innerText = "⏹️ 停止并获取纠音";
+                isRecording = true;
 
-                    mediaRecorder.onstop = async () => {
-                        statusEl.innerText = "🎯 录音完成！AI 外教正在生成语音纠音报告...";
-                        
-                        let aiFeedbackText = "综合评价92分。发音很清晰！注意连读可以更加自然。";
-                        let fullReport = "【AI 纠音与打分报告】\n• 综合评分：92分\n• 发音亮点：整体语调流畅。\n• 💡 纠音建议：请注意词尾辅音的清晰度，部分单词连读可以更自然。";
+                let userSaidText = "";
 
-                        if (apiKey) {
-                            try {
-                                const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
-                                    method: "POST",
-                                    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
-                                    body: JSON.stringify({
-                                        model: "deepseek-flash",
-                                        messages: [{ role: "user", content: `The user practiced shadowing the following English text: "${targetText}". Act as a professional English coach. Give a short score out of 100, and 1-2 practical pronunciation advice in short Chinese sentences (suitable for speech reading).` }]
-                                    })
-                                });
-                                const resData = await response.json();
-                                if (resData.choices && resData.choices.length > 0) {
-                                    aiFeedbackText = resData.choices[0].message.content.trim();
-                                    fullReport = "【AI 英语口语纠音与打分报告】\n" + aiFeedbackText;
-                                }
-                            } catch(e) {}
+                shadowRecognition.onresult = function(event) {
+                    userSaidText = event.results[0][0].transcript;
+                };
+
+                shadowRecognition.onerror = function(event) {
+                    console.log("识别提示:", event.error);
+                };
+
+                shadowRecognition.onend = async function() {
+                    isRecording = false;
+                    btn.style.background = "#4F46E5";
+                    btn.innerText = "🎙️ 实时跟读打分";
+                    statusEl.innerText = "🎯 评估完成！AI 正在生成诊断报告...";
+
+                    let promptContent = "";
+                    if (userSaidText) {
+                        promptContent = `The user shadowed the English passage. Target text: "${targetText}". The user actually pronounced/said: "${userSaidText}". Act as an expert English coach. Give a score out of 100 based on accuracy, pinpoint which words were mispronounced or missed, and give short Chinese advice.`;
+                    } else {
+                        promptContent = `The user practiced shadowing text: "${targetText}". Act as an English coach. Give a short score and 2 key pronunciation tips (stress/intonation) in Chinese.`;
+                    }
+
+                    if (apiKey) {
+                        try {
+                            const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
+                                body: JSON.stringify({
+                                    model: "deepseek-flash",
+                                    messages: [{ role: "user", content: promptContent }]
+                                })
+                            });
+                            const resData = await response.json();
+                            if (resData.choices && resData.choices.length > 0) {
+                                let resultText = resData.choices[0].message.content.trim();
+                                alert("【AI 英语口语诊断与纠音报告】\n" + resultText);
+                                speakFeedbackVoice(resultText);
+                            }
+                        } catch(e) {
+                            alert("网络请求异常，请重试。");
                         }
+                    } else {
+                        alert("【离线纠音提示】\n您未配置 API Key。配置后可享受专属 AI 实时识别纠音！\n您刚刚读的内容识别为: " + (userSaidText || "未检测到清晰语音"));
+                    }
+                    statusEl.innerText = "点击按钮开始朗读，讲完后再次点击停止，AI 实时识别并进行语音纠音播报。";
+                };
 
-                        alert(fullReport);
-                        speakFeedbackVoice(aiFeedbackText);
-
-                        statusEl.innerText = "点击按钮开始朗读，再次点击停止，AI 将以语音播报形式给出纠音建议。";
-                        btn.style.background = "#4F46E5";
-                        btn.innerText = "🎙️ 跟读录音并纠音";
-                    };
-
-                    mediaRecorder.start();
-                    isRecording = true;
-                    btn.style.background = "#EF4444";
-                    btn.innerText = "⏹️ 停止录音并获取纠音";
-                    statusEl.innerText = "🔴 正在录音中... 请大声朗读，讲完后点击红色按钮获取 AI 语音纠音！";
-                } catch (err) {
-                    alert("无法获取麦克风权限，请检查手机或浏览器的麦克风权限设置。");
+                try {
+                    shadowRecognition.start();
+                } catch (e) {
+                    isRecording = false;
+                    btn.style.background = "#4F46E5";
+                    btn.innerText = "🎙️ 实时跟读打分";
+                    statusEl.innerText = "点击按钮开始朗读，讲完后再次点击停止，AI 实时识别并进行语音纠音播报。";
                 }
             } else {
-                if (mediaRecorder && mediaRecorder.state !== "inactive") {
-                    mediaRecorder.stop();
-                    mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                if (shadowRecognition) {
+                    shadowRecognition.stop();
                 }
-                isRecording = false;
             }
         }
 
@@ -784,7 +803,6 @@
             alert(`🎉 成功打卡！连续天数：${streak} 天！`); 
         }
 
-        // 页面加载完毕即执行初始化渲染
         window.onload = initApp;
     </script>
 </body>
