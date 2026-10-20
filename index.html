@@ -82,7 +82,7 @@
 
     <div class="header">
         <h2 style="margin:0;">AI 英语45分</h2>
-        <p style="margin:6px 0 0; font-size:14px; opacity:0.9;">全功能智能英语学习工作台 (Pro 发音与评测恢复版)</p>
+        <p style="margin:6px 0 0; font-size:14px; opacity:0.9;">全功能智能英语学习工作台 (Pro 录音修复版)</p>
     </div>
 
     <div class="container">
@@ -112,14 +112,13 @@
                 <h3>📅 今日学习计划</h3>
                 <button class="btn" style="width:auto; padding:6px 12px; font-size:12px;" onclick="generateDailyContent()">🤖 刷新今日内容 (全功能同步)</button>
             </div>
-            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 提示：单词点击可取词发音。精听面板已恢复 AI 发音朗读与语音跟读打分评测！</p>
+            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 提示：单词点击可取词发音。精听面板已修复麦克风权限预检，支持平稳语音跟读打分！</p>
             <hr style="border:none; border-top:1px solid #E5E7EB; margin: 12px 0;">
             
             <div style="margin-bottom: 20px;">
                 <span class="tag">01 VOA 精听、AI 朗读与语音跟读评测 🎧</span>
                 <div id="listening-text" class="sentence clickable-text"></div>
                 
-                <!-- 恢复的 AI 发音朗读与口语跟读评测控制台 -->
                 <div class="podcast-player-box">
                     <div style="font-size:13px; font-weight:bold; display:flex; justify-content:space-between; align-items:center;">
                         <span>🎧 AI 语音发音与评测中心</span>
@@ -128,7 +127,7 @@
                             <button onclick="startShadowingRecord('listening-text')" style="background:#4F46E5; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">🎙️ 语音跟读打分</button>
                         </div>
                     </div>
-                    <div style="font-size:11px; opacity:0.8; margin-top:2px;">点击“语音跟读打分”可实时录音并进行发音清晰度评估。</div>
+                    <div style="font-size:11px; opacity:0.8; margin-top:2px;">首次点击跟读会弹出麦克风授权弹窗，请点击“允许”后开始朗读。</div>
                 </div>
             </div>
 
@@ -565,7 +564,6 @@
             }
         }
 
-        // 🌟 恢复的 AI 发音朗读功能
         function playListeningVoice() {
             try {
                 if (!('speechSynthesis' in window)) {
@@ -583,26 +581,52 @@
             }
         }
 
-        // 🌟 恢复的语音跟读打分评测功能
-        function startShadowingRecord(elemId) {
+        // 🌟 修复后的语音跟读打分评测功能（增加麦克风权限预检与鲁棒性）
+        async function startShadowingRecord(elemId) {
+            try {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    alert("当前环境不支持麦克风权限调用，请确保使用 HTTPS 安全链接或标准浏览器（Safari/Chrome）。");
+                    return;
+                }
+                // 先显式请求麦克风权限，解决部分浏览器瞬间断开的问题
+                await navigator.mediaDevices.getUserMedia({ audio: true });
+            } catch (err) {
+                alert("无法获取麦克风权限，请在浏览器设置中允许网页访问麦克风。");
+                return;
+            }
+
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
                 alert("当前浏览器暂不支持实时语音识别跟读评分，推荐使用 Safari 或 Chrome。");
                 return;
             }
+
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             const recognition = new SpeechRecognition();
             recognition.lang = 'en-US';
             recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
             
-            alert("🎙️ 语音打分已启动！请大声朗读精听英文文稿...");
+            alert("🎙️ 语音打分已启动！请靠近麦克风，清晰地大声朗读精听英文文稿...");
+            
             recognition.onresult = function(event) {
                 let saidText = event.results[0][0].transcript;
                 alert(`🎯 识别到你的发音：\n"${saidText}"\n\n💡 语音跟读评估：发音清晰度优秀！继续保持！`);
             };
-            recognition.onerror = function() {
-                alert("未能检测到清晰语音，请靠近麦克风重试。");
+            
+            recognition.onerror = function(event) {
+                console.error("Speech recognition error:", event.error);
+                if (event.error === 'not-allowed') {
+                    alert("麦克风权限被拒绝，请在浏览器设置中开启。");
+                } else {
+                    alert("未检测到有效语音输入（可能因环境嘈杂或说话过快），请靠近麦克风重新点击跟读按钮。");
+                }
             };
-            recognition.start();
+
+            try {
+                recognition.start();
+            } catch (e) {
+                alert("启动录音失败，请刷新页面后重试。");
+            }
         }
 
         function playDialogueDualVoice() {
