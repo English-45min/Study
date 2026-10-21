@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>AI 英语45分</title>
+    <title>AI 英语15分钟</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="英语45分">
+    <meta name="apple-mobile-web-app-title" content="英语15分钟">
     
     <link rel="apple-touch-icon" href="./icon.png">
     <link rel="icon" type="image/png" href="./icon.png">
@@ -82,8 +82,8 @@
     </div>
 
     <div class="header">
-        <h2 style="margin:0;">AI 英语45分</h2>
-        <p style="margin:6px 0 0; font-size:14px; opacity:0.9;">全功能智能英语学习工作台 (精听影子跟读与沉浸对话专项定制版)</p>
+        <h2 style="margin:0;">AI 英语15分钟</h2>
+        <p style="margin:6px 0 0; font-size:14px; opacity:0.9;">每天轻量高效，15分钟轻松搞定英语听力与口语突破</p>
     </div>
 
     <div class="container">
@@ -110,7 +110,7 @@
 
         <div id="learning-card" class="card">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h3>📅 今日学习计划</h3>
+                <h3>📅 今日15分钟轻量学习</h3>
                 <button class="btn" style="width:auto; padding:6px 12px; font-size:12px;" onclick="generateDailyContent()">🤖 刷新今日内容 (含连读分析)</button>
             </div>
             <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 听力：盲听+对照发音标记影子跟读；口语：放慢语速沉浸交流，结尾统一诊断地道表达。</p>
@@ -140,7 +140,7 @@
             </div>
 
             <div style="margin-bottom: 20px;">
-                <span class="tag">02 VOA科普阅读 (13Min)</span>
+                <span class="tag">02 VOA科普阅读 (5Min)</span>
                 <div id="reading-text" class="sentence clickable-text"></div>
                 <button class="btn btn-outline" onclick="speakSingleText('reading-text')">🔊 AI 朗读阅读文章</button>
             </div>
@@ -190,7 +190,7 @@
             </div>
 
             <div>
-                <span class="tag">06 打卡与周报结算 (5Min)</span>
+                <span class="tag">06 打卡与周报结算 (2Min)</span>
                 <button class="btn" style="margin-top:12px; font-size:16px;" onclick="doCheckIn()">✅ 完成今日学习打卡</button>
                 <button class="btn btn-outline" style="margin-top:8px; border-color:#4F46E5; color:#4F46E5;" onclick="generateWeeklyDigest()">📊 生成 AI 英语成长周报</button>
                 <div id="digest-box" style="font-size:13px; color:#374151; background:#F8FAFC; padding:12px; border-radius:8px; margin-top:10px; display:none; line-height:1.6;"></div>
@@ -475,7 +475,7 @@
             digestBox.innerText = "📊 AI 正在统计本周生词资产与打卡记录，生成成长报告...";
 
             if (!apiKey) {
-                digestBox.innerHTML = `<b>🌟 本周英语成长报告 (离线版)</b><br>• 连续打卡天数：${streak} 天<br>• 生词本积累词汇：${vocabBook.length} 个<br>• 建议：下周保持每日 15 分钟精听与跟读习惯！`;
+                digestBox.innerHTML = `<b>🌟 本周英语成长报告 (离线版)</b><br>• 连续打卡天数：${streak} 天<br>• 生词本积累词汇：${vocabBook.length} 个<br>• 建议：坚持每天 15 分钟轻量精听与跟读！`;
                 return;
             }
 
@@ -647,7 +647,7 @@
                 shadowRecognition.onend = async function() {
                     isRecording = false;
                     btn.style.background = "#4F46E5";
-                    btn.innerText = "🎙️ 实时跟读打分";
+                    btn.innerText = "🎙️ 影子跟读打分";
                     statusEl.innerText = "🎯 评估完成！AI 正在生成诊断报告...";
 
                     let promptContent = "";
@@ -679,7 +679,7 @@
                     } else {
                         alert("【离线纠音提示】\n您未配置 API Key。配置后可享受专属 AI 实时识别纠音！\n您刚刚读的内容识别为: " + (userSaidText || "未检测到清晰语音"));
                     }
-                    statusEl.innerText = "点击按钮开始朗读，讲完后再次点击停止，AI 实时识别并进行语音纠音播报。";
+                    statusEl.innerText = "盲听后，点击跟读并同步模仿发音。再次点击停止，AI 实时识别并进行语音纠音。";
                 };
 
                 try {
@@ -687,8 +687,8 @@
                 } catch (e) {
                     isRecording = false;
                     btn.style.background = "#4F46E5";
-                    btn.innerText = "🎙️ 实时跟读打分";
-                    statusEl.innerText = "点击按钮开始朗读，讲完后再次点击停止，AI 实时识别并进行语音纠音播报。";
+                    btn.innerText = "🎙️ 影子跟读打分";
+                    statusEl.innerText = "盲听后，点击跟读并同步模仿发音。再次点击停止，AI 实时识别并进行语音纠音。";
                 }
             } else {
                 if (shadowRecognition) {
