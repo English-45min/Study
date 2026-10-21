@@ -87,6 +87,12 @@
     </div>
 
     <div class="container">
+        <!-- 💡 提示由于Safari无痕浏览导致Key丢失的警告横幅 -->
+        <div id="private-mode-warning" class="card" style="background:#FEF2F2; border:1px solid #FCA5A5; display:none; margin-bottom:12px; padding:12px;">
+            <div style="font-size:13px; color:#991B1B; font-weight:bold;">⚠️ 检测到当前处于 Safari【无痕浏览】模式：</div>
+            <div style="font-size:12px; color:#7F1D1D; margin-top:4px;">iOS 无痕模式会自动清除打卡天数与 API 密钥。<b>请点击 Safari 右下角菜单，退出“无痕浏览”模式</b>，或使用下方的“一键强力保存配置”功能！</div>
+        </div>
+
         <div class="card">
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div>
@@ -101,6 +107,7 @@
             <details style="margin-top: 10px; font-size: 12px; color: #6B7280;" open>
                 <summary style="cursor:pointer;">⚙️ API 配置 (修改自动即时保存)</summary>
                 <input type="password" id="api-key-input" class="api-input" placeholder="输入 sk-xxxx 密钥" oninput="saveApiKey()">
+                <button class="btn btn-outline" style="margin-top:6px; padding:6px; font-size:11px; border-color:#4F46E5; color:#4F46E5;" onclick="forceSaveKeyAndStreak()">💾 一键强力保存配置与打卡</button>
             </details>
             <details style="margin-top: 6px; font-size: 12px; color: #4F46E5; font-weight:600;">
                 <summary style="cursor:pointer;">📖 我的本地生词本 (<span id="vocab-count">0</span>)</summary>
@@ -233,19 +240,10 @@
             ]
         };
 
-        let userLevel = localStorage.getItem('user_level') || 'L2 (基础级)';
-        let streak = parseInt(localStorage.getItem('streak'), 10) || 0;
-        let apiKey = localStorage.getItem('api_key') || '';
-        
+        let userLevel = 'L2 (基础级)';
+        let streak = 0;
+        let apiKey = '';
         let vocabBook = [];
-        try {
-            let savedVocab = localStorage.getItem('vocab_book');
-            if (savedVocab) {
-                let parsed = JSON.parse(savedVocab);
-                if (Array.isArray(parsed)) vocabBook = parsed;
-            }
-        } catch (e) { vocabBook = []; }
-
         let lastSelectedWord = "";
         let lastSelectedInfo = "";
         let currentFlashcardIndex = 0;
@@ -253,7 +251,56 @@
         let isRecording = false;
         let shadowRecognition = null;
 
+        // 🌟 强健的存储读取函数（防无痕模式丢数据）
+        function loadStorageData() {
+            try {
+                userLevel = localStorage.getItem('user_level') || sessionStorage.getItem('session_user_level') || 'L2 (基础级)';
+                streak = parseInt(localStorage.getItem('streak') || sessionStorage.getItem('session_streak'), 10) || 0;
+                apiKey = localStorage.getItem('api_key') || sessionStorage.getItem('session_api_key') || '';
+                
+                let savedVocab = localStorage.getItem('vocab_book') || sessionStorage.getItem('session_vocab_book');
+                if (savedVocab) {
+                    let parsed = JSON.parse(savedVocab);
+                    if (Array.isArray(parsed)) vocabBook = parsed;
+                }
+            } catch (e) {
+                // 如果无痕模式完全禁用了 storage，启用内存兜底
+            }
+        }
+
+        function saveStorageData() {
+            try {
+                localStorage.setItem('user_level', userLevel);
+                localStorage.setItem('streak', streak);
+                localStorage.setItem('api_key', apiKey);
+                localStorage.setItem('vocab_book', JSON.stringify(vocabBook));
+
+                // 同时写入 sessionStorage 双重保障
+                sessionStorage.setItem('session_user_level', userLevel);
+                sessionStorage.setItem('session_streak', streak);
+                sessionStorage.setItem('session_api_key', apiKey);
+                sessionStorage.setItem('session_vocab_book', JSON.stringify(vocabBook));
+            } catch (e) {
+                // 浏览器极度受限时的静默保护
+            }
+        }
+
+        // 🌟 检测无痕浏览模式
+        function checkPrivateBrowsing() {
+            try {
+                const testKey = '__test_private__';
+                localStorage.setItem(testKey, testKey);
+                localStorage.removeItem(testKey);
+            } catch (e) {
+                // 确实处于无痕或禁止存储模式
+                document.getElementById('private-mode-warning').style.display = 'block';
+            }
+        }
+
         function initApp() {
+            loadStorageData();
+            checkPrivateBrowsing();
+
             try {
                 document.getElementById('streak-text').innerText = `连续打卡：${streak} 天`;
                 document.getElementById('user-level-tag').innerText = `当前等级：${userLevel}`;
@@ -349,7 +396,7 @@
         function saveCurrentWord() {
             if (!lastSelectedWord) return;
             vocabBook.push({word: lastSelectedWord, info: lastSelectedInfo, time: new Date().toLocaleDateString()});
-            localStorage.setItem('vocab_book', JSON.stringify(vocabBook));
+            saveStorageData();
             renderVocabBook();
             alert(`已将 "${lastSelectedWord}" 加入生词本！`);
             closePopup();
@@ -394,7 +441,7 @@
 
         function removeVocab(index) {
             vocabBook.splice(index, 1);
-            localStorage.setItem('vocab_book', JSON.stringify(vocabBook));
+            saveStorageData();
             renderVocabBook();
         }
 
@@ -594,7 +641,7 @@
                 let text = document.getElementById('listening-text').innerText;
                 let msg = new SpeechSynthesisUtterance(text);
                 msg.lang = 'en-US';
-                msg.rate = 0.8; // 保持慢速示范，方便影子跟读
+                msg.rate = 0.8;
                 window.speechSynthesis.speak(msg);
             } catch (e) {
                 alert("播放失败，请重试。");
@@ -612,7 +659,6 @@
             } catch (e) {}
         }
 
-        // 🌟 精听+影子跟读：实时抓取音流与 AI 诊断
         function toggleShadowingRecord() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
                 alert("当前浏览器暂不支持实时语音识别，推荐使用 Chrome 或 Safari 浏览器。");
@@ -741,7 +787,6 @@
             }
         }
 
-        // 🌟 口语实战：慢速交流 + 结束统一地道纠音
         async function sendChat() {
             const inputField = document.getElementById('user-chat-input');
             const userText = inputField.value.trim();
@@ -798,7 +843,7 @@
             try {
                 window.speechSynthesis.cancel();
                 let msg = new SpeechSynthesisUtterance(aiReply.split('\n')[0]);
-                msg.lang = 'en-US'; msg.rate = 0.8; // 慢速播报
+                msg.lang = 'en-US'; msg.rate = 0.8;
                 window.speechSynthesis.speak(msg);
             } catch (e) {}
 
@@ -807,8 +852,15 @@
 
         function saveApiKey() { 
             apiKey = document.getElementById('api-key-input').value.trim(); 
-            localStorage.setItem('api_key', apiKey); 
+            saveStorageData();
             checkApiBalance(); 
+        }
+
+        function forceSaveKeyAndStreak() {
+            apiKey = document.getElementById('api-key-input').value.trim();
+            saveStorageData();
+            alert("✅ 密钥与打卡数据已强制保存到本地！");
+            checkApiBalance();
         }
 
         function startAssessment() {
@@ -816,13 +868,13 @@
             if (userLevel === "1") userLevel = "L1 (入门级)";
             else if (userLevel === "3") userLevel = "L3 (进阶级)";
             else userLevel = "L2 (基础级)";
-            localStorage.setItem('user_level', userLevel);
+            saveStorageData();
             document.getElementById('user-level-tag').innerText = `当前等级：${userLevel}`;
         }
 
         function doCheckIn() { 
             streak++; 
-            localStorage.setItem('streak', streak); 
+            saveStorageData();
             document.getElementById('streak-text').innerText = `连续打卡：${streak} 天`; 
             alert(`🎉 成功打卡！连续天数：${streak} 天！`); 
         }
