@@ -53,6 +53,7 @@
         .role-select { background: #F0FDF4; border: 1px solid #16A34A; color: #166534; padding: 6px 10px; border-radius: 6px; font-size: 13px; font-weight: bold; margin-bottom: 8px; display: inline-block; width: 100%; box-sizing: border-box; }
         
         .podcast-player-box { background: #1E1B4B; color: white; padding: 14px; border-radius: 12px; margin-top: 10px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .speed-select { background: #312E81; color: white; border: 1px solid #6366F1; border-radius: 6px; padding: 4px 6px; font-size: 12px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -133,10 +134,18 @@
                 </div>
 
                 <div class="podcast-player-box">
-                    <div style="font-size:13px; font-weight:bold; display:flex; justify-content:space-between; align-items:center;">
-                        <span>🎧 音频示范与影子跟读录音</span>
-                        <div style="display:flex; gap:6px;">
-                            <button onclick="playListeningVoice()" style="background:#10B981; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">▶ 慢速示范朗读</button>
+                    <div style="font-size:13px; font-weight:bold; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+                        <span>🎧 音频示范与影子跟读</span>
+                        <div style="display:flex; gap:6px; align-items:center;">
+                            <!-- 🌟 自定义语速调节选项 -->
+                            <select id="listening-speed" class="speed-select" title="调整播放语速">
+                                <option value="0.5">0.5x 极慢</option>
+                                <option value="0.65">0.65x 超慢</option>
+                                <option value="0.75" selected>0.75x 慢速</option>
+                                <option value="0.85">0.85x 稍慢</option>
+                                <option value="1.0">1.0x 正常</option>
+                            </select>
+                            <button onclick="playListeningVoice()" style="background:#10B981; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">▶ 示范朗读</button>
                             <button id="record-btn" onclick="toggleShadowingRecord()" style="background:#4F46E5; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">🎙️ 影子跟读打分</button>
                         </div>
                     </div>
@@ -200,7 +209,6 @@
                 <button class="btn btn-outline" style="margin-top:8px; border-color:#4F46E5; color:#4F46E5;" onclick="generateWeeklyDigest()">📊 生成 AI 英语成长周报</button>
                 <div id="digest-box" style="font-size:13px; color:#374151; background:#F8FAFC; padding:12px; border-radius:8px; margin-top:10px; display:none; line-height:1.6;"></div>
 
-                <!-- 🌟 云端同步面板（已移至打卡区下方） -->
                 <div style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:10px; padding:14px; margin-top:14px;">
                     <div style="font-weight:bold; font-size:13px; color:#4F46E5; margin-bottom:8px;">☁️ iOS 与 Pixel 跨设备云端同步 (JSONBin)</div>
                     <input type="text" id="bin-id-input" class="api-input" placeholder="JSONBin Bin ID (首次自动生成)" oninput="saveBinId()" style="margin-bottom:6px;">
@@ -700,6 +708,7 @@
             }
         }
 
+        // 🌟 读取自定义语速进行朗读
         function playListeningVoice() {
             try {
                 if (!('speechSynthesis' in window)) {
@@ -710,7 +719,11 @@
                 let text = document.getElementById('listening-text').innerText;
                 let msg = new SpeechSynthesisUtterance(text);
                 msg.lang = 'en-US';
-                msg.rate = 0.8;
+                
+                // 获取下拉菜单选择的速率，默认 0.75x
+                let speedVal = parseFloat(document.getElementById('listening-speed').value) || 0.75;
+                msg.rate = speedVal;
+                
                 window.speechSynthesis.speak(msg);
             } catch (e) {
                 alert("播放失败，请重试。");
