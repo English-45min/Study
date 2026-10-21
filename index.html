@@ -28,13 +28,14 @@
         .clickable-text span:active { background: #C7D2FE; }
 
         .sentence { font-size: 16px; line-height: 1.8; background: #F9FAFB; padding: 14px; border-left: 4px solid var(--primary); border-radius: 0 8px 8px 0; margin: 12px 0; }
+        .phonetics-box { background: #FFFBEB; border: 1px solid #FCD34D; border-left: 4px solid #F59E0B; padding: 12px; border-radius: 0 8px 8px 0; font-size: 13px; color: #92400E; margin-top: 8px; line-height: 1.6; }
         .dialogue-box { background: #F0FDF4; border-left: 4px solid var(--success); padding: 14px; border-radius: 0 8px 8px 0; font-size: 15px; line-height: 1.8; margin: 12px 0; max-height: 280px; overflow-y: auto; }
         .x-card-box { background: #F8FAFC; border: 1px solid #E2E8F0; border-left: 4px solid #1DA1F2; padding: 14px; border-radius: 0 8px 8px 0; margin: 12px 0; }
         
         #word-popup { position: fixed; top: 20%; left: 50%; transform: translateX(-50%); background: #1F2937; color: white; padding: 14px 18px; border-radius: 12px; font-size: 14px; z-index: 10000; display: none; width: 80%; max-width: 320px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.4); text-align: center; }
         #word-popup button { background: #4F46E5; color: white; border: none; padding: 8px 14px; border-radius: 6px; margin-top: 10px; cursor: pointer; font-size: 13px; font-weight: 600; }
 
-        .chat-container { background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 10px; padding: 12px; height: 160px; overflow-y: auto; margin-top: 10px; font-size: 14px; }
+        .chat-container { background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 10px; padding: 12px; height: 180px; overflow-y: auto; margin-top: 10px; font-size: 14px; }
         .chat-msg { margin-bottom: 8px; padding: 8px 12px; border-radius: 8px; max-width: 85%; word-break: break-all; }
         .chat-ai { background: #E0E7FF; color: #312E81; }
         .chat-user { background: #DCFCE7; color: #166534; margin-left: auto; }
@@ -82,7 +83,7 @@
 
     <div class="header">
         <h2 style="margin:0;">AI 英语45分</h2>
-        <p style="margin:6px 0 0; font-size:14px; opacity:0.9;">全功能智能英语学习工作台 (实时语音识别与纠音版)</p>
+        <p style="margin:6px 0 0; font-size:14px; opacity:0.9;">全功能智能英语学习工作台 (精听影子跟读与沉浸对话专项定制版)</p>
     </div>
 
     <div class="container">
@@ -110,24 +111,31 @@
         <div id="learning-card" class="card">
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <h3>📅 今日学习计划</h3>
-                <button class="btn" style="width:auto; padding:6px 12px; font-size:12px;" onclick="generateDailyContent()">🤖 刷新今日内容 (全功能同步)</button>
+                <button class="btn" style="width:auto; padding:6px 12px; font-size:12px;" onclick="generateDailyContent()">🤖 刷新今日内容 (含连读分析)</button>
             </div>
-            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 提示：单词点击可取词发音。点击跟读后大声朗读，AI 将实时识别您的语音并提供智能打分与语音纠音播报！</p>
+            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 听力：盲听+对照发音标记影子跟读；口语：放慢语速沉浸交流，结尾统一诊断地道表达。</p>
             <hr style="border:none; border-top:1px solid #E5E7EB; margin: 12px 0;">
             
             <div style="margin-bottom: 20px;">
-                <span class="tag">01 VOA 精听、AI 朗读与实时语音纠音 🎧</span>
+                <span class="tag">01 VOA 精听 + 影子跟读 (Shadowing) 🎧</span>
                 <div id="listening-text" class="sentence clickable-text"></div>
                 
+                <div id="phonetics-analysis" class="phonetics-box">
+                    <b>💡 连读/弱读/吞音发音规律拆解：</b><br>
+                    • <b>连读标注</b>：use_artificial (/juːz ɑːrtɪˈfɪʃl/), or_AI<br>
+                    • <b>弱读/介词</b>：at /ət/, for /fər/, to /tə/ (非重读词均采用弱读音标)<br>
+                    • <b>吞音技巧</b>：mos(t) workers, repor(t) said (结尾辅音不发完全，仅留口型)
+                </div>
+
                 <div class="podcast-player-box">
                     <div style="font-size:13px; font-weight:bold; display:flex; justify-content:space-between; align-items:center;">
-                        <span>🎧 AI 发音打分与实时纠音中心</span>
+                        <span>🎧 音频示范与影子跟读录音</span>
                         <div style="display:flex; gap:6px;">
-                            <button onclick="playListeningVoice()" style="background:#10B981; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">▶ 标准发音朗读</button>
-                            <button id="record-btn" onclick="toggleShadowingRecord()" style="background:#4F46E5; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">🎙️ 实时跟读打分</button>
+                            <button onclick="playListeningVoice()" style="background:#10B981; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">▶ 慢速示范朗读</button>
+                            <button id="record-btn" onclick="toggleShadowingRecord()" style="background:#4F46E5; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">🎙️ 影子跟读打分</button>
                         </div>
                     </div>
-                    <div id="record-status" style="font-size:11px; opacity:0.9; margin-top:2px;">点击按钮开始朗读，讲完后再次点击停止，AI 实时识别并进行语音纠音播报。</div>
+                    <div id="record-status" style="font-size:11px; opacity:0.9; margin-top:2px;">盲听后，点击跟读并同步模仿发音。再次点击停止，AI 实时识别并进行语音纠音。</div>
                 </div>
             </div>
 
@@ -141,7 +149,7 @@
                 <span class="tag" id="dialogue-tag" style="background:#DCFCE7; color:#15803D;">03 8-10轮超长深度情景对话 [等级定制] ☕</span>
                 <div id="dialogue-text" class="dialogue-box clickable-text"></div>
                 <button class="btn btn-outline" style="border-color:#16A34A; color:#16A34A; margin-bottom:8px;" onclick="playDialogueDualVoice()">🎭 智能男女声交替朗读全篇</button>
-                
+
                 <div style="margin-top:12px;">
                     <label class="role-select">
                         🎭 角色扮演模式选择：
@@ -152,12 +160,12 @@
                     </label>
                 </div>
 
-                <div style="font-weight:600; font-size:13px; color:#166534; margin-top:8px;">💬 角色扮演口语实战（点击输入框，用键盘自带 🎙️ 说话）：</div>
+                <div style="font-weight:600; font-size:13px; color:#166534; margin-top:8px;">💬 自由口语实战（慢速交流，结尾统一总结地道表达）：</div>
                 <div class="chat-container" id="chat-box">
-                    <div class="chat-msg chat-ai" id="chat-welcome-msg">🎭 角色扮演已就绪！您当前扮演【角色 A】，AI 扮演【角色 B】。请根据上方长剧本或直接用英语向 AI 发起对话！</div>
+                    <div class="chat-msg chat-ai" id="chat-welcome-msg">🎭 慢速英语交谈已就绪！用熟悉的日常、市场或工作话题聊聊吧。遇到表达不准没关系，先开口，结束时我会统一总结地道用法！</div>
                 </div>
                 <div class="chat-input-row">
-                    <input type="text" id="user-chat-input" class="chat-input" placeholder="输入您的角色台词，或点键盘 🎙️ 语音输入..." onkeypress="if(event.key==='Enter') sendChat()">
+                    <input type="text" id="user-chat-input" class="chat-input" placeholder="输入英文，或点击键盘 🎙️ 语音输入..." onkeypress="if(event.key==='Enter') sendChat()">
                     <button class="btn" style="width:auto; margin-top:0; padding:8px 16px;" onclick="sendChat()">发送</button>
                 </div>
             </div>
@@ -201,7 +209,8 @@
             reading: "Language acquisition works best with consistent comprehensible input that matches your level.",
             dialogue: "Scene: Buying Bottled Water and Snacks\nA: Hello! Good morning.\nB: Good morning! Welcome to the convenience store. Can I help you?\nA: Yes, please. Where is the bottled water?\nB: It is right over there, next to the milk fridge.\nA: Thank you. How much is this small bottle?\nB: That one is one dollar and fifty cents.\nA: Great. I will take two bottles and a chocolate bar.\nB: Sure. Would you like a plastic bag?\nA: No, thank you. I have my own bag.\nB: That will be three dollars in total. Cash or card?\nB: Card, please. Here is my phone to tap.\nA: Payment approved. Have a wonderful day!\nB: Thank you! Goodbye.",
             xText: "Building an English learning Progressive Web App with DeepSeek API and Speech Synthesis opens up new possibilities for AI-driven education.",
-            xAnalysis: "💡 爆款解析：本文探讨了结合 DeepSeek API 与语音合成构建英语分级 PWA 的应用实践。核心表达：'opens up new possibilities' (开启全新可能性)。"
+            xAnalysis: "💡 爆款解析：本文探讨了结合 DeepSeek API 与语音合成构建英语分级 PWA 的应用实践。核心表达：'opens up new possibilities' (开启全新可能性)。",
+            phonetics: "<b>💡 连读/弱读/吞音发音规律拆解：</b><br>• <b>连读标注</b>：use_artificial (/juːz ɑːrtɪˈfɪʃl/), or_AI<br>• <b>弱读/介词</b>：at /ət/, for /fər/, to /tə/ (非重读词均采用弱读音标)<br>• <b>吞音技巧</b>：mos(t) workers, repor(t) said (结尾辅音不发完全，仅留口型)"
         };
 
         const topicsByLevel = {
@@ -263,6 +272,7 @@
                 let savedDialogue = localStorage.getItem('saved_dialogue') || defaultContent.dialogue;
                 let savedXText = localStorage.getItem('saved_xText') || defaultContent.xText;
                 let savedXAnalysis = localStorage.getItem('saved_xAnalysis') || defaultContent.xAnalysis;
+                let savedPhonetics = localStorage.getItem('saved_phonetics') || defaultContent.phonetics;
 
                 renderInteractiveText('listening-text', savedListening);
                 renderInteractiveText('reading-text', savedReading);
@@ -274,6 +284,9 @@
                 
                 const xAnalysisEl = document.getElementById('x-analysis');
                 if (xAnalysisEl) xAnalysisEl.innerText = savedXAnalysis;
+
+                const phoneticsEl = document.getElementById('phonetics-analysis');
+                if (phoneticsEl) phoneticsEl.innerHTML = savedPhonetics;
 
             } catch (e) {
                 console.error("初始化渲染异常:", e);
@@ -524,6 +537,7 @@
             const selectedTopic = currentList[Math.floor(Math.random() * currentList.length)];
 
             document.getElementById('listening-text').innerText = "🤖 正在生成精听文稿...";
+            document.getElementById('phonetics-analysis').innerHTML = "🤖 正在进行连读与弱读标记解析...";
             document.getElementById('reading-text').innerText = "🤖 正在生成科普...";
             document.getElementById('dialogue-tag').innerText = `03 8-10轮超长深度情景对话 [${userLevel}] ☕`;
             document.getElementById('dialogue-text').innerText = `🤖 正在生成适配 ${userLevel} 的 8-10 轮超长沉浸式剧本 [${selectedTopic}]...`;
@@ -532,6 +546,7 @@
 
             try {
                 const p1 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 short VOA-style news summary text (approx. 90 words). Return ONLY pure English text.`);
+                const p4 = fetchSinglePart(`Analyze linking, weak forms, and assimilation for the generated passage. Format as HTML:\n<b>💡 连读/弱读/吞音发音规律拆解：</b><br>• <b>连读标注</b>：...<br>• <b>弱读/介词</b>：...<br>• <b>吞音技巧</b>：...`);
                 const p2 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 short science reading passage (approx. 100 words). Return ONLY pure English text.`);
                 const p3 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 practical, immersive English dialogue script tailored strictly for level ${userLevel} in the scenario of: "${selectedTopic}". 
                 CRITICAL REQUIREMENT: The dialogue MUST be complete and long, containing EXACTLY 8 to 10 full turns (16 to 20 alternating lines between A and B) to form a thorough storyline. 
@@ -539,10 +554,13 @@
                 Format strictly as:\nScene: ${selectedTopic}\nA: [English]\nB: [English]\nA: [English]\nB: [English]\n(continue until 8-10 turns are completed)`);
                 const p5 = fetchSinglePart(`Generate a trending viral tweet (about tech, AI, productivity, or life, 20-40 words) in English, followed by a line break and a short Chinese breakdown ("💡 爆款解析：...").`);
 
-                const [listening, reading, dialogue, xRaw] = await Promise.all([p1, p2, p3, p5]);
+                const [listening, phonetics, reading, dialogue, xRaw] = await Promise.all([p1, p4, p2, p3, p5]);
 
                 renderInteractiveText('listening-text', listening);
                 localStorage.setItem('saved_listening', listening);
+
+                document.getElementById('phonetics-analysis').innerHTML = phonetics;
+                localStorage.setItem('saved_phonetics', phonetics);
 
                 renderInteractiveText('reading-text', reading);
                 localStorage.setItem('saved_reading', reading);
@@ -576,7 +594,7 @@
                 let text = document.getElementById('listening-text').innerText;
                 let msg = new SpeechSynthesisUtterance(text);
                 msg.lang = 'en-US';
-                msg.rate = 0.85;
+                msg.rate = 0.8; // 保持慢速示范，方便影子跟读
                 window.speechSynthesis.speak(msg);
             } catch (e) {
                 alert("播放失败，请重试。");
@@ -594,7 +612,7 @@
             } catch (e) {}
         }
 
-        // 🌟 方案一：真正的浏览器实时语音识别 + AI 纠音和播报
+        // 🌟 精听+影子跟读：实时抓取音流与 AI 诊断
         function toggleShadowingRecord() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
                 alert("当前浏览器暂不支持实时语音识别，推荐使用 Chrome 或 Safari 浏览器。");
@@ -698,7 +716,7 @@
                 if (index >= sentencesToSpeak.length) return;
                 let item = sentencesToSpeak[index];
                 let msg = new SpeechSynthesisUtterance(item.text);
-                msg.lang = 'en-US'; msg.rate = 0.85; msg.pitch = (item.speaker === 'A') ? 1.0 : 1.3;
+                msg.lang = 'en-US'; msg.rate = 0.8; msg.pitch = (item.speaker === 'A') ? 1.0 : 1.3;
                 msg.onend = function() { setTimeout(() => speakStep(index + 1), 300); };
                 window.speechSynthesis.speak(msg);
             }
@@ -723,6 +741,7 @@
             }
         }
 
+        // 🌟 口语实战：慢速交流 + 结束统一地道纠音
         async function sendChat() {
             const inputField = document.getElementById('user-chat-input');
             const userText = inputField.value.trim();
@@ -738,7 +757,7 @@
             chatBox.scrollTop = chatBox.scrollHeight;
 
             const loadingId = 'loading-' + Date.now();
-            chatBox.innerHTML += `<div class="chat-msg chat-ai" id="${loadingId}">AI (角色 ${aiRole}) 正在根据 ${userLevel} 难度回复与纠错...</div>`;
+            chatBox.innerHTML += `<div class="chat-msg chat-ai" id="${loadingId}">AI (角色 ${aiRole}) 正在慢速回复与总结表达...</div>`;
             chatBox.scrollTop = chatBox.scrollHeight;
 
             let aiReply = "";
@@ -752,7 +771,12 @@
                         messages: [
                             { 
                                 role: "system", 
-                                content: `You are an interactive English roleplay partner. The user is at English level ${userLevel}. Adapt your English vocabulary and sentence length to match ${userLevel} (if L1, use very simple words and short sentences). Current dialogue scenario:\n${dialogueContext}\nThe user is playing Role ${userRole}, and you must play Role ${aiRole} to reply naturally. After your English reply, add a short Chinese tip ("💡 外教纠错/建议: ...").` 
+                                content: `You are an encouraging, slow-speaking English conversation partner for a learner at level ${userLevel}. 
+                                Requirements:
+                                1. Speak ONLY in simple, short English sentences at a slow pace.
+                                2. Do NOT interrupt or criticize the user during conversation. Keep the chat flow natural and friendly.
+                                3. Current scene: ${dialogueContext}. You play Role ${aiRole}.
+                                4. At the end of your response, add a short section in Chinese: "\n💡 地道表达替换与错误总结:\n- [Original] -> [Native Expression]"` 
                             },
                             { role: "user", content: userText }
                         ]
@@ -762,19 +786,19 @@
                 if (resData.choices && resData.choices.length > 0) aiReply = resData.choices[0].message.content.trim();
                 else throw new Error("响应异常");
             } catch (err) {
-                aiReply = `Great! Let's continue. (💡 外教纠错: 表达很清晰！)`;
+                aiReply = `I understand! Let's keep talking.\n💡 地道表达替换与错误总结:\n- 表达非常流畅，继续保持！`;
             }
 
             const loadingEl = document.getElementById(loadingId);
             if (loadingEl) loadingEl.remove();
 
-            chatBox.innerHTML += `<div class="chat-msg chat-ai">AI (角色 ${aiRole}): ${aiReply}</div>`;
+            chatBox.innerHTML += `<div class="chat-msg chat-ai">AI (角色 ${aiRole}): ${aiReply.replace(/\n/g, '<br>')}</div>`;
             chatBox.scrollTop = chatBox.scrollHeight;
             
             try {
                 window.speechSynthesis.cancel();
                 let msg = new SpeechSynthesisUtterance(aiReply.split('\n')[0]);
-                msg.lang = 'en-US'; msg.rate = 0.85;
+                msg.lang = 'en-US'; msg.rate = 0.8; // 慢速播报
                 window.speechSynthesis.speak(msg);
             } catch (e) {}
 
