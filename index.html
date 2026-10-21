@@ -89,7 +89,7 @@
     <div class="container">
         <div id="private-mode-warning" class="card" style="background:#FEF2F2; border:1px solid #FCA5A5; display:none; margin-bottom:12px; padding:12px;">
             <div style="font-size:13px; color:#991B1B; font-weight:bold;">⚠️ 检测到当前处于 Safari【无痕浏览】模式：</div>
-            <div style="font-size:12px; color:#7F1D1D; margin-top:4px;">请退出无痕模式，或通过下方的【云端同步】功能在不同设备间同步打卡与生词！</div>
+            <div style="font-size:12px; color:#7F1D1D; margin-top:4px;">无痕模式会阻止本地保存。请使用下方打卡区的【云端同步】功能在设备间保存数据！</div>
         </div>
 
         <div class="card">
@@ -104,14 +104,8 @@
                 </div>
             </div>
             <details style="margin-top: 10px; font-size: 12px; color: #6B7280;" open>
-                <summary style="cursor:pointer;">⚙️ API 与 跨设备云端同步配置</summary>
-                <input type="password" id="api-key-input" class="api-input" placeholder="DeepSeek API 密钥 (sk-xxxx)" oninput="saveApiKey()">
-                <input type="text" id="bin-id-input" class="api-input" placeholder="JSONBin Bin ID (留空则自动创建)" oninput="saveBinId()">
-                <input type="password" id="bin-key-input" class="api-input" placeholder="JSONBin Master Key (用于跨设备同步)" oninput="saveBinKey()">
-                <div style="display:flex; gap:6px; margin-top:8px;">
-                    <button class="btn" style="margin-top:0; padding:8px; background:#10B981; font-size:12px;" onclick="pushToCloud()">☁️ 推送数据到云端</button>
-                    <button class="btn" style="margin-top:0; padding:8px; background:#4F46E5; font-size:12px;" onclick="pullFromCloud()">📥 从云端拉取数据</button>
-                </div>
+                <summary style="cursor:pointer;">⚙️ API 配置 (DeepSeek Key)</summary>
+                <input type="password" id="api-key-input" class="api-input" placeholder="输入 sk-xxxx 密钥" oninput="saveApiKey()">
             </details>
             <details style="margin-top: 6px; font-size: 12px; color: #4F46E5; font-weight:600;">
                 <summary style="cursor:pointer;">📖 我的本地生词本 (<span id="vocab-count">0</span>)</summary>
@@ -201,10 +195,21 @@
             </div>
 
             <div>
-                <span class="tag">06 打卡与周报结算 (2Min)</span>
+                <span class="tag">06 打卡与跨设备云端同步 (2Min)</span>
                 <button class="btn" style="margin-top:12px; font-size:16px;" onclick="doCheckIn()">✅ 完成今日学习打卡</button>
                 <button class="btn btn-outline" style="margin-top:8px; border-color:#4F46E5; color:#4F46E5;" onclick="generateWeeklyDigest()">📊 生成 AI 英语成长周报</button>
                 <div id="digest-box" style="font-size:13px; color:#374151; background:#F8FAFC; padding:12px; border-radius:8px; margin-top:10px; display:none; line-height:1.6;"></div>
+
+                <!-- 🌟 云端同步面板（已移至打卡区下方） -->
+                <div style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:10px; padding:14px; margin-top:14px;">
+                    <div style="font-weight:bold; font-size:13px; color:#4F46E5; margin-bottom:8px;">☁️ iOS 与 Pixel 跨设备云端同步 (JSONBin)</div>
+                    <input type="text" id="bin-id-input" class="api-input" placeholder="JSONBin Bin ID (首次自动生成)" oninput="saveBinId()" style="margin-bottom:6px;">
+                    <input type="password" id="bin-key-input" class="api-input" placeholder="JSONBin Master Key (跨设备同步密钥)" oninput="saveBinKey()" style="margin-bottom:8px;">
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn" style="margin-top:0; padding:8px; background:#10B981; font-size:12px;" onclick="pushToCloud()">☁️ 推送数据到云端</button>
+                        <button class="btn" style="margin-top:0; padding:8px; background:#4F46E5; font-size:12px;" onclick="pullFromCloud()">📥 从云端拉取数据</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -340,7 +345,6 @@
             }
         }
 
-        // ☁️ JSONBin 云端同步逻辑
         async function pushToCloud() {
             binKey = document.getElementById('bin-key-input').value.trim();
             if (!binKey) { alert("请先输入您的 JSONBin Master Key！"); return; }
@@ -350,7 +354,6 @@
 
             try {
                 if (!binId) {
-                    // 自动创建新的 Bin
                     const res = await fetch("https://api.jsonbin.io/v3/b", {
                         method: "POST",
                         headers: { "Content-Type": "application/json", "X-Master-Key": binKey, "X-Bin-Private": "true" },
@@ -364,7 +367,6 @@
                         alert("🎉 成功创建云端存储并推送数据！\n请将该 Bin ID 复制到另一台设备上即可实现同步。");
                     } else { throw new Error("创建失败"); }
                 } else {
-                    // 更新已有的 Bin
                     const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
                         method: "PUT",
                         headers: { "Content-Type": "application/json", "X-Master-Key": binKey },
@@ -375,7 +377,7 @@
                     } else { throw new Error("更新失败"); }
                 }
             } catch (e) {
-                alert("推送云端失败，请检查 Master Key 和 Bin ID 是否正确。");
+                alert("推送云端失败，请检查 Master Key 是否正确。");
             }
         }
 
