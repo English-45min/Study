@@ -238,33 +238,13 @@
         const defaultContent = {
             listening: "Many companies now use artificial intelligence, or AI, at work. AI can help people write emails, plan meetings, and answer questions. Some workers say AI saves time. They can finish tasks faster. But other people are worried. They think AI may make mistakes or take jobs. This week, a new report said workers need to learn new skills. Schools and companies can teach these skills. Experts say people should use AI carefully. They say humans must always check the work. AI is a tool, not a replacement for people.",
             reading: "Language acquisition works best with consistent comprehensible input that matches your level.",
-            dialogue: "Scene: Buying Bottled Water and Snacks\nA: Hello! Good morning.\nB: Good morning! Welcome to the convenience store. Can I help you?\nA: Yes, please. Where is the bottled water?\nB: It is right over there, next to the milk fridge.\nA: Thank you. How much is this small bottle?\nB: That one is one dollar and fifty cents.\nA: Great. I will take two bottles and a chocolate bar.\nB: Sure. Would you like a plastic bag?\nA: No, thank you. I have my own bag.\nB: That will be three dollars in total. Cash or card?\nB: Card, please. Here is my phone to tap.\nA: Payment approved. Have a wonderful day!\nB: Thank you! Goodbye.",
+            dialogue: "Scene: Buying Bottled Water and Snacks\nA (Alex): Hello! Good morning.\nB (Sarah): Good morning! Welcome to the convenience store. Can I help you?\nA (Alex): Yes, please. Where is the bottled water?\nB (Sarah): It is right over there, next to the milk fridge.\nA (Alex): Thank you. How much is this small bottle?\nB (Sarah): That one is one dollar and fifty cents.\nA (Alex): Great. I will take two bottles and a chocolate bar.\nB (Sarah): Sure. Would you like a plastic bag?\nA (Alex): No, thank you. I have my own bag.\nB (Sarah): That will be three dollars in total. Cash or card?\nA (Alex): Card, please. Here is my phone to tap.\nB (Sarah): Payment approved. Have a wonderful day!\nA (Alex): Thank you! Goodbye.",
             xText: "Building an English learning Progressive Web App with DeepSeek API and Speech Synthesis opens up new possibilities for AI-driven education.",
             xAnalysis: "💡 爆款解析：本文探讨了结合 DeepSeek API 与语音合成构建英语分级 PWA 的应用实践。核心表达：'opens up new possibilities' (开启全新可能性)。",
             phonetics: "<b>💡 连读/弱读/吞音发音规律拆解：</b><br>• <b>连读标注</b>：use_artificial (/juːz ɑːrtɪˈfɪʃl/), or_AI<br>• <b>弱读/介词</b>：at /ət/, for /fər/, to /tə/ (非重读词均采用弱读音标)<br>• <b>吞音技巧</b>：mos(t) workers, repor(t) said (结尾辅音不发完全，仅留口型)"
         };
 
-        const topicsByLevel = {
-            "L1 (入门级)": [
-                "Buying Bottled Water & Snacks at a Convenience Store",
-                "Asking Simple Directions and Asking the Way to the Station",
-                "Checking in at a Hotel Front Desk and Asking for Wi-Fi",
-                "Ordering Coffee and Extra Milk at a Cafe",
-                "Shopping for Clothes and Asking for Sizes and Prices"
-            ],
-            "L2 (基础级)": [
-                "Airport Customs & Immigration Interview",
-                "Hotel Late Check-out & Requesting Extra Towels",
-                "Ordering Food at a Restaurant & Explaining Dietary Requirements",
-                "Renting a Car and Discussing Insurance Options",
-                "Discussing Technology, Smart Phones, and Digital Life"
-            ],
-            "L3 (进阶级)": [
-                "Handling Flight Cancellation & Rebooking with Airline Staff",
-                "Business Networking & Small Talk at an International Conference",
-                "Evaluating Financial Markets, Tech Innovations, and Career Pathways"
-            ]
-        };
+        const domains = ["Tech & AI Innovations", "Perth/Aus Daily Life & Coffee", "Smart Travel & Flight Delays", "Remote Work & Digital Nomads", "Modern Health & Productivity"];
 
         let userLevel = 'L2 (基础级)';
         let streak = 0;
@@ -671,31 +651,38 @@
             throw new Error("生成失败");
         }
 
+        // 🌟 核心升级：带有丰富动态 Domain 和随机种子的 DeepSeek 推送生成函数
         async function generateDailyContent(isManual = true) {
             if (!apiKey) { 
                 if (isManual) alert("当前为离线模式。请在顶部配置 DeepSeek API Key 后，即可免费享受每日无限生成全新文章！"); 
                 return; 
             }
             
-            let currentList = topicsByLevel[userLevel] || topicsByLevel["L2 (基础级)"];
-            const selectedTopic = currentList[Math.floor(Math.random() * currentList.length)];
-            const randomSeed = "RandomSeed_" + Math.random().toString(36).substring(7) + "_" + Date.now();
+            const randomDomain = domains[Math.floor(Math.random() * domains.length)];
+            const randomSeed = "Seed_" + Math.random().toString(36).substring(7) + "_" + Date.now();
 
-            document.getElementById('listening-text').innerText = "🤖 正在为你写作全新的精听文章...";
+            document.getElementById('listening-text').innerText = "🤖 正在为你写作全新领域的精听文章...";
             document.getElementById('phonetics-analysis').innerHTML = "🤖 正在对新文章进行连读与弱读剖析...";
             document.getElementById('reading-text').innerText = "🤖 正在生成全新科普文...";
-            document.getElementById('dialogue-tag').innerText = `03 8-10轮超长深度情景对话 [${userLevel}] ☕`;
-            document.getElementById('dialogue-text').innerText = `🤖 正在生成全新剧本 [${selectedTopic}]...`;
+            document.getElementById('dialogue-tag').innerText = `03 8-10轮超长深度情景对话 [${userLevel}] - [${randomDomain}] ☕`;
+            document.getElementById('dialogue-text').innerText = `🤖 正在生成全新沉浸式剧本...`;
             document.getElementById('x-text').innerText = "🤖 正在抓取最新 X 爆款推文...";
             document.getElementById('x-analysis').innerText = "正在拆解知识点...";
 
             try {
-                const p1 = fetchSinglePart(`For CEFR ${userLevel}, generate a BRAND NEW short VOA-style news summary text (approx. 90 words). Topic seed: ${randomSeed}. Must be unique and different from previous news. Return ONLY pure English text.`);
+                const p1 = fetchSinglePart(`For CEFR ${userLevel}, generate a BRAND NEW VOA-style news summary text (approx. 90 words) in the domain of [${randomDomain}]. Seed: ${randomSeed}. Must be fresh and unique. Return ONLY pure English text.`);
                 const p4 = fetchSinglePart(`Analyze linking, weak forms, and assimilation for the generated passage. Format as HTML:\n<b>💡 连读/弱读/吞音发音规律拆解：</b><br>• <b>连读标注</b>：...<br>• <b>弱读/介词</b>：...<br>• <b>吞音技巧</b>：...`);
-                const p2 = fetchSinglePart(`For CEFR ${userLevel}, generate a BRAND NEW short science reading passage (approx. 100 words). Topic seed: ${randomSeed}. Return ONLY pure English text.`);
-                const p3 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 practical, immersive English dialogue script tailored strictly for level ${userLevel} in the scenario of: "${selectedTopic}". Topic seed: ${randomSeed}.
-                CRITICAL REQUIREMENT: The dialogue MUST be complete and long, containing EXACTLY 8 to 10 full turns (16 to 20 alternating lines between A and B) to form a thorough storyline. 
-                Format strictly as:\nScene: ${selectedTopic}\nA: [English]\nB: [English]\nA: [English]\nB: [English]\n(continue until 8-10 turns are completed)`);
+                const p2 = fetchSinglePart(`For CEFR ${userLevel}, generate a BRAND NEW short science reading passage (approx. 100 words). Domain: [${randomDomain}]. Seed: ${randomSeed}. Return ONLY pure English text.`);
+                const p3 = fetchSinglePart(`Act as a Hollywood scriptwriter and English teacher. 
+                Create an immersive, complete 8-10 turn dialogue (CEFR Level: ${userLevel}) in the domain of [${randomDomain}]. Seed: ${randomSeed}.
+                Requirements:
+                1. Roles: Character A (Male, name Alex) and Character B (Female, name Sarah).
+                2. Plot: Include a clear scenario, a small problem or inquiry, and natural banter.
+                3. Format strictly as:
+                Scene: [Brief Description]
+                A (Alex): [English]
+                B (Sarah): [English]
+                (continue for 8 to 10 full turns)`);
                 const p5 = fetchSinglePart(`Generate a trending viral tweet (about tech, AI, productivity, or life, 20-40 words) in English, followed by a line break and a short Chinese breakdown ("💡 爆款解析：..."). Seed: ${randomSeed}`);
 
                 const [listening, phonetics, reading, dialogue, xRaw] = await Promise.all([p1, p4, p2, p3, p5]);
@@ -725,7 +712,7 @@
                 localStorage.setItem('last_gen_date', new Date().toLocaleDateString());
 
                 checkApiBalance();
-                if (isManual) alert("🎉 已成功从 DeepSeek 生成全新的学习文章与深度对话剧本！");
+                if (isManual) alert("🎉 已成功从 DeepSeek 生成全新领域的学习文章与深度对话剧本！");
             } catch (e) {
                 if (isManual) alert("生成过程触发网络波动, 已为您恢复基础文稿。");
             }
@@ -860,42 +847,77 @@
             }
         }
 
-        // 🌟 已更新：男女声交替，恢复 1.0x 正常自然语速
+        // 🌟 核心升级：智能男女声交替与 1.0x 正常流畅语速
         function playDialogueDualVoice() {
             try { window.speechSynthesis.cancel(); } catch(e){}
             const dialogueText = document.getElementById('dialogue-text').innerText;
             const lines = dialogueText.split('\n');
             let sentencesToSpeak = [];
+            
             lines.forEach(line => {
                 let cleanLine = line.trim();
                 if (!cleanLine || cleanLine.startsWith('Scene:')) return;
                 let speaker = 'A'; let text = cleanLine;
-                if (cleanLine.startsWith('A:')) { speaker = 'A'; text = cleanLine.substring(2).trim(); }
-                else if (cleanLine.startsWith('B:')) { speaker = 'B'; text = cleanLine.substring(2).trim(); }
+                if (cleanLine.startsWith('A:') || cleanLine.startsWith('A (Alex):')) { 
+                    speaker = 'A'; 
+                    text = cleanLine.replace(/^(A:|A \(Alex\):)/, '').trim(); 
+                } else if (cleanLine.startsWith('B:') || cleanLine.startsWith('B (Sarah):')) { 
+                    speaker = 'B'; 
+                    text = cleanLine.replace(/^(B:|B \(Sarah\):)/, '').trim(); 
+                }
                 if (text) sentencesToSpeak.push({ speaker: speaker, text: text });
             });
             if (sentencesToSpeak.length === 0) return;
+
+            let voices = window.speechSynthesis.getVoices();
+            let englishVoices = voices.filter(v => v.lang.startsWith('en'));
+
+            let maleVoice = englishVoices.find(v => 
+                v.name.includes('Alex') || v.name.includes('David') || v.name.includes('Male') || v.name.includes('Daniel')
+            ) || englishVoices[0];
+
+            let femaleVoice = englishVoices.find(v => 
+                v.name.includes('Samantha') || v.name.includes('Zira') || v.name.includes('Female') || v.name.includes('Victoria') || v.name.includes('Karen')
+            ) || englishVoices[1] || englishVoices[0];
 
             function speakStep(index) {
                 if (index >= sentencesToSpeak.length) return;
                 let item = sentencesToSpeak[index];
                 let msg = new SpeechSynthesisUtterance(item.text);
                 msg.lang = 'en-US'; 
-                msg.rate = 1.0; // 恢复正常地道交流语速
-                msg.pitch = (item.speaker === 'A') ? 0.95 : 1.25; // 区分男低音 (A) 与女高音 (B)
-                msg.onend = function() { setTimeout(() => speakStep(index + 1), 250); };
+                msg.rate = 1.0; // 正常流畅语速
+
+                if (item.speaker === 'A') {
+                    if (maleVoice) msg.voice = maleVoice;
+                    msg.pitch = 0.9; // 男声低沉音调
+                } else {
+                    if (femaleVoice) msg.voice = femaleVoice;
+                    msg.pitch = 1.3; // 女声清脆音调
+                }
+
+                msg.onend = function() { 
+                    setTimeout(() => speakStep(index + 1), 250); 
+                };
                 window.speechSynthesis.speak(msg);
             }
-            speakStep(0);
+
+            if (voices.length === 0) {
+                window.speechSynthesis.onvoiceschanged = function() {
+                    voices = window.speechSynthesis.getVoices();
+                    speakStep(0);
+                };
+            } else {
+                speakStep(0);
+            }
         }
 
         function updateRolePlay() {
             const role = document.getElementById('role-select-box').value;
             const welcomeMsg = document.getElementById('chat-welcome-msg');
             if (role === 'A') {
-                welcomeMsg.innerText = "🎭 角色扮演切换：您当前扮演【角色 A】，AI 扮演【角色 B】。请用英语向 AI 发起对话！";
+                welcomeMsg.innerText = "🎭 角色扮演切换：您当前扮演【角色 A (Alex)】，AI 扮演【角色 B (Sarah)】。请用英语向 AI 发起对话！";
             } else {
-                welcomeMsg.innerText = "🎭 角色扮演切换：您当前扮演【角色 B】，AI 扮演【角色 A】。请等待 AI 发起第一句，或直接用英语回应 AI！";
+                welcomeMsg.innerText = "🎭 角色扮演切换：您当前扮演【角色 B (Sarah)】，AI 扮演【角色 A (Alex)】。请等待 AI 发起第一句，或直接用英语回应 AI！";
             }
         }
 
@@ -914,7 +936,7 @@
             chatBox.scrollTop = chatBox.scrollHeight;
 
             const loadingId = 'loading-' + Date.now();
-            chatBox.innerHTML += `<div class="chat-msg chat-ai" id="${loadingId}">AI (角色 ${aiRole}) 正在慢速回复与总结表达...</div>`;
+            chatBox.innerHTML += `<div class="chat-msg chat-ai" id="${loadingId}">AI (角色 ${aiRole}) 正在流畅回复与总结表达...</div>`;
             chatBox.scrollTop = chatBox.scrollHeight;
 
             let aiReply = "";
@@ -930,9 +952,9 @@
                                 role: "system", 
                                 content: `You are an encouraging English conversation partner for a learner at level ${userLevel}. 
                                 Requirements:
-                                1. Speak in natural, short English sentences.
+                                1. Speak in natural, conversational English sentences at normal speed.
                                 2. Do NOT interrupt or criticize the user during conversation. Keep the chat flow natural and friendly.
-                                3. Current scene: ${dialogueContext}. You play Role ${aiRole}.
+                                3. Current scene context: ${dialogueContext}. You play Role ${aiRole}.
                                 4. At the end of your response, add a short section in Chinese: "\n💡 地道表达替换与错误总结:\n- [Original] -> [Native Expression]"` 
                             },
                             { role: "user", content: userText }
