@@ -117,7 +117,7 @@
         <div id="learning-card" class="card">
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <h3>📅 今日15分钟轻量学习</h3>
-                <button class="btn" style="width:auto; padding:6px 12px; font-size:12px;" onclick="generateDailyContent()">🤖 刷新今日新文章 (不重复)</button>
+                <button class="btn" style="width:auto; padding:6px 12px; font-size:12px;" onclick="generateDailyContent(true)">🤖 强制刷新新文章</button>
             </div>
             <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 听力：盲听+对照发音标记影子跟读；口语：放慢语速沉浸交流，结尾统一诊断地道表达。</p>
             <hr style="border:none; border-top:1px solid #E5E7EB; margin: 12px 0;">
@@ -137,7 +137,6 @@
                     <div style="font-size:13px; font-weight:bold; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
                         <span>🎧 音频示范与影子跟读</span>
                         <div style="display:flex; gap:6px; align-items:center;">
-                            <!-- 🌟 全新强化版语速调节：最低支持 0.3x 真放慢 -->
                             <select id="listening-speed" class="speed-select" title="调整播放语速">
                                 <option value="0.3">0.3x 极慢 (磨耳对音)</option>
                                 <option value="0.45" selected>0.45x 特慢 (建议跟读)</option>
@@ -170,7 +169,7 @@
             <div style="margin-bottom: 20px;">
                 <span class="tag" id="dialogue-tag" style="background:#DCFCE7; color:#15803D;">03 8-10轮超长深度情景对话 [等级定制] ☕</span>
                 <div id="dialogue-text" class="dialogue-box clickable-text"></div>
-                <button class="btn btn-outline" style="border-color:#16A34A; color:#16A34A; margin-bottom:8px;" onclick="playDialogueDualVoice()">🎭 智能男女声交替朗读全篇</button>
+                <button class="btn btn-outline" style="border-color:#16A34A; color:#16A34A; margin-bottom:8px;" onclick="playDialogueDualVoice()">🎭 智能男女声交替 (1.0x 正常语速)</button>
 
                 <div style="margin-top:12px;">
                     <label class="role-select">
@@ -317,7 +316,7 @@
             }
         }
 
-        function initApp() {
+        async function initApp() {
             loadStorageData();
             checkPrivateBrowsing();
 
@@ -327,7 +326,7 @@
                 
                 if (apiKey) {
                     document.getElementById('api-key-input').value = apiKey;
-                    checkApiBalance();
+                    await checkApiBalance();
                 } else {
                     document.getElementById('balance-status').innerText = "离线/未配置Key";
                 }
@@ -337,26 +336,34 @@
                 
                 renderVocabBook();
 
-                let savedListening = localStorage.getItem('saved_listening') || defaultContent.listening;
-                let savedReading = localStorage.getItem('saved_reading') || defaultContent.reading;
-                let savedDialogue = localStorage.getItem('saved_dialogue') || defaultContent.dialogue;
-                let savedXText = localStorage.getItem('saved_xText') || defaultContent.xText;
-                let savedXAnalysis = localStorage.getItem('saved_xAnalysis') || defaultContent.xAnalysis;
-                let savedPhonetics = localStorage.getItem('saved_phonetics') || defaultContent.phonetics;
+                const todayStr = new Date().toLocaleDateString();
+                const lastGenDate = localStorage.getItem('last_gen_date');
 
-                renderInteractiveText('listening-text', savedListening);
-                renderInteractiveText('reading-text', savedReading);
-                
-                const dialogueEl = document.getElementById('dialogue-text');
-                if (dialogueEl) dialogueEl.innerHTML = savedDialogue.replace(/\n/g, '<br>');
+                if (apiKey && lastGenDate !== todayStr) {
+                    console.log("检测到新的一天，自动从 DeepSeek 推送全新学习文稿...");
+                    generateDailyContent(false);
+                } else {
+                    let savedListening = localStorage.getItem('saved_listening') || defaultContent.listening;
+                    let savedReading = localStorage.getItem('saved_reading') || defaultContent.reading;
+                    let savedDialogue = localStorage.getItem('saved_dialogue') || defaultContent.dialogue;
+                    let savedXText = localStorage.getItem('saved_xText') || defaultContent.xText;
+                    let savedXAnalysis = localStorage.getItem('saved_xAnalysis') || defaultContent.xAnalysis;
+                    let savedPhonetics = localStorage.getItem('saved_phonetics') || defaultContent.phonetics;
 
-                renderInteractiveText('x-text', savedXText);
-                
-                const xAnalysisEl = document.getElementById('x-analysis');
-                if (xAnalysisEl) xAnalysisEl.innerText = savedXAnalysis;
+                    renderInteractiveText('listening-text', savedListening);
+                    renderInteractiveText('reading-text', savedReading);
+                    
+                    const dialogueEl = document.getElementById('dialogue-text');
+                    if (dialogueEl) dialogueEl.innerHTML = savedDialogue.replace(/\n/g, '<br>');
 
-                const phoneticsEl = document.getElementById('phonetics-analysis');
-                if (phoneticsEl) phoneticsEl.innerHTML = savedPhonetics;
+                    renderInteractiveText('x-text', savedXText);
+                    
+                    const xAnalysisEl = document.getElementById('x-analysis');
+                    if (xAnalysisEl) xAnalysisEl.innerText = savedXAnalysis;
+
+                    const phoneticsEl = document.getElementById('phonetics-analysis');
+                    if (phoneticsEl) phoneticsEl.innerHTML = savedPhonetics;
+                }
 
             } catch (e) {
                 console.error("初始化渲染异常:", e);
@@ -664,9 +671,11 @@
             throw new Error("生成失败");
         }
 
-        // 🌟 生成无限全新的不同文章（加入随机因子 Seed）
-        async function generateDailyContent() {
-            if (!apiKey) { alert("当前为离线模式。请在顶部配置 DeepSeek API Key 后，即可免费享受每日无限生成全新文章！"); return; }
+        async function generateDailyContent(isManual = true) {
+            if (!apiKey) { 
+                if (isManual) alert("当前为离线模式。请在顶部配置 DeepSeek API Key 后，即可免费享受每日无限生成全新文章！"); 
+                return; 
+            }
             
             let currentList = topicsByLevel[userLevel] || topicsByLevel["L2 (基础级)"];
             const selectedTopic = currentList[Math.floor(Math.random() * currentList.length)];
@@ -713,13 +722,15 @@
                 document.getElementById('x-analysis').innerText = xAnalysisText;
                 localStorage.setItem('saved_xAnalysis', xAnalysisText);
 
+                localStorage.setItem('last_gen_date', new Date().toLocaleDateString());
+
                 checkApiBalance();
+                if (isManual) alert("🎉 已成功从 DeepSeek 生成全新的学习文章与深度对话剧本！");
             } catch (e) {
-                alert("生成过程触发网络波动, 已为您恢复基础文稿。");
+                if (isManual) alert("生成过程触发网络波动, 已为您恢复基础文稿。");
             }
         }
 
-        // 🌟 核心调优：精听朗读真正降速控制
         function playListeningVoice() {
             try {
                 if (!('speechSynthesis' in window)) {
@@ -731,7 +742,6 @@
                 let msg = new SpeechSynthesisUtterance(text);
                 msg.lang = 'en-US';
                 
-                // 读取下拉框设定的低语速（如 0.3x 或 0.45x）
                 let speedVal = parseFloat(document.getElementById('listening-speed').value) || 0.45;
                 msg.rate = speedVal;
                 
@@ -741,7 +751,6 @@
             }
         }
 
-        // 🌟 科普阅读与推文朗读降速控制
         function speakSingleText(elementId, speedSelectId) {
             try { window.speechSynthesis.cancel(); } catch(e){}
             let text = document.getElementById(elementId).innerText;
@@ -851,6 +860,7 @@
             }
         }
 
+        // 🌟 已更新：男女声交替，恢复 1.0x 正常自然语速
         function playDialogueDualVoice() {
             try { window.speechSynthesis.cancel(); } catch(e){}
             const dialogueText = document.getElementById('dialogue-text').innerText;
@@ -870,8 +880,10 @@
                 if (index >= sentencesToSpeak.length) return;
                 let item = sentencesToSpeak[index];
                 let msg = new SpeechSynthesisUtterance(item.text);
-                msg.lang = 'en-US'; msg.rate = 0.55; msg.pitch = (item.speaker === 'A') ? 1.0 : 1.3;
-                msg.onend = function() { setTimeout(() => speakStep(index + 1), 300); };
+                msg.lang = 'en-US'; 
+                msg.rate = 1.0; // 恢复正常地道交流语速
+                msg.pitch = (item.speaker === 'A') ? 0.95 : 1.25; // 区分男低音 (A) 与女高音 (B)
+                msg.onend = function() { setTimeout(() => speakStep(index + 1), 250); };
                 window.speechSynthesis.speak(msg);
             }
             speakStep(0);
@@ -916,9 +928,9 @@
                         messages: [
                             { 
                                 role: "system", 
-                                content: `You are an encouraging, slow-speaking English conversation partner for a learner at level ${userLevel}. 
+                                content: `You are an encouraging English conversation partner for a learner at level ${userLevel}. 
                                 Requirements:
-                                1. Speak ONLY in simple, short English sentences at a slow pace.
+                                1. Speak in natural, short English sentences.
                                 2. Do NOT interrupt or criticize the user during conversation. Keep the chat flow natural and friendly.
                                 3. Current scene: ${dialogueContext}. You play Role ${aiRole}.
                                 4. At the end of your response, add a short section in Chinese: "\n💡 地道表达替换与错误总结:\n- [Original] -> [Native Expression]"` 
@@ -943,7 +955,8 @@
             try {
                 window.speechSynthesis.cancel();
                 let msg = new SpeechSynthesisUtterance(aiReply.split('\n')[0]);
-                msg.lang = 'en-US'; msg.rate = 0.6;
+                msg.lang = 'en-US'; 
+                msg.rate = 1.0;
                 window.speechSynthesis.speak(msg);
             } catch (e) {}
 
