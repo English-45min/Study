@@ -53,7 +53,7 @@
         .role-select { background: #F0FDF4; border: 1px solid #16A34A; color: #166534; padding: 6px 10px; border-radius: 6px; font-size: 13px; font-weight: bold; margin-bottom: 8px; display: inline-block; width: 100%; box-sizing: border-box; }
         
         .podcast-player-box { background: #1E1B4B; color: white; padding: 14px; border-radius: 12px; margin-top: 10px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .speed-select { background: #312E81; color: white; border: 1px solid #6366F1; border-radius: 6px; padding: 4px 6px; font-size: 12px; font-weight: bold; }
+        .speed-select { background: #312E81; color: #F3F4F6; border: 1px solid #6366F1; border-radius: 6px; padding: 4px 8px; font-size: 12px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -117,7 +117,7 @@
         <div id="learning-card" class="card">
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <h3>📅 今日15分钟轻量学习</h3>
-                <button class="btn" style="width:auto; padding:6px 12px; font-size:12px;" onclick="generateDailyContent()">🤖 刷新今日内容 (含连读分析)</button>
+                <button class="btn" style="width:auto; padding:6px 12px; font-size:12px;" onclick="generateDailyContent()">🤖 刷新今日新文章 (不重复)</button>
             </div>
             <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 听力：盲听+对照发音标记影子跟读；口语：放慢语速沉浸交流，结尾统一诊断地道表达。</p>
             <hr style="border:none; border-top:1px solid #E5E7EB; margin: 12px 0;">
@@ -137,13 +137,13 @@
                     <div style="font-size:13px; font-weight:bold; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
                         <span>🎧 音频示范与影子跟读</span>
                         <div style="display:flex; gap:6px; align-items:center;">
-                            <!-- 🌟 自定义语速调节选项 -->
+                            <!-- 🌟 全新强化版语速调节：最低支持 0.3x 真放慢 -->
                             <select id="listening-speed" class="speed-select" title="调整播放语速">
-                                <option value="0.5">0.5x 极慢</option>
-                                <option value="0.65">0.65x 超慢</option>
-                                <option value="0.75" selected>0.75x 慢速</option>
-                                <option value="0.85">0.85x 稍慢</option>
-                                <option value="1.0">1.0x 正常</option>
+                                <option value="0.3">0.3x 极慢 (磨耳对音)</option>
+                                <option value="0.45" selected>0.45x 特慢 (建议跟读)</option>
+                                <option value="0.6">0.6x 慢速</option>
+                                <option value="0.8">0.8x 稍慢</option>
+                                <option value="1.0">1.0x 原速</option>
                             </select>
                             <button onclick="playListeningVoice()" style="background:#10B981; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">▶ 示范朗读</button>
                             <button id="record-btn" onclick="toggleShadowingRecord()" style="background:#4F46E5; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">🎙️ 影子跟读打分</button>
@@ -156,7 +156,15 @@
             <div style="margin-bottom: 20px;">
                 <span class="tag">02 VOA科普阅读 (5Min)</span>
                 <div id="reading-text" class="sentence clickable-text"></div>
-                <button class="btn btn-outline" onclick="speakSingleText('reading-text')">🔊 AI 朗读阅读文章</button>
+                <div style="display:flex; gap:6px; align-items:center; margin-top:8px;">
+                    <select id="reading-speed" class="speed-select" style="background:#4F46E5;" title="调整科普阅读语速">
+                        <option value="0.35">0.35x 特慢</option>
+                        <option value="0.5" selected>0.5x 慢速</option>
+                        <option value="0.75">0.75x 稍慢</option>
+                        <option value="1.0">1.0x 原速</option>
+                    </select>
+                    <button class="btn btn-outline" style="margin-top:0;" onclick="speakSingleText('reading-text', 'reading-speed')">🔊 AI 朗读阅读文章</button>
+                </div>
             </div>
 
             <div style="margin-bottom: 20px;">
@@ -239,21 +247,23 @@
 
         const topicsByLevel = {
             "L1 (入门级)": [
-                "Buying Bottled Water & Snacks at a Convenience Store (便利店买水与零食 - 完整多轮)",
-                "Asking Simple Directions and Asking the Way to the Station (向路人详细问路与找车站)",
-                "Checking in at a Hotel Front Desk and Asking for Wi-Fi (酒店前台办理入住与问Wi-Fi密码)",
-                "Ordering Coffee and Extra Milk at a Cafe (在咖啡馆点咖啡并要求加奶)",
-                "Shopping for Clothes and Asking for Sizes and Prices (买衣服并询问尺码与价格)"
+                "Buying Bottled Water & Snacks at a Convenience Store",
+                "Asking Simple Directions and Asking the Way to the Station",
+                "Checking in at a Hotel Front Desk and Asking for Wi-Fi",
+                "Ordering Coffee and Extra Milk at a Cafe",
+                "Shopping for Clothes and Asking for Sizes and Prices"
             ],
             "L2 (基础级)": [
-                "Airport Customs & Immigration Interview (海关入境详细问答)",
-                "Hotel Late Check-out & Requesting Extra Towels (酒店延迟退房与索要毛巾)",
-                "Ordering Food at a Restaurant & Explaining Dietary Requirements (餐厅点餐与饮食要求)",
-                "Renting a Car and Discussing Insurance Options (租车与保险细节商讨)"
+                "Airport Customs & Immigration Interview",
+                "Hotel Late Check-out & Requesting Extra Towels",
+                "Ordering Food at a Restaurant & Explaining Dietary Requirements",
+                "Renting a Car and Discussing Insurance Options",
+                "Discussing Technology, Smart Phones, and Digital Life"
             ],
             "L3 (进阶级)": [
-                "Handling Flight Cancellation & Rebooking with Airline Staff (处理航班取消与改签)",
-                "Business Networking & Small Talk at an International Conference (国际会议商务社交与破冰)"
+                "Handling Flight Cancellation & Rebooking with Airline Staff",
+                "Business Networking & Small Talk at an International Conference",
+                "Evaluating Financial Markets, Tech Innovations, and Career Pathways"
             ]
         };
 
@@ -511,7 +521,7 @@
                 if (!('speechSynthesis' in window)) return;
                 window.speechSynthesis.cancel();
                 let msg = new SpeechSynthesisUtterance(word);
-                msg.lang = 'en-US'; msg.rate = 0.85;
+                msg.lang = 'en-US'; msg.rate = 0.8;
                 window.speechSynthesis.speak(msg);
             } catch (e) {}
         }
@@ -654,29 +664,30 @@
             throw new Error("生成失败");
         }
 
+        // 🌟 生成无限全新的不同文章（加入随机因子 Seed）
         async function generateDailyContent() {
-            if (!apiKey) { alert("当前为离线模式。配置 API Key 后可享受 AI 实时生成功能！"); return; }
+            if (!apiKey) { alert("当前为离线模式。请在顶部配置 DeepSeek API Key 后，即可免费享受每日无限生成全新文章！"); return; }
             
             let currentList = topicsByLevel[userLevel] || topicsByLevel["L2 (基础级)"];
             const selectedTopic = currentList[Math.floor(Math.random() * currentList.length)];
+            const randomSeed = "RandomSeed_" + Math.random().toString(36).substring(7) + "_" + Date.now();
 
-            document.getElementById('listening-text').innerText = "🤖 正在生成精听文稿...";
-            document.getElementById('phonetics-analysis').innerHTML = "🤖 正在进行连读与弱读标记解析...";
-            document.getElementById('reading-text').innerText = "🤖 正在生成科普...";
+            document.getElementById('listening-text').innerText = "🤖 正在为你写作全新的精听文章...";
+            document.getElementById('phonetics-analysis').innerHTML = "🤖 正在对新文章进行连读与弱读剖析...";
+            document.getElementById('reading-text').innerText = "🤖 正在生成全新科普文...";
             document.getElementById('dialogue-tag').innerText = `03 8-10轮超长深度情景对话 [${userLevel}] ☕`;
-            document.getElementById('dialogue-text').innerText = `🤖 正在生成适配 ${userLevel} 的 8-10 轮超长沉浸式剧本 [${selectedTopic}]...`;
-            document.getElementById('x-text').innerText = "🤖 正在抓取 X 爆款推文...";
+            document.getElementById('dialogue-text').innerText = `🤖 正在生成全新剧本 [${selectedTopic}]...`;
+            document.getElementById('x-text').innerText = "🤖 正在抓取最新 X 爆款推文...";
             document.getElementById('x-analysis').innerText = "正在拆解知识点...";
 
             try {
-                const p1 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 short VOA-style news summary text (approx. 90 words). Return ONLY pure English text.`);
+                const p1 = fetchSinglePart(`For CEFR ${userLevel}, generate a BRAND NEW short VOA-style news summary text (approx. 90 words). Topic seed: ${randomSeed}. Must be unique and different from previous news. Return ONLY pure English text.`);
                 const p4 = fetchSinglePart(`Analyze linking, weak forms, and assimilation for the generated passage. Format as HTML:\n<b>💡 连读/弱读/吞音发音规律拆解：</b><br>• <b>连读标注</b>：...<br>• <b>弱读/介词</b>：...<br>• <b>吞音技巧</b>：...`);
-                const p2 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 short science reading passage (approx. 100 words). Return ONLY pure English text.`);
-                const p3 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 practical, immersive English dialogue script tailored strictly for level ${userLevel} in the scenario of: "${selectedTopic}". 
+                const p2 = fetchSinglePart(`For CEFR ${userLevel}, generate a BRAND NEW short science reading passage (approx. 100 words). Topic seed: ${randomSeed}. Return ONLY pure English text.`);
+                const p3 = fetchSinglePart(`For CEFR ${userLevel}, generate 1 practical, immersive English dialogue script tailored strictly for level ${userLevel} in the scenario of: "${selectedTopic}". Topic seed: ${randomSeed}.
                 CRITICAL REQUIREMENT: The dialogue MUST be complete and long, containing EXACTLY 8 to 10 full turns (16 to 20 alternating lines between A and B) to form a thorough storyline. 
-                If level is L1, use extremely simple words, short sentences, and basic daily expressions. 
                 Format strictly as:\nScene: ${selectedTopic}\nA: [English]\nB: [English]\nA: [English]\nB: [English]\n(continue until 8-10 turns are completed)`);
-                const p5 = fetchSinglePart(`Generate a trending viral tweet (about tech, AI, productivity, or life, 20-40 words) in English, followed by a line break and a short Chinese breakdown ("💡 爆款解析：...").`);
+                const p5 = fetchSinglePart(`Generate a trending viral tweet (about tech, AI, productivity, or life, 20-40 words) in English, followed by a line break and a short Chinese breakdown ("💡 爆款解析：..."). Seed: ${randomSeed}`);
 
                 const [listening, phonetics, reading, dialogue, xRaw] = await Promise.all([p1, p4, p2, p3, p5]);
 
@@ -704,11 +715,11 @@
 
                 checkApiBalance();
             } catch (e) {
-                alert("生成过程触发网络波动, 已为您恢复默认学习内容。");
+                alert("生成过程触发网络波动, 已为您恢复基础文稿。");
             }
         }
 
-        // 🌟 读取自定义语速进行朗读
+        // 🌟 核心调优：精听朗读真正降速控制
         function playListeningVoice() {
             try {
                 if (!('speechSynthesis' in window)) {
@@ -720,8 +731,8 @@
                 let msg = new SpeechSynthesisUtterance(text);
                 msg.lang = 'en-US';
                 
-                // 获取下拉菜单选择的速率，默认 0.75x
-                let speedVal = parseFloat(document.getElementById('listening-speed').value) || 0.75;
+                // 读取下拉框设定的低语速（如 0.3x 或 0.45x）
+                let speedVal = parseFloat(document.getElementById('listening-speed').value) || 0.45;
                 msg.rate = speedVal;
                 
                 window.speechSynthesis.speak(msg);
@@ -730,13 +741,28 @@
             }
         }
 
+        // 🌟 科普阅读与推文朗读降速控制
+        function speakSingleText(elementId, speedSelectId) {
+            try { window.speechSynthesis.cancel(); } catch(e){}
+            let text = document.getElementById(elementId).innerText;
+            let msg = new SpeechSynthesisUtterance(text);
+            msg.lang = 'en-US';
+            
+            let speedVal = 0.5;
+            if (speedSelectId && document.getElementById(speedSelectId)) {
+                speedVal = parseFloat(document.getElementById(speedSelectId).value) || 0.5;
+            }
+            msg.rate = speedVal;
+            window.speechSynthesis.speak(msg);
+        }
+
         function speakFeedbackVoice(text) {
             try {
                 if (!('speechSynthesis' in window)) return;
                 window.speechSynthesis.cancel();
                 let msg = new SpeechSynthesisUtterance(text);
                 msg.lang = 'zh-CN';
-                msg.rate = 0.95;
+                msg.rate = 0.9;
                 window.speechSynthesis.speak(msg);
             } catch (e) {}
         }
@@ -844,19 +870,11 @@
                 if (index >= sentencesToSpeak.length) return;
                 let item = sentencesToSpeak[index];
                 let msg = new SpeechSynthesisUtterance(item.text);
-                msg.lang = 'en-US'; msg.rate = 0.8; msg.pitch = (item.speaker === 'A') ? 1.0 : 1.3;
+                msg.lang = 'en-US'; msg.rate = 0.55; msg.pitch = (item.speaker === 'A') ? 1.0 : 1.3;
                 msg.onend = function() { setTimeout(() => speakStep(index + 1), 300); };
                 window.speechSynthesis.speak(msg);
             }
             speakStep(0);
-        }
-
-        function speakSingleText(elementId) {
-            try { window.speechSynthesis.cancel(); } catch(e){}
-            let text = document.getElementById(elementId).innerText;
-            let msg = new SpeechSynthesisUtterance(text);
-            msg.lang = 'en-US'; msg.rate = 0.85;
-            window.speechSynthesis.speak(msg);
         }
 
         function updateRolePlay() {
@@ -925,7 +943,7 @@
             try {
                 window.speechSynthesis.cancel();
                 let msg = new SpeechSynthesisUtterance(aiReply.split('\n')[0]);
-                msg.lang = 'en-US'; msg.rate = 0.8;
+                msg.lang = 'en-US'; msg.rate = 0.6;
                 window.speechSynthesis.speak(msg);
             } catch (e) {}
 
