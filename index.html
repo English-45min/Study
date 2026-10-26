@@ -258,6 +258,7 @@
         let isCardFlipped = false;
         let isRecording = false;
         let shadowRecognition = null;
+        let isDialoguePlaying = false; // Android 防重叠全局锁
 
         function loadStorageData() {
             try {
@@ -651,7 +652,6 @@
             throw new Error("生成失败");
         }
 
-        // 🌟 核心升级：带有丰富动态 Domain 和随机种子的 DeepSeek 推送生成函数
         async function generateDailyContent(isManual = true) {
             if (!apiKey) { 
                 if (isManual) alert("当前为离线模式。请在顶部配置 DeepSeek API Key 后，即可免费享受每日无限生成全新文章！"); 
@@ -847,9 +847,17 @@
             }
         }
 
-        // 🌟 核心升级：智能男女声交替与 1.0x 正常流畅语速
+        // 🌟 已彻底修复 Android 端重复朗读 Bug 的男女声交替朗读函数
         function playDialogueDualVoice() {
-            try { window.speechSynthesis.cancel(); } catch(e){}
+            try { 
+                window.speechSynthesis.cancel(); 
+            } catch(e){}
+
+            if (isDialoguePlaying) {
+                isDialoguePlaying = false;
+                return;
+            }
+
             const dialogueText = document.getElementById('dialogue-text').innerText;
             const lines = dialogueText.split('\n');
             let sentencesToSpeak = [];
@@ -867,6 +875,7 @@
                 }
                 if (text) sentencesToSpeak.push({ speaker: speaker, text: text });
             });
+            
             if (sentencesToSpeak.length === 0) return;
 
             let voices = window.speechSynthesis.getVoices();
@@ -880,34 +889,58 @@
                 v.name.includes('Samantha') || v.name.includes('Zira') || v.name.includes('Female') || v.name.includes('Victoria') || v.name.includes('Karen')
             ) || englishVoices[1] || englishVoices[0];
 
-            function speakStep(index) {
-                if (index >= sentencesToSpeak.length) return;
+            isDialoguePlaying = true;
+            let index = 0;
+
+            function speakNext() {
+                if (!isDialoguePlaying || index >= sentencesToSpeak.length) {
+                    isDialoguePlaying = false;
+                    return;
+                }
+
                 let item = sentencesToSpeak[index];
+                index++;
+
                 let msg = new SpeechSynthesisUtterance(item.text);
                 msg.lang = 'en-US'; 
-                msg.rate = 1.0; // 正常流畅语速
+                msg.rate = 1.0; 
 
                 if (item.speaker === 'A') {
                     if (maleVoice) msg.voice = maleVoice;
-                    msg.pitch = 0.9; // 男声低沉音调
+                    msg.pitch = 0.9; 
                 } else {
                     if (femaleVoice) msg.voice = femaleVoice;
-                    msg.pitch = 1.3; // 女声清脆音调
+                    msg.pitch = 1.3; 
                 }
 
-                msg.onend = function() { 
-                    setTimeout(() => speakStep(index + 1), 250); 
+                let hasEnded = false;
+                msg.onend = function() {
+                    if (hasEnded) return;
+                    hasEnded = true;
+                    if (isDialoguePlaying) {
+                        setTimeout(speakNext, 250);
+                    }
                 };
+
+                msg.onerror = function() {
+                    if (hasEnded) return;
+                    hasEnded = true;
+                    if (isDialoguePlaying) {
+                        setTimeout(speakNext, 250);
+                    }
+                };
+
+                window.speechSynthesis.cancel();
                 window.speechSynthesis.speak(msg);
             }
 
             if (voices.length === 0) {
                 window.speechSynthesis.onvoiceschanged = function() {
                     voices = window.speechSynthesis.getVoices();
-                    speakStep(0);
+                    speakNext();
                 };
             } else {
-                speakStep(0);
+                speakNext();
             }
         }
 
