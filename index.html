@@ -333,9 +333,7 @@
 
                     renderInteractiveText('listening-text', savedListening);
                     renderInteractiveText('reading-text', savedReading);
-                    
-                    const dialogueEl = document.getElementById('dialogue-text');
-                    if (dialogueEl) dialogueEl.innerHTML = savedDialogue.replace(/\n/g, '<br>');
+                    renderInteractiveText('dialogue-text', savedDialogue);
 
                     renderInteractiveText('x-text', savedXText);
                     
@@ -415,6 +413,7 @@
             }
         }
 
+        // 🌟 已升级：支持换行与对话场景的多行可点击点词翻译渲染
         function renderInteractiveText(elemId, text) {
             const container = document.getElementById(elemId);
             if (!container) return;
@@ -696,7 +695,7 @@
                 renderInteractiveText('reading-text', reading);
                 localStorage.setItem('saved_reading', reading);
 
-                document.getElementById('dialogue-text').innerHTML = dialogue.replace(/\n/g, '<br>');
+                renderInteractiveText('dialogue-text', dialogue);
                 localStorage.setItem('saved_dialogue', dialogue);
                 
                 const xParts = xRaw.split('\n');
@@ -763,7 +762,6 @@
             } catch (e) {}
         }
 
-        // 🌟 已优化：提高麦克风灵敏度，解决手机端收不到声音的 Bug
         function toggleShadowingRecord() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
                 alert("当前浏览器暂不支持实时语音识别，推荐使用 Chrome 或 Safari 浏览器。");
@@ -779,7 +777,7 @@
                     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                     shadowRecognition = new SpeechRecognition();
                     shadowRecognition.lang = 'en-US';
-                    shadowRecognition.interimResults = true; // 开启实时中间结果，大幅提升捕捉灵敏度
+                    shadowRecognition.interimResults = true;
                     shadowRecognition.maxAlternatives = 1;
 
                     statusEl.innerText = "🔴 正在听您朗读... 请靠近麦克风大声朗读！";
@@ -858,7 +856,6 @@
             }
         }
 
-        // 🌟 男女声交替朗读函数（已修复 Android 重复朗读 Bug）
         function playDialogueDualVoice() {
             try { 
                 window.speechSynthesis.cancel(); 
