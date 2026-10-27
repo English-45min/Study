@@ -148,7 +148,7 @@
                             <button id="record-btn" onclick="toggleShadowingRecord()" style="background:#4F46E5; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">🎙️ 影子跟读打分</button>
                         </div>
                     </div>
-                    <div id="record-status" style="font-size:11px; opacity:0.9; margin-top:2px;">盲听后，点击跟读并同步模仿发音。再次点击停止，AI 实时识别并进行语音纠音。</div>
+                    <div id="record-status" style="font-size:11px; opacity:0.9; margin-top:2px;">盲听后，点击跟读并大声朗读。再次点击停止，AI 实时识别并进行语音纠音。</div>
                 </div>
             </div>
 
@@ -258,7 +258,7 @@
         let isCardFlipped = false;
         let isRecording = false;
         let shadowRecognition = null;
-        let isDialoguePlaying = false; // Android 防重叠全局锁
+        let isDialoguePlaying = false;
 
         function loadStorageData() {
             try {
@@ -763,6 +763,7 @@
             } catch (e) {}
         }
 
+        // 🌟 已优化：提高麦克风灵敏度，解决手机端收不到声音的 Bug
         function toggleShadowingRecord() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
                 alert("当前浏览器暂不支持实时语音识别，推荐使用 Chrome 或 Safari 浏览器。");
@@ -774,80 +775,90 @@
             const targetText = document.getElementById('listening-text').innerText;
 
             if (!isRecording) {
-                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                shadowRecognition = new SpeechRecognition();
-                shadowRecognition.lang = 'en-US';
-                shadowRecognition.interimResults = false;
-
-                statusEl.innerText = "🔴 正在听您朗读... 请大声读出上方文稿！";
-                btn.style.background = "#EF4444";
-                btn.innerText = "⏹️ 停止并获取纠音";
-                isRecording = true;
-
-                let userSaidText = "";
-
-                shadowRecognition.onresult = function(event) {
-                    userSaidText = event.results[0][0].transcript;
-                };
-
-                shadowRecognition.onerror = function(event) {
-                    console.log("识别提示:", event.error);
-                };
-
-                shadowRecognition.onend = async function() {
-                    isRecording = false;
-                    btn.style.background = "#4F46E5";
-                    btn.innerText = "🎙️ 影子跟读打分";
-                    statusEl.innerText = "🎯 评估完成！AI 正在生成诊断报告...";
-
-                    let promptContent = "";
-                    if (userSaidText) {
-                        promptContent = `The user shadowed the English passage. Target text: "${targetText}". The user actually pronounced/said: "${userSaidText}". Act as an expert English coach. Give a score out of 100 based on accuracy, pinpoint which words were mispronounced or missed, and give short Chinese advice.`;
-                    } else {
-                        promptContent = `The user practiced shadowing text: "${targetText}". Act as an English coach. Give a short score and 2 key pronunciation tips (stress/intonation) in Chinese.`;
-                    }
-
-                    if (apiKey) {
-                        try {
-                            const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
-                                body: JSON.stringify({
-                                    model: "deepseek-flash",
-                                    messages: [{ role: "user", content: promptContent }]
-                                })
-                            });
-                            const resData = await response.json();
-                            if (resData.choices && resData.choices.length > 0) {
-                                let resultText = resData.choices[0].message.content.trim();
-                                alert("【AI 英语口语诊断与纠音报告】\n" + resultText);
-                                speakFeedbackVoice(resultText);
-                            }
-                        } catch(e) {
-                            alert("网络请求异常，请重试。");
-                        }
-                    } else {
-                        alert("【离线纠音提示】\n您未配置 API Key。配置后可享受专属 AI 实时识别纠音！\n您刚刚读的内容识别为: " + (userSaidText || "未检测到清晰语音"));
-                    }
-                    statusEl.innerText = "盲听后，点击跟读并同步模仿发音。再次点击停止，AI 实时识别并进行语音纠音。";
-                };
-
                 try {
+                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    shadowRecognition = new SpeechRecognition();
+                    shadowRecognition.lang = 'en-US';
+                    shadowRecognition.interimResults = true; // 开启实时中间结果，大幅提升捕捉灵敏度
+                    shadowRecognition.maxAlternatives = 1;
+
+                    statusEl.innerText = "🔴 正在听您朗读... 请靠近麦克风大声朗读！";
+                    btn.style.background = "#EF4444";
+                    btn.innerText = "⏹️ 停止并获取纠音";
+                    isRecording = true;
+
+                    let userSaidText = "";
+
+                    shadowRecognition.onresult = function(event) {
+                        for (let i = event.resultIndex; i < event.results.length; ++i) {
+                            if (event.results[i].isFinal) {
+                                userSaidText += event.results[i][0].transcript;
+                            }
+                        }
+                    };
+
+                    shadowRecognition.onerror = function(event) {
+                        console.log("识别提示:", event.error);
+                        if (event.error === 'no-speech') {
+                            statusEl.innerText = "⚠️ 未检测到声音，请说话大声一点或靠近手机重试。";
+                        }
+                    };
+
+                    shadowRecognition.onend = async function() {
+                        isRecording = false;
+                        btn.style.background = "#4F46E5";
+                        btn.innerText = "🎙️ 影子跟读打分";
+                        
+                        if (!userSaidText) {
+                            statusEl.innerText = "盲听后，点击跟读并同步模仿发音。再次点击停止，AI 实时识别并进行语音纠音。";
+                            alert("未检测到清晰的英文语音输入，请确保麦克风权限已开启并大声朗读。");
+                            return;
+                        }
+
+                        statusEl.innerText = "🎯 评估完成！AI 正在生成诊断报告...";
+
+                        let promptContent = `The user shadowed the English passage. Target text: "${targetText}". The user actually pronounced/said: "${userSaidText}". Act as an expert English coach. Give a score out of 100 based on accuracy, pinpoint which words were mispronounced or missed, and give short Chinese advice.`;
+
+                        if (apiKey) {
+                            try {
+                                const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
+                                    body: JSON.stringify({
+                                        model: "deepseek-flash",
+                                        messages: [{ role: "user", content: promptContent }]
+                                    })
+                                });
+                                const resData = await response.json();
+                                if (resData.choices && resData.choices.length > 0) {
+                                    let resultText = resData.choices[0].message.content.trim();
+                                    alert("【AI 英语口语诊断与纠音报告】\n" + resultText);
+                                    speakFeedbackVoice(resultText);
+                                }
+                            } catch(e) {
+                                alert("网络请求异常，请重试。");
+                            }
+                        } else {
+                            alert("【离线纠音提示】\n您未配置 API Key。识别到的内容: " + userSaidText);
+                        }
+                        statusEl.innerText = "盲听后，点击跟读并同步模仿发音。再次点击停止，AI 实时识别并进行语音纠音。";
+                    };
+
                     shadowRecognition.start();
                 } catch (e) {
                     isRecording = false;
                     btn.style.background = "#4F46E5";
                     btn.innerText = "🎙️ 影子跟读打分";
-                    statusEl.innerText = "盲听后，点击跟读并同步模仿发音。再次点击停止，AI 实时识别并进行语音纠音。";
+                    statusEl.innerText = "麦克风启动失败，请检查浏览器麦克风权限。";
                 }
             } else {
                 if (shadowRecognition) {
-                    shadowRecognition.stop();
+                    try { shadowRecognition.stop(); } catch(err){}
                 }
             }
         }
 
-        // 🌟 已彻底修复 Android 端重复朗读 Bug 的男女声交替朗读函数
+        // 🌟 男女声交替朗读函数（已修复 Android 重复朗读 Bug）
         function playDialogueDualVoice() {
             try { 
                 window.speechSynthesis.cancel(); 
