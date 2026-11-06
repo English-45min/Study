@@ -54,6 +54,11 @@
         
         .podcast-player-box { background: #1E1B4B; color: white; padding: 14px; border-radius: 12px; margin-top: 10px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
         .speed-select { background: #312E81; color: #F3F4F6; border: 1px solid #6366F1; border-radius: 6px; padding: 4px 8px; font-size: 12px; font-weight: bold; }
+        
+        /* 新增外链卡片样式 */
+        .external-link-card { background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 12px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .external-link-card a { color: #4F46E5; font-weight: bold; text-decoration: none; font-size: 14px; }
+        .external-link-card p { margin: 4px 0 0; font-size: 12px; color: #64748B; }
     </style>
 </head>
 <body>
@@ -114,6 +119,33 @@
             </details>
         </div>
 
+        <!-- 🌐 核心新增：免费优质听力外链推荐卡片 -->
+        <div class="card">
+            <span class="tag" style="background:#F3E8FF; color:#7E22CE;">🌐 推荐全球免费优质听力平台</span>
+            <p style="font-size:12px; color:#6B7280; margin:6px 0 10px;">点击可直接跳转，配合通勤听力与分级练听！</p>
+            
+            <div class="external-link-card">
+                <div>
+                    <a href="https://www.elllo.org" target="_blank" rel="noopener">🎧 ELLLO (English Listening Lesson Library Online)</a>
+                    <p>全球免费英语听力库，提供超 3000 篇多国口音真实对话与音频练习。</p>
+                </div>
+            </div>
+
+            <div class="external-link-card">
+                <div>
+                    <a href="https://www.esl-lab.com" target="_blank" rel="noopener">🔊 Randall's ESL Cyber Listening Lab</a>
+                    <p>完全免费的经典听力实验室，含初中高级生活对话及听力在线测验。</p>
+                </div>
+            </div>
+
+            <div class="external-link-card">
+                <div>
+                    <a href="https://www.eslpod.com" target="_blank" rel="noopener">🚶 ESLPod (慢速英语听力播客)</a>
+                    <p>慢速地道日常英语，最受推荐的散步、驾车与通勤磨耳朵听力神器。</p>
+                </div>
+            </div>
+        </div>
+
         <div id="learning-card" class="card">
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <h3>📅 今日15分钟轻量学习</h3>
@@ -166,7 +198,6 @@
                 </div>
             </div>
 
-            <!-- 🌟 全新升级：独立于 VOA 的旅游全过程实战对话 -->
             <div style="margin-bottom: 20px;">
                 <span class="tag" id="dialogue-tag" style="background:#DCFCE7; color:#15803D;">03 ✈️ 旅游全过程实战对话 [全流程轮替] ☕</span>
                 <div id="dialogue-text" class="dialogue-box clickable-text"></div>
@@ -245,7 +276,6 @@
             phonetics: "<b>💡 连读/弱读/吞音发音规律拆解：</b><br>• <b>连读标注</b>：use_artificial (/juːz ɑːrtɪˈfɪʃl/), or_AI<br>• <b>弱读/介词</b>：at /ət/, for /fər/, to /tə/ (非重读词均采用弱读音标)<br>• <b>吞音技巧</b>：mos(t) workers, repor(t) said (结尾辅音不发完全，仅留口型)"
         };
 
-        // 🌟 核心升级：覆盖从出发到回家的 10 大完整旅游流程链
         const travelLifecycleScenarios = [
             "Stage 01: Pre-departure & Flight Check-in at the Airport",
             "Stage 02: Airport Customs Control & Immigration Interview",
@@ -663,14 +693,12 @@
             throw new Error("生成失败");
         }
 
-        // 🌟 核心升级：生成独立于 VOA 的旅游全过程系列剧本
         async function generateDailyContent(isManual = true) {
             if (!apiKey) { 
                 if (isManual) alert("当前为离线模式。请在顶部配置 DeepSeek API Key 后，即可免费享受每日无限生成全新文章与旅游剧本！"); 
                 return; 
             }
             
-            // 随机挑选一个旅游全流程节点
             const selectedTravelStage = travelLifecycleScenarios[Math.floor(Math.random() * travelLifecycleScenarios.length)];
             const randomSeed = "TravelSeed_" + Math.random().toString(36).substring(7) + "_" + Date.now();
 
@@ -687,7 +715,6 @@
                 const p4 = fetchSinglePart(`Analyze linking, weak forms, and assimilation for the generated passage. Format as HTML:\n<b>💡 连读/弱读/吞音发音规律拆解：</b><br>• <b>连读标注</b>：...<br>• <b>弱读/介词</b>：...<br>• <b>吞音技巧</b>：...`);
                 const p2 = fetchSinglePart(`For CEFR ${userLevel}, generate a BRAND NEW short science reading passage (approx. 100 words). Seed: ${randomSeed}. Return ONLY pure English text.`);
                 
-                // 🌟 独立旅游全过程 Prompt
                 const p3 = fetchSinglePart(`Act as an expert scriptwriter for authentic real-world travel English.
                 Create a realistic, highly immersive 8-10 turn dialogue (CEFR Level: ${userLevel}) specifically for the travel stage: "${selectedTravelStage}".
                 Requirements:
