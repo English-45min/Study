@@ -29,6 +29,7 @@
 
         .sentence { font-size: 16px; line-height: 1.8; background: #F9FAFB; padding: 14px; border-left: 4px solid var(--primary); border-radius: 0 8px 8px 0; margin: 12px 0; }
         .phonetics-box { background: #FFFBEB; border: 1px solid #FCD34D; border-left: 4px solid #F59E0B; padding: 12px; border-radius: 0 8px 8px 0; font-size: 13px; color: #92400E; margin-top: 8px; line-height: 1.6; }
+        .dialogue-box { background: #F0FDF4; border-left: 4px solid var(--success); padding: 14px; border-radius: 0 8px 8px 0; font-size: 15px; line-height: 1.8; margin: 12px 0; max-height: 280px; overflow-y: auto; }
         .x-card-box { background: #F8FAFC; border: 1px solid #E2E8F0; border-left: 4px solid #1DA1F2; padding: 14px; border-radius: 0 8px 8px 0; margin: 12px 0; }
         
         #word-popup { position: fixed; top: 20%; left: 50%; transform: translateX(-50%); background: #1F2937; color: white; padding: 14px 18px; border-radius: 12px; font-size: 14px; z-index: 10000; display: none; width: 80%; max-width: 320px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.4); text-align: center; }
@@ -147,7 +148,7 @@
                 <h3>📅 今日15分钟轻量学习</h3>
                 <button class="btn" style="width:auto; padding:6px 12px; font-size:12px;" onclick="generateDailyContent(true)">🤖 强制刷新新文章</button>
             </div>
-            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 听力：盲听+对照发音标记影子跟读；口语：点击语音按钮直接开口对话，AI 实时纠错与语音朗读。</p>
+            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 听力：盲听+对照发音标记影子跟读；口语：旅游全过程实战对话 + AI 实时语音口语对练纠错。</p>
             <hr style="border:none; border-top:1px solid #E5E7EB; margin: 12px 0;">
             
             <div style="margin-bottom: 20px;">
@@ -194,14 +195,22 @@
                 </div>
             </div>
 
-            <!-- 🌟 核心升级：支持真正的语音对话模式 -->
+            <!-- 🌟 模块一：旅游全过程实战对话 (加在 AI 口语训练之前) -->
             <div style="margin-bottom: 20px;">
-                <span class="tag" style="background:#DCFCE7; color:#15803D;">03 🗣️ AI 实时语音对练与纠错中心 [支持直接开口说] ☕</span>
-                <p style="font-size:12px; color:#6B7280; margin:6px 0;">👉 设定场景后，点击下方 **【🎤 开启语音对话】** 按钮，直接用英语开口说话！AI 会将您的语音转成文字并回复，同时自动语音朗读，并实时给出纠错建议。</p>
+                <span class="tag" id="dialogue-tag" style="background:#DCFCE7; color:#15803D;">03 ✈️ 旅游全过程实战对话 [全流程轮替] ☕</span>
+                <p style="font-size:12px; color:#6B7280; margin:4px 0;">👉 覆盖从出发到回家的 10 大完整旅行场景，支持智能男女声交替朗读与点词查词。</p>
+                <div id="dialogue-text" class="dialogue-box clickable-text"></div>
+                <button class="btn btn-outline" style="border-color:#16A34A; color:#16A34A;" onclick="playDialogueDualVoice()">🎭 智能男女声交替朗读 (1.0x 原速)</button>
+            </div>
+
+            <!-- 🌟 模块二：AI 实时语音口语陪练与纠错中心 (支持直接开口说) -->
+            <div style="margin-bottom: 20px;">
+                <span class="tag" style="background:#EEF2FF; color:#4F46E5;">04 🗣️ AI 实时语音口语陪练与纠错中心 [支持直接开口说] 🎙️</span>
+                <p style="font-size:12px; color:#6B7280; margin:6px 0;">👉 设定场景后，点击下方 **【🎤 开启语音对话】** 按钮，直接用英语开口说话！AI 会将您的语音转成文字并回复，同时自动语音朗读，并实时纠错。</p>
                 
                 <div style="margin-top:8px; display:flex; gap:6px;">
                     <input type="text" id="scenario-input" class="chat-input" placeholder="输入练习场景 (例如: Airport Customs, Ordering Coffee)..." style="margin-top:0;">
-                    <button class="btn" style="width:auto; margin-top:0; padding:8px 12px; font-size:13px; background:#16A34A;" onclick="setTrainingScenario()">🎯 设定场景</button>
+                    <button class="btn" style="width:auto; margin-top:0; padding:8px 12px; font-size:13px; background:#4F46E5;" onclick="setTrainingScenario()">🎯 设定场景</button>
                 </div>
 
                 <div class="chat-container" id="chat-box">
@@ -221,7 +230,7 @@
             </div>
 
             <div style="margin-bottom: 20px;">
-                <span class="tag">04 语境实战微测验 (Quiz) 🧠</span>
+                <span class="tag">05 语境实战微测验 (Quiz) 🧠</span>
                 <div id="quiz-box" style="background:#F0FDF4; border:1px solid #BBF7D0; padding:14px; border-radius:8px; margin-top:10px; font-size:14px;">
                     <div id="quiz-question" style="font-weight:bold; margin-bottom:8px;">点击下方按钮生成本篇内容的 AI 语境实战题：</div>
                     <div id="quiz-options"></div>
@@ -230,7 +239,7 @@
             </div>
 
             <div style="margin-bottom: 20px;">
-                <span class="tag tag-x">05 X (Twitter) 热门推文精读 🔥</span>
+                <span class="tag tag-x">06 X (Twitter) 热门推文精读 🔥</span>
                 <div class="x-card-box">
                     <div style="font-size:12px; color:#64748B; font-weight:bold; margin-bottom:6px;" id="x-author">@TechTrends · 2h</div>
                     <div id="x-text" class="clickable-text" style="font-size:15px; font-weight:600; color:#0F1419; margin-bottom:10px; line-height:1.6;"></div>
@@ -240,7 +249,7 @@
             </div>
 
             <div>
-                <span class="tag">06 打卡与跨设备云端同步 (2Min)</span>
+                <span class="tag">07 打卡与跨设备云端同步 (2Min)</span>
                 <button class="btn" style="margin-top:12px; font-size:16px;" onclick="doCheckIn()">✅ 完成今日学习打卡</button>
                 <button class="btn btn-outline" style="margin-top:8px; border-color:#4F46E5; color:#4F46E5;" onclick="generateWeeklyDigest()">📊 生成 AI 英语成长周报</button>
                 <div id="digest-box" style="font-size:13px; color:#374151; background:#F8FAFC; padding:12px; border-radius:8px; margin-top:10px; display:none; line-height:1.6;"></div>
@@ -267,10 +276,24 @@
         const defaultContent = {
             listening: "Many companies now use artificial intelligence, or AI, at work. AI can help people write emails, plan meetings, and answer questions. Some workers say AI saves time. They can finish tasks faster. But other people are worried. They think AI may make mistakes or take jobs. This week, a new report said workers need to learn new skills. Schools and companies can teach these skills. Experts say people should use AI carefully. They say humans must always check the work. AI is a tool, not a replacement for people.",
             reading: "Language acquisition works best with consistent comprehensible input that matches your level.",
+            dialogue: "Scene: Stage 02 - Airport Customs & Passport Control\nA (Alex): Good afternoon officer. Here is my passport and entry declaration card.\nB (Sarah): Thank you. What is the main purpose of your visit to Perth today?\nA (Alex): I am here on vacation for ten days with my family.\nB (Sarah): Excellent. Where will you be staying during your holiday?\nA (Alex): We booked a hotel near Elizabeth Quay in the city center.\nB (Sarah): Do you have anything to declare, such as fresh food or large amounts of cash?\nA (Alex): No, officer. Just standard clothing and personal medicine.\nB (Sarah): Great. Place your index finger on the scanner, please.\nA (Alex): Sure, like this?\nB (Sarah): Perfect. Everything looks good. Enjoy your stay in Australia!\nA (Alex): Thank you very much! Have a nice day.",
             xText: "Building an English learning Progressive Web App with DeepSeek API and Speech Synthesis opens up new possibilities for AI-driven education.",
             xAnalysis: "💡 爆款解析：本文探讨了结合 DeepSeek API 与语音合成构建英语分级 PWA 的应用实践。核心表达：'opens up new possibilities' (开启全新可能性)。",
             phonetics: "<b>💡 连读/弱读/吞音发音规律拆解：</b><br>• <b>连读标注</b>：use_artificial (/juːz ɑːrtɪˈfɪʃl/), or_AI<br>• <b>弱读/介词</b>：at /ət/, for /fər/, to /tə/ (非重读词均采用弱读音标)<br>• <b>吞音技巧</b>：mos(t) workers, repor(t) said (结尾辅音不发完全，仅留口型)"
         };
+
+        const travelLifecycleScenarios = [
+            "Stage 01: Pre-departure & Flight Check-in at the Airport",
+            "Stage 02: Airport Customs Control & Immigration Interview",
+            "Stage 03: Hotel Check-in, Asking for Quiet Room & Wi-Fi Password",
+            "Stage 04: Renting a Car at Counter & Discussing Full Insurance",
+            "Stage 05: Ordering Specialty Coffee & Food at a Local Cafe",
+            "Stage 06: Buying Tickets & Asking Directions at Famous Attractions",
+            "Stage 07: Shopping at Department Store & Asking for Tax Refund (VAT)",
+            "Stage 08: Handling Unexpected Issues (Lost Item or Asking Pharmacy for Help)",
+            "Stage 09: Dinner Reservation & Special Dietary / Allergy Requests",
+            "Stage 10: Hotel Check-out, Luggage Storage & Heading Back to Airport"
+        ];
 
         let userLevel = 'L2 (基础级)';
         let streak = 0;
@@ -284,9 +307,9 @@
         let isCardFlipped = false;
         let isRecording = false;
         let shadowRecognition = null;
+        let isDialoguePlaying = false;
         let currentTrainingScenario = "General Daily Conversation & Travel";
 
-        // 🎤 语音对话专用识别对象
         let isVoiceChatActive = false;
         let voiceChatRecognition = null;
 
@@ -351,17 +374,19 @@
                 const lastGenDate = localStorage.getItem('last_gen_date');
 
                 if (apiKey && lastGenDate !== todayStr) {
-                    console.log("检测到新的一天，自动从 DeepSeek 推送全新学习文稿...");
+                    console.log("检测到新的一天，自动从 DeepSeek 推送全新学习文稿与旅游剧本...");
                     generateDailyContent(false);
                 } else {
                     let savedListening = localStorage.getItem('saved_listening') || defaultContent.listening;
                     let savedReading = localStorage.getItem('saved_reading') || defaultContent.reading;
+                    let savedDialogue = localStorage.getItem('saved_dialogue') || defaultContent.dialogue;
                     let savedXText = localStorage.getItem('saved_xText') || defaultContent.xText;
                     let savedXAnalysis = localStorage.getItem('saved_xAnalysis') || defaultContent.xAnalysis;
                     let savedPhonetics = localStorage.getItem('saved_phonetics') || defaultContent.phonetics;
 
                     renderInteractiveText('listening-text', savedListening);
                     renderInteractiveText('reading-text', savedReading);
+                    renderInteractiveText('dialogue-text', savedDialogue);
                     renderInteractiveText('x-text', savedXText);
                     
                     const xAnalysisEl = document.getElementById('x-analysis');
@@ -679,15 +704,18 @@
 
         async function generateDailyContent(isManual = true) {
             if (!apiKey) { 
-                if (isManual) alert("当前为离线模式。请在顶部配置 DeepSeek API Key 后，即可免费享受每日无限生成全新文章！"); 
+                if (isManual) alert("当前为离线模式。请在顶部配置 DeepSeek API Key 后，即可免费享受每日无限生成全新文章与旅游剧本！"); 
                 return; 
             }
             
-            const randomSeed = "Seed_" + Math.random().toString(36).substring(7) + "_" + Date.now();
+            const selectedTravelStage = travelLifecycleScenarios[Math.floor(Math.random() * travelLifecycleScenarios.length)];
+            const randomSeed = "TravelSeed_" + Math.random().toString(36).substring(7) + "_" + Date.now();
 
-            document.getElementById('listening-text').innerText = "🤖 正在为你写作全新领域的精听文章...";
+            document.getElementById('listening-text').innerText = "🤖 正在为你写作全新的精听文章...";
             document.getElementById('phonetics-analysis').innerHTML = "🤖 正在对新文章进行连读与弱读剖析...";
             document.getElementById('reading-text').innerText = "🤖 正在生成全新科普文...";
+            document.getElementById('dialogue-tag').innerText = `03 ✈️ 旅游全过程实战对话 [${selectedTravelStage.split(':')[0]}] ☕`;
+            document.getElementById('dialogue-text').innerText = `🤖 正在生成全新沉浸式旅游剧本 [${selectedTravelStage}]...`;
             document.getElementById('x-text').innerText = "🤖 正在抓取最新 X 爆款推文...";
             document.getElementById('x-analysis').innerText = "正在拆解知识点...";
 
@@ -695,9 +723,21 @@
                 const p1 = fetchSinglePart(`For CEFR ${userLevel}, generate a BRAND NEW VOA-style news summary text (approx. 90 words). Seed: ${randomSeed}. Must be fresh and unique. Return ONLY pure English text.`);
                 const p4 = fetchSinglePart(`Analyze linking, weak forms, and assimilation for the generated passage. Format as HTML:\n<b>💡 连读/弱读/吞音发音规律拆解：</b><br>• <b>连读标注</b>：...<br>• <b>弱读/介词</b>：...<br>• <b>吞音技巧</b>：...`);
                 const p2 = fetchSinglePart(`For CEFR ${userLevel}, generate a BRAND NEW short science reading passage (approx. 100 words). Seed: ${randomSeed}. Return ONLY pure English text.`);
+                
+                const p3 = fetchSinglePart(`Act as an expert scriptwriter for authentic real-world travel English.
+                Create a realistic, highly immersive 8-10 turn dialogue (CEFR Level: ${userLevel}) specifically for the travel stage: "${selectedTravelStage}".
+                Requirements:
+                1. Roles: Character A (Male, name Alex - Traveler) and Character B (Female, name Sarah - Staff/Local/Official).
+                2. Scenario: Focus on real travel situations.
+                3. Dialogue length MUST be exactly 8 to 10 full turns (16 to 20 lines total).
+                4. Format strictly as:
+                Scene: ${selectedTravelStage}
+                A (Alex): [English]
+                B (Sarah): [English]`);
+
                 const p5 = fetchSinglePart(`Generate a trending viral tweet (about tech, travel, productivity, or lifestyle, 20-40 words) in English, followed by a line break and a short Chinese breakdown ("💡 爆款解析：..."). Seed: ${randomSeed}`);
 
-                const [listening, phonetics, reading, xRaw] = await Promise.all([p1, p4, p2, p5]);
+                const [listening, phonetics, reading, dialogue, xRaw] = await Promise.all([p1, p4, p2, p3, p5]);
 
                 renderInteractiveText('listening-text', listening);
                 localStorage.setItem('saved_listening', listening);
@@ -707,6 +747,9 @@
 
                 renderInteractiveText('reading-text', reading);
                 localStorage.setItem('saved_reading', reading);
+
+                renderInteractiveText('dialogue-text', dialogue);
+                localStorage.setItem('saved_dialogue', dialogue);
                 
                 const xParts = xRaw.split('\n');
                 let xTweetText = xParts[0];
@@ -721,7 +764,7 @@
                 localStorage.setItem('last_gen_date', new Date().toLocaleDateString());
 
                 checkApiBalance();
-                if (isManual) alert("🎉 已成功生成全英文精听与科普文章！");
+                if (isManual) alert("🎉 已成功生成全英文文章与全新的【旅游全过程实战剧本】！");
             } catch (e) {
                 if (isManual) alert("生成过程触发网络波动, 已为您恢复基础文稿。");
             }
@@ -737,10 +780,8 @@
                 let text = document.getElementById('listening-text').innerText;
                 let msg = new SpeechSynthesisUtterance(text);
                 msg.lang = 'en-US';
-                
                 let speedVal = parseFloat(document.getElementById('listening-speed').value) || 0.45;
                 msg.rate = speedVal;
-                
                 window.speechSynthesis.speak(msg);
             } catch (e) {
                 alert("播放失败，请重试。");
@@ -752,7 +793,6 @@
             let text = document.getElementById(elementId).innerText;
             let msg = new SpeechSynthesisUtterance(text);
             msg.lang = 'en-US';
-            
             let speedVal = 0.5;
             if (speedSelectId && document.getElementById(speedSelectId)) {
                 speedVal = parseFloat(document.getElementById(speedSelectId).value) || 0.5;
@@ -807,9 +847,6 @@
 
                     shadowRecognition.onerror = function(event) {
                         console.log("识别提示:", event.error);
-                        if (event.error === 'no-speech') {
-                            statusEl.innerText = "⚠️ 未检测到声音，请说话大声一点或靠近手机重试。";
-                        }
                     };
 
                     shadowRecognition.onend = async function() {
@@ -866,6 +903,91 @@
             }
         }
 
+        // 🎭 旅游全过程对话的智能男女声交替朗读
+        function playDialogueDualVoice() {
+            try { window.speechSynthesis.cancel(); } catch(e){}
+
+            if (isDialoguePlaying) {
+                isDialoguePlaying = false;
+                return;
+            }
+
+            const dialogueText = document.getElementById('dialogue-text').innerText;
+            const lines = dialogueText.split('\n');
+            let sentencesToSpeak = [];
+            
+            lines.forEach(line => {
+                let cleanLine = line.trim();
+                if (!cleanLine || cleanLine.startsWith('Scene:')) return;
+                let speaker = 'A'; let text = cleanLine;
+                if (cleanLine.startsWith('A:') || cleanLine.startsWith('A (Alex):')) { 
+                    speaker = 'A'; 
+                    text = cleanLine.replace(/^(A:|A \(Alex\):)/, '').trim(); 
+                } else if (cleanLine.startsWith('B:') || cleanLine.startsWith('B (Sarah):')) { 
+                    speaker = 'B'; 
+                    text = cleanLine.replace(/^(B:|B \(Sarah\):)/, '').trim(); 
+                }
+                if (text) sentencesToSpeak.push({ speaker: speaker, text: text });
+            });
+            
+            if (sentencesToSpeak.length === 0) return;
+
+            let voices = window.speechSynthesis.getVoices();
+            let englishVoices = voices.filter(v => v.lang.startsWith('en'));
+
+            let maleVoice = englishVoices.find(v => v.name.includes('Alex') || v.name.includes('David') || v.name.includes('Male')) || englishVoices[0];
+            let femaleVoice = englishVoices.find(v => v.name.includes('Samantha') || v.name.includes('Zira') || v.name.includes('Female')) || englishVoices[1] || englishVoices[0];
+
+            isDialoguePlaying = true;
+            let index = 0;
+
+            function speakNext() {
+                if (!isDialoguePlaying || index >= sentencesToSpeak.length) {
+                    isDialoguePlaying = false;
+                    return;
+                }
+
+                let item = sentencesToSpeak[index];
+                index++;
+
+                let msg = new SpeechSynthesisUtterance(item.text);
+                msg.lang = 'en-US'; 
+                msg.rate = 1.0; 
+
+                if (item.speaker === 'A') {
+                    if (maleVoice) msg.voice = maleVoice;
+                    msg.pitch = 0.9; 
+                } else {
+                    if (femaleVoice) msg.voice = femaleVoice;
+                    msg.pitch = 1.3; 
+                }
+
+                let hasEnded = false;
+                msg.onend = function() {
+                    if (hasEnded) return;
+                    hasEnded = true;
+                    if (isDialoguePlaying) setTimeout(speakNext, 250);
+                };
+                msg.onerror = function() {
+                    if (hasEnded) return;
+                    hasEnded = true;
+                    if (isDialoguePlaying) setTimeout(speakNext, 250);
+                };
+
+                window.speechSynthesis.cancel();
+                window.speechSynthesis.speak(msg);
+            }
+
+            if (voices.length === 0) {
+                window.speechSynthesis.onvoiceschanged = function() {
+                    voices = window.speechSynthesis.getVoices();
+                    speakNext();
+                };
+            } else {
+                speakNext();
+            }
+        }
+
         function setTrainingScenario() {
             const scInput = document.getElementById('scenario-input').value.trim();
             if (!scInput) { alert("请输入您想要练习的口语场景！"); return; }
@@ -876,7 +998,7 @@
             document.getElementById('scenario-input').value = "";
         }
 
-        // 🎤 真正的语音对话交互逻辑：按一下开始录音说话，识别后自动发给 AI 并在回复后自动朗读
+        // 🎤 真正的语音对话交互逻辑：点击开始录音说话，识别后自动发给 AI 并在回复后自动朗读
         function toggleVoiceChat() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
                 alert("当前浏览器暂不支持语音识别功能，推荐使用 Chrome 或 Safari 浏览器。");
@@ -922,7 +1044,7 @@
 
                         if (spokenText) {
                             document.getElementById('user-chat-input').value = spokenText;
-                            sendChat(); // 识别完成后自动发送给 AI
+                            sendChat();
                         } else {
                             statusText.innerText = "⚠️ 未检测到语音输入，请重试。";
                         }
@@ -948,7 +1070,7 @@
             if (!userText) return;
 
             const chatBox = document.getElementById('chat-box');
-            chatBox.innerHTML += `<div class="chat-msg chat-user">你 (语音识别): ${userText}</div>`;
+            chatBox.innerHTML += `<div class="chat-msg chat-user">你: ${userText}</div>`;
             inputField.value = '';
             chatBox.scrollTop = chatBox.scrollHeight;
 
@@ -995,7 +1117,6 @@
             chatBox.innerHTML += `<div class="chat-msg chat-ai">${aiReply.replace(/\n/g, '<br>')}</div>`;
             chatBox.scrollTop = chatBox.scrollHeight;
             
-            // 🔊 AI 自动语音朗读回复的第一句英文
             try {
                 window.speechSynthesis.cancel();
                 let firstEnglishSentence = aiReply.split('\n')[0];
