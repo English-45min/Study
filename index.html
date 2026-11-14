@@ -549,14 +549,18 @@
             if (listEl) listEl.innerHTML = html;
         }
 
+        // 🔊 统一且具有防卡死机制的单词发音函数
         function speakWord(word) {
             if (!word) return;
             try {
                 if (!('speechSynthesis' in window)) return;
-                window.speechSynthesis.cancel();
-                let msg = new SpeechSynthesisUtterance(word);
-                msg.lang = 'en-US'; msg.rate = 0.8;
-                window.speechSynthesis.speak(msg);
+                window.speechSynthesis.cancel(); // 强制清空之前残留的阻塞队列
+                setTimeout(() => {
+                    let msg = new SpeechSynthesisUtterance(word);
+                    msg.lang = 'en-US'; 
+                    msg.rate = 0.8;
+                    window.speechSynthesis.speak(msg);
+                }, 50);
             } catch (e) {}
         }
 
@@ -725,44 +729,54 @@
             try {
                 if (!('speechSynthesis' in window)) return;
                 window.speechSynthesis.cancel();
-                let msg = new SpeechSynthesisUtterance(document.getElementById('listening-text').innerText);
-                msg.lang = 'en-US';
-                msg.rate = parseFloat(document.getElementById('listening-speed').value) || 0.45;
-                window.speechSynthesis.speak(msg);
+                setTimeout(() => {
+                    let msg = new SpeechSynthesisUtterance(document.getElementById('listening-text').innerText);
+                    msg.lang = 'en-US';
+                    msg.rate = parseFloat(document.getElementById('listening-speed').value) || 0.45;
+                    window.speechSynthesis.speak(msg);
+                }, 50);
             } catch (e) {}
         }
 
         function speakSingleText(elementId, speedSelectId) {
-            try { window.speechSynthesis.cancel(); } catch(e){}
-            let msg = new SpeechSynthesisUtterance(document.getElementById(elementId).innerText);
-            msg.lang = 'en-US';
-            msg.rate = speedSelectId ? (parseFloat(document.getElementById(speedSelectId).value) || 0.5) : 0.5;
-            window.speechSynthesis.speak(msg);
+            try {
+                window.speechSynthesis.cancel();
+                setTimeout(() => {
+                    let msg = new SpeechSynthesisUtterance(document.getElementById(elementId).innerText);
+                    msg.lang = 'en-US';
+                    msg.rate = speedSelectId ? (parseFloat(document.getElementById(speedSelectId).value) || 0.5) : 0.5;
+                    window.speechSynthesis.speak(msg);
+                }, 50);
+            } catch(e){}
         }
 
         function speakFeedbackVoice(text) {
             try {
                 if (!('speechSynthesis' in window)) return;
                 window.speechSynthesis.cancel();
-                let msg = new SpeechSynthesisUtterance(text);
-                msg.lang = 'zh-CN';
-                msg.rate = 0.9;
-                window.speechSynthesis.speak(msg);
+                setTimeout(() => {
+                    let msg = new SpeechSynthesisUtterance(text);
+                    msg.lang = 'zh-CN';
+                    msg.rate = 0.9;
+                    window.speechSynthesis.speak(msg);
+                }, 50);
             } catch (e) {}
         }
 
-        // 🔊 独立稳妥的 AI 语音朗读函数
+        // 🔊 独立稳妥的 AI 语音朗读函数（带防队列卡死保护）
         function speakAiReply(textToSpeak) {
             try {
                 if (!('speechSynthesis' in window)) {
                     alert("当前浏览器不支持语音朗读。");
                     return;
                 }
-                window.speechSynthesis.cancel();
-                let msg = new SpeechSynthesisUtterance(textToSpeak);
-                msg.lang = 'en-US';
-                msg.rate = 1.0;
-                window.speechSynthesis.speak(msg);
+                window.speechSynthesis.cancel(); // 强制释放通道
+                setTimeout(() => {
+                    let msg = new SpeechSynthesisUtterance(textToSpeak);
+                    msg.lang = 'en-US';
+                    msg.rate = 1.0;
+                    window.speechSynthesis.speak(msg);
+                }, 50);
             } catch (e) {
                 alert("播放语音失败");
             }
@@ -983,7 +997,6 @@
 
             // 健壮性提取：获取 AI 回复中的第一段纯英文字句
             let cleanEnglishSentence = aiReply.split('\n')[0].replace(/\[.*?\]/g, '').trim();
-            // 如果第一行没提取到英文，就取前50个字符作为备用朗读内容
             if (!cleanEnglishSentence || /[\u4e00-\u9fa5]/.test(cleanEnglishSentence)) {
                 cleanEnglishSentence = aiReply.replace(/[\u4e00-\u9fa5]/g, '').substring(0, 60).trim();
             }
