@@ -35,7 +35,7 @@
         #word-popup { position: fixed; top: 20%; left: 50%; transform: translateX(-50%); background: #1F2937; color: white; padding: 14px 18px; border-radius: 12px; font-size: 14px; z-index: 10000; display: none; width: 80%; max-width: 320px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.4); text-align: center; }
         #word-popup button { background: #4F46E5; color: white; border: none; padding: 8px 14px; border-radius: 6px; margin-top: 10px; cursor: pointer; font-size: 13px; font-weight: 600; }
 
-        .chat-container { background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 10px; padding: 12px; height: 260px; overflow-y: auto; margin-top: 10px; font-size: 14px; }
+        .chat-container { background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 10px; padding: 12px; height: 280px; overflow-y: auto; margin-top: 10px; font-size: 14px; }
         .chat-msg { margin-bottom: 10px; padding: 10px 14px; border-radius: 8px; max-width: 90%; word-break: break-all; line-height: 1.5; }
         .chat-ai { background: #E0E7FF; color: #312E81; }
         .chat-user { background: #DCFCE7; color: #166534; margin-left: auto; }
@@ -148,7 +148,7 @@
                 <h3>📅 今日15分钟轻量学习</h3>
                 <button class="btn" style="width:auto; padding:6px 12px; font-size:12px;" onclick="generateDailyContent(true)">🤖 强制刷新新文章</button>
             </div>
-            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 听力：盲听+对照发音标记影子跟读；口语：旅游全过程实战对话 + AI 实时语音口语对练纠错。</p>
+            <p style="font-size:12px; color:#6B7280; margin:4px 0 0;">👉 听力：盲听+对照发音标记影子跟读；口语：旅游对话参考 + AI 一对一实时语音对练与纠错。</p>
             <hr style="border:none; border-top:1px solid #E5E7EB; margin: 12px 0;">
             
             <div style="margin-bottom: 20px;">
@@ -195,7 +195,7 @@
                 </div>
             </div>
 
-            <!-- 🌟 模块一：旅游全过程实战对话 (加在 AI 口语训练之前) -->
+            <!-- 03 模块：旅游全过程实战对话 -->
             <div style="margin-bottom: 20px;">
                 <span class="tag" id="dialogue-tag" style="background:#DCFCE7; color:#15803D;">03 ✈️ 旅游全过程实战对话 [全流程轮替] ☕</span>
                 <p style="font-size:12px; color:#6B7280; margin:4px 0;">👉 覆盖从出发到回家的 10 大完整旅行场景，支持智能男女声交替朗读与点词查词。</p>
@@ -203,25 +203,25 @@
                 <button class="btn btn-outline" style="border-color:#16A34A; color:#16A34A;" onclick="playDialogueDualVoice()">🎭 智能男女声交替朗读 (1.0x 原速)</button>
             </div>
 
-            <!-- 🌟 模块二：AI 实时语音口语陪练与纠错中心 (支持直接开口说) -->
+            <!-- 04 模块：AI 一对一实时语音对练与纠错中心 -->
             <div style="margin-bottom: 20px;">
-                <span class="tag" style="background:#EEF2FF; color:#4F46E5;">04 🗣️ AI 实时语音口语陪练与纠错中心 [支持直接开口说] 🎙️</span>
-                <p style="font-size:12px; color:#6B7280; margin:6px 0;">👉 设定场景后，点击下方 **【🎤 开启语音对话】** 按钮，直接用英语开口说话！AI 会将您的语音转成文字并回复，同时自动语音朗读，并实时纠错。</p>
+                <span class="tag" style="background:#EEF2FF; color:#4F46E5;">04 🗣️ AI 一对一实时语音对练与纠错中心 [你说一句，AI答一句并纠错] 🎙️</span>
+                <p style="font-size:12px; color:#6B7280; margin:6px 0;">👉 <b>支持设定角色（如：甲方/乙方，Client/Vendor，旅客/海关等）</b>。点击下方语音按钮说话，AI 会逐句与你交替对话，并用纯英文语音朗读回复，同时实时输出纠错和地道表达！</p>
                 
                 <div style="margin-top:8px; display:flex; gap:6px;">
-                    <input type="text" id="scenario-input" class="chat-input" placeholder="输入练习场景 (例如: Airport Customs, Ordering Coffee)..." style="margin-top:0;">
+                    <input type="text" id="scenario-input" class="chat-input" placeholder="设定角色/场景 (例如: I am Client, you are Vendor)..." style="margin-top:0;">
                     <button class="btn" style="width:auto; margin-top:0; padding:8px 12px; font-size:13px; background:#4F46E5;" onclick="setTrainingScenario()">🎯 设定场景</button>
                 </div>
 
                 <div class="chat-container" id="chat-box">
-                    <div class="chat-msg chat-ai" id="chat-welcome-msg">👋 Hi! 我是你的专属 AI 口语教练。您可以点击下方的 **【🎤 开启语音对话】** 按钮，直接开口说英文。AI 会实时听取您的语音、纠正语法、给出地道表达并语音朗读回复！</div>
+                    <div class="chat-msg chat-ai" id="chat-welcome-msg">👋 Hi! 我是你的 AI 口语教练。点击下方 **【🎤 点击开始说话】** 按钮，说一句英文，我会立刻根据你的角色与问题回答一句，并自动语音朗读！</div>
                 </div>
 
                 <!-- 🎤 语音对话操作按钮区 -->
                 <div style="margin-top: 10px; display: flex; gap: 8px;">
-                    <button id="voice-chat-btn" class="btn" style="background:#10B981; margin-top:0; flex:1;" onclick="toggleVoiceChat()">🎤 开启语音对话 (点击开始说话)</button>
+                    <button id="voice-chat-btn" class="btn" style="background:#10B981; margin-top:0; flex:1;" onclick="toggleVoiceChat()">🎤 点击开始说话 (按一下说话)</button>
                 </div>
-                <div id="voice-status-text" style="font-size:12px; color:#4F46E5; text-align:center; margin-top:6px; font-weight:600;">点击上方按钮后即可开始用英语开口说话</div>
+                <div id="voice-status-text" style="font-size:12px; color:#4F46E5; text-align:center; margin-top:6px; font-weight:600;">点击上方按钮即可开始用英语开口对练</div>
 
                 <div class="chat-input-row" style="margin-top:8px;">
                     <input type="text" id="user-chat-input" class="chat-input" placeholder="或在此处键入英文发送..." onkeypress="if(event.key==='Enter') sendChat()">
@@ -308,7 +308,7 @@
         let isRecording = false;
         let shadowRecognition = null;
         let isDialoguePlaying = false;
-        let currentTrainingScenario = "General Daily Conversation & Travel";
+        let currentTrainingScenario = "General Conversation: I am the Client (甲方), AI is the Vendor (乙方)";
 
         let isVoiceChatActive = false;
         let voiceChatRecognition = null;
@@ -374,7 +374,6 @@
                 const lastGenDate = localStorage.getItem('last_gen_date');
 
                 if (apiKey && lastGenDate !== todayStr) {
-                    console.log("检测到新的一天，自动从 DeepSeek 推送全新学习文稿与旅游剧本...");
                     generateDailyContent(false);
                 } else {
                     let savedListening = localStorage.getItem('saved_listening') || defaultContent.listening;
@@ -396,9 +395,7 @@
                     if (phoneticsEl) phoneticsEl.innerHTML = savedPhonetics;
                 }
 
-            } catch (e) {
-                console.error("初始化渲染异常:", e);
-            }
+            } catch (e) {}
         }
 
         async function pushToCloud() {
@@ -420,7 +417,7 @@
                         binId = data.metadata.id;
                         document.getElementById('bin-id-input').value = binId;
                         saveStorageData();
-                        alert("🎉 成功创建云端存储并推送数据！\n请将该 Bin ID 复制到另一台设备上即可实现同步。");
+                        alert("🎉 成功创建云端存储并推送数据！");
                     } else { throw new Error("创建失败"); }
                 } else {
                     const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
@@ -428,9 +425,8 @@
                         headers: { "Content-Type": "application/json", "X-Master-Key": binKey },
                         body: JSON.stringify(payload)
                     });
-                    if (res.ok) {
-                        alert("☁️ 数据成功推送至云端！");
-                    } else { throw new Error("更新失败"); }
+                    if (res.ok) alert("☁️ 数据成功推送至云端！");
+                    else throw new Error("更新失败");
                 }
             } catch (e) {
                 alert("推送云端失败，请检查 Master Key 是否正确。");
@@ -595,12 +591,8 @@
         }
         function rateFlashcard(result) {
             currentFlashcardIndex++;
-            if (currentFlashcardIndex < vocabBook.length) {
-                loadFlashcard();
-            } else {
-                alert("🎉 本轮生词闪卡突击已全部完成！记忆效果巩固加成！");
-                closeFlashcardModal();
-            }
+            if (currentFlashcardIndex < vocabBook.length) loadFlashcard();
+            else { alert("🎉 本轮生词闪卡突击已全部完成！"); closeFlashcardModal(); }
         }
 
         async function generateQuiz() {
@@ -611,10 +603,7 @@
             
             if (!apiKey) {
                 qBox.innerText = "【离线测验示例】What does 'artificial intelligence' mean?";
-                oBox.innerHTML = `
-                    <div style="margin-top:6px;"><button class="btn btn-outline" style="text-align:left; padding:8px;" onclick="alert('回答正确！')">A. 人工智能</button></div>
-                    <div style="margin-top:6px;"><button class="btn btn-outline" style="text-align:left; padding:8px;" onclick="alert('回答错误')">B. 自然风光</button></div>
-                `;
+                oBox.innerHTML = `<div style="margin-top:6px;"><button class="btn btn-outline" style="text-align:left; padding:8px;" onclick="alert('回答正确！')">A. 人工智能</button></div>`;
                 return;
             }
 
@@ -624,7 +613,7 @@
                     headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
                     body: JSON.stringify({
                         model: "deepseek-flash",
-                        messages: [{ role: "user", content: `Based on CEFR ${userLevel}, create 1 English vocabulary contextual multiple choice quiz (with 1 correct option and 3 wrong options). Format strictly as JSON:\n{"question": "...", "options": ["A. ...", "B. ...", "C. ...", "D. ..."], "answer": "A"}` }]
+                        messages: [{ role: "user", content: `Based on CEFR ${userLevel}, create 1 English vocabulary contextual multiple choice quiz. Format strictly as JSON:\n{"question": "...", "options": ["A. ...", "B. ...", "C. ...", "D. ..."], "answer": "A"}` }]
                     })
                 });
                 const resData = await response.json();
@@ -634,20 +623,18 @@
                 quizData.options.forEach((opt, idx) => {
                     let letter = String.fromCharCode(65 + idx);
                     let isCorrect = opt.startsWith(quizData.answer) || letter === quizData.answer;
-                    oBox.innerHTML += `<div style="margin-top:6px;"><button class="btn btn-outline" style="text-align:left; padding:8px;" onclick="alert('${isCorrect ? "🎉 回答正确！Amazing!" : "❌ 回答错误，再接再厉！"}')">${opt}</button></div>`;
+                    oBox.innerHTML += `<div style="margin-top:6px;"><button class="btn btn-outline" style="text-align:left; padding:8px;" onclick="alert('${isCorrect ? "🎉 回答正确！Amazing!" : "❌ 回答错误！"}')">${opt}</button></div>`;
                 });
-            } catch(e) {
-                qBox.innerText = "生成测验遇到网络波动，请重试。";
-            }
+            } catch(e) { qBox.innerText = "生成测验遇到网络波动，请重试。"; }
         }
 
         async function generateWeeklyDigest() {
             const digestBox = document.getElementById('digest-box');
             digestBox.style.display = 'block';
-            digestBox.innerText = "📊 AI 正在统计本周生词资产与打卡记录，生成成长报告...";
+            digestBox.innerText = "📊 AI 正在统计周报...";
 
             if (!apiKey) {
-                digestBox.innerHTML = `<b>🌟 本周英语成长报告 (离线版)</b><br>• 连续打卡天数：${streak} 天<br>• 生词本积累词汇：${vocabBook.length} 个<br>• 建议：坚持每天 15 分钟轻量精听与跟读！`;
+                digestBox.innerHTML = `<b>🌟 本周英语成长报告 (离线版)</b><br>• 连续打卡：${streak} 天<br>• 生词积累：${vocabBook.length} 个`;
                 return;
             }
 
@@ -657,14 +644,12 @@
                     headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
                     body: JSON.stringify({
                         model: "deepseek-flash",
-                        messages: [{ role: "user", content: `Generate a short, encouraging weekly English learning progress report in Chinese based on streak: ${streak} days, and vocabulary count: ${vocabBook.length}. Keep it professional, motivating, and concise.` }]
+                        messages: [{ role: "user", content: `Generate a short weekly report in Chinese based on streak: ${streak} days, vocab: ${vocabBook.length}.` }]
                     })
                 });
                 const resData = await response.json();
                 digestBox.innerHTML = `<b>🌟 AI 英语能力成长周报</b><br>` + resData.choices[0].message.content.trim().replace(/\n/g, '<br>');
-            } catch(e) {
-                digestBox.innerText = `📊 本周总结：连续打卡 ${streak} 天，生词积累 ${vocabBook.length} 个。继续加油！`;
-            }
+            } catch(e) { digestBox.innerText = `📊 总结：连续打卡 ${streak} 天。`; }
         }
 
         async function checkApiBalance() {
@@ -674,7 +659,7 @@
                     method: "GET",
                     headers: { "Authorization": `Bearer ${apiKey}` }
                 });
-                if (!response.ok) throw new Error("API 校验失败");
+                if (!response.ok) throw new Error();
                 const data = await response.json();
                 if (data.is_available && data.balance_infos && data.balance_infos.length > 0) {
                     document.getElementById('balance-status').innerText = "正常运行";
@@ -683,121 +668,75 @@
                     document.getElementById('balance-status').innerText = "余额不足";
                     document.getElementById('balance-amount').innerText = "￥0.00";
                 }
-            } catch (err) {
-                document.getElementById('balance-status').innerText = "离线/网络受限";
-            }
+            } catch (err) { document.getElementById('balance-status').innerText = "离线/受限"; }
         }
 
         async function fetchSinglePart(promptText) {
             const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
                 method: "POST",
                 headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
-                body: JSON.stringify({
-                    model: "deepseek-flash",
-                    messages: [{ role: "user", content: promptText }]
-                })
+                body: JSON.stringify({ model: "deepseek-flash", messages: [{ role: "user", content: promptText }] })
             });
             const resData = await response.json();
             if (resData.choices && resData.choices.length > 0) return resData.choices[0].message.content.trim();
-            throw new Error("生成失败");
+            throw new Error();
         }
 
         async function generateDailyContent(isManual = true) {
-            if (!apiKey) { 
-                if (isManual) alert("当前为离线模式。请在顶部配置 DeepSeek API Key 后，即可免费享受每日无限生成全新文章与旅游剧本！"); 
-                return; 
-            }
-            
+            if (!apiKey) { if (isManual) alert("当前为离线模式。请在顶部配置 API Key！"); return; }
             const selectedTravelStage = travelLifecycleScenarios[Math.floor(Math.random() * travelLifecycleScenarios.length)];
-            const randomSeed = "TravelSeed_" + Math.random().toString(36).substring(7) + "_" + Date.now();
+            const randomSeed = "Seed_" + Math.random().toString(36).substring(7);
 
-            document.getElementById('listening-text').innerText = "🤖 正在为你写作全新的精听文章...";
-            document.getElementById('phonetics-analysis').innerHTML = "🤖 正在对新文章进行连读与弱读剖析...";
-            document.getElementById('reading-text').innerText = "🤖 正在生成全新科普文...";
+            document.getElementById('listening-text').innerText = "🤖 正在生成精听文章...";
+            document.getElementById('reading-text').innerText = "🤖 正在生成科普文...";
             document.getElementById('dialogue-tag').innerText = `03 ✈️ 旅游全过程实战对话 [${selectedTravelStage.split(':')[0]}] ☕`;
-            document.getElementById('dialogue-text').innerText = `🤖 正在生成全新沉浸式旅游剧本 [${selectedTravelStage}]...`;
-            document.getElementById('x-text').innerText = "🤖 正在抓取最新 X 爆款推文...";
-            document.getElementById('x-analysis').innerText = "正在拆解知识点...";
+            document.getElementById('dialogue-text').innerText = `🤖 正在生成旅游剧本...`;
 
             try {
-                const p1 = fetchSinglePart(`For CEFR ${userLevel}, generate a BRAND NEW VOA-style news summary text (approx. 90 words). Seed: ${randomSeed}. Must be fresh and unique. Return ONLY pure English text.`);
-                const p4 = fetchSinglePart(`Analyze linking, weak forms, and assimilation for the generated passage. Format as HTML:\n<b>💡 连读/弱读/吞音发音规律拆解：</b><br>• <b>连读标注</b>：...<br>• <b>弱读/介词</b>：...<br>• <b>吞音技巧</b>：...`);
-                const p2 = fetchSinglePart(`For CEFR ${userLevel}, generate a BRAND NEW short science reading passage (approx. 100 words). Seed: ${randomSeed}. Return ONLY pure English text.`);
-                
-                const p3 = fetchSinglePart(`Act as an expert scriptwriter for authentic real-world travel English.
-                Create a realistic, highly immersive 8-10 turn dialogue (CEFR Level: ${userLevel}) specifically for the travel stage: "${selectedTravelStage}".
-                Requirements:
-                1. Roles: Character A (Male, name Alex - Traveler) and Character B (Female, name Sarah - Staff/Local/Official).
-                2. Scenario: Focus on real travel situations.
-                3. Dialogue length MUST be exactly 8 to 10 full turns (16 to 20 lines total).
-                4. Format strictly as:
-                Scene: ${selectedTravelStage}
-                A (Alex): [English]
-                B (Sarah): [English]`);
-
-                const p5 = fetchSinglePart(`Generate a trending viral tweet (about tech, travel, productivity, or lifestyle, 20-40 words) in English, followed by a line break and a short Chinese breakdown ("💡 爆款解析：..."). Seed: ${randomSeed}`);
+                const p1 = fetchSinglePart(`For CEFR ${userLevel}, generate a VOA-style news summary (approx. 90 words). Seed: ${randomSeed}. Return ONLY pure English text.`);
+                const p4 = fetchSinglePart(`Analyze linking and weak forms for the passage. Format as HTML:\n<b>💡 连读/弱读发音拆解：</b><br>• ...`);
+                const p2 = fetchSinglePart(`For CEFR ${userLevel}, generate a short science reading passage. Seed: ${randomSeed}. Return ONLY pure English text.`);
+                const p3 = fetchSinglePart(`Create an immersive 8-10 turn travel dialogue for: "${selectedTravelStage}". Format as:\nScene: ${selectedTravelStage}\nA (Alex): ...\nB (Sarah): ...`);
+                const p5 = fetchSinglePart(`Generate a trending viral tweet in English, followed by a Chinese breakdown ("💡 爆款解析：..."). Seed: ${randomSeed}`);
 
                 const [listening, phonetics, reading, dialogue, xRaw] = await Promise.all([p1, p4, p2, p3, p5]);
 
                 renderInteractiveText('listening-text', listening);
                 localStorage.setItem('saved_listening', listening);
-
                 document.getElementById('phonetics-analysis').innerHTML = phonetics;
                 localStorage.setItem('saved_phonetics', phonetics);
-
                 renderInteractiveText('reading-text', reading);
                 localStorage.setItem('saved_reading', reading);
-
                 renderInteractiveText('dialogue-text', dialogue);
                 localStorage.setItem('saved_dialogue', dialogue);
                 
-                const xParts = xRaw.split('\n');
-                let xTweetText = xParts[0];
-                let xAnalysisText = xParts.slice(1).join('\n') || "💡 爆款解析：地道表达与语法拆解。";
-
-                renderInteractiveText('x-text', xTweetText);
-                localStorage.setItem('saved_xText', xTweetText);
-
-                document.getElementById('x-analysis').innerText = xAnalysisText;
-                localStorage.setItem('saved_xAnalysis', xAnalysisText);
-
+                let xParts = xRaw.split('\n');
+                renderInteractiveText('x-text', xParts[0]);
+                localStorage.setItem('saved_xText', xParts[0]);
+                document.getElementById('x-analysis').innerText = xParts.slice(1).join('\n') || "💡 爆款解析";
+                localStorage.setItem('saved_xAnalysis', document.getElementById('x-analysis').innerText);
                 localStorage.setItem('last_gen_date', new Date().toLocaleDateString());
 
-                checkApiBalance();
-                if (isManual) alert("🎉 已成功生成全英文文章与全新的【旅游全过程实战剧本】！");
-            } catch (e) {
-                if (isManual) alert("生成过程触发网络波动, 已为您恢复基础文稿。");
-            }
+                if (isManual) alert("🎉 每日内容与旅游剧本更新完毕！");
+            } catch (e) { if (isManual) alert("网络波动，已恢复基础文稿。"); }
         }
 
         function playListeningVoice() {
             try {
-                if (!('speechSynthesis' in window)) {
-                    alert("当前浏览器不支持语音朗读功能。");
-                    return;
-                }
+                if (!('speechSynthesis' in window)) return;
                 window.speechSynthesis.cancel();
-                let text = document.getElementById('listening-text').innerText;
-                let msg = new SpeechSynthesisUtterance(text);
+                let msg = new SpeechSynthesisUtterance(document.getElementById('listening-text').innerText);
                 msg.lang = 'en-US';
-                let speedVal = parseFloat(document.getElementById('listening-speed').value) || 0.45;
-                msg.rate = speedVal;
+                msg.rate = parseFloat(document.getElementById('listening-speed').value) || 0.45;
                 window.speechSynthesis.speak(msg);
-            } catch (e) {
-                alert("播放失败，请重试。");
-            }
+            } catch (e) {}
         }
 
         function speakSingleText(elementId, speedSelectId) {
             try { window.speechSynthesis.cancel(); } catch(e){}
-            let text = document.getElementById(elementId).innerText;
-            let msg = new SpeechSynthesisUtterance(text);
+            let msg = new SpeechSynthesisUtterance(document.getElementById(elementId).innerText);
             msg.lang = 'en-US';
-            let speedVal = 0.5;
-            if (speedSelectId && document.getElementById(speedSelectId)) {
-                speedVal = parseFloat(document.getElementById(speedSelectId).value) || 0.5;
-            }
-            msg.rate = speedVal;
+            msg.rate = speedSelectId ? (parseFloat(document.getElementById(speedSelectId).value) || 0.5) : 0.5;
             window.speechSynthesis.speak(msg);
         }
 
@@ -814,10 +753,9 @@
 
         function toggleShadowingRecord() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert("当前浏览器暂不支持实时语音识别，推荐使用 Chrome 或 Safari 浏览器。");
+                alert("当前浏览器暂不支持语音识别。");
                 return;
             }
-
             const btn = document.getElementById('record-btn');
             const statusEl = document.getElementById('record-status');
             const targetText = document.getElementById('listening-text').innerText;
@@ -828,42 +766,24 @@
                     shadowRecognition = new SpeechRecognition();
                     shadowRecognition.lang = 'en-US';
                     shadowRecognition.interimResults = true;
-                    shadowRecognition.maxAlternatives = 1;
-
-                    statusEl.innerText = "🔴 正在听您朗读... 请靠近麦克风大声朗读！";
+                    statusEl.innerText = "🔴 正在听您朗读...";
                     btn.style.background = "#EF4444";
                     btn.innerText = "⏹️ 停止并获取纠音";
                     isRecording = true;
-
                     let userSaidText = "";
 
                     shadowRecognition.onresult = function(event) {
                         for (let i = event.resultIndex; i < event.results.length; ++i) {
-                            if (event.results[i].isFinal) {
-                                userSaidText += event.results[i][0].transcript;
-                            }
+                            if (event.results[i].isFinal) userSaidText += event.results[i][0].transcript;
                         }
                     };
-
-                    shadowRecognition.onerror = function(event) {
-                        console.log("识别提示:", event.error);
-                    };
-
                     shadowRecognition.onend = async function() {
                         isRecording = false;
                         btn.style.background = "#4F46E5";
                         btn.innerText = "🎙️ 影子跟读打分";
-                        
-                        if (!userSaidText) {
-                            statusEl.innerText = "盲听后，点击跟读并同步模仿发音。再次点击停止，AI 实时识别并进行语音纠音。";
-                            alert("未检测到清晰的英文语音输入，请确保麦克风权限已开启并大声朗读。");
-                            return;
-                        }
+                        if (!userSaidText) { statusEl.innerText = "未检测到声音。"; return; }
 
-                        statusEl.innerText = "🎯 评估完成！AI 正在生成诊断报告...";
-
-                        let promptContent = `The user shadowed the English passage. Target text: "${targetText}". The user actually pronounced/said: "${userSaidText}". Act as an expert English coach. Give a score out of 100 based on accuracy, pinpoint which words were mispronounced or missed, and give short Chinese advice.`;
-
+                        statusEl.innerText = "🎯 评估中...";
                         if (apiKey) {
                             try {
                                 const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
@@ -871,46 +791,27 @@
                                     headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
                                     body: JSON.stringify({
                                         model: "deepseek-flash",
-                                        messages: [{ role: "user", content: promptContent }]
+                                        messages: [{ role: "user", content: `Target: "${targetText}". User said: "${userSaidText}". Give score and brief advice.` }]
                                     })
                                 });
                                 const resData = await response.json();
-                                if (resData.choices && resData.choices.length > 0) {
-                                    let resultText = resData.choices[0].message.content.trim();
-                                    alert("【AI 英语口语诊断与纠错报告】\n" + resultText);
-                                    speakFeedbackVoice(resultText);
-                                }
-                            } catch(e) {
-                                alert("网络请求异常，请重试。");
-                            }
-                        } else {
-                            alert("【离线纠音提示】\n您未配置 API Key。识别到的内容: " + userSaidText);
+                                let resText = resData.choices[0].message.content.trim();
+                                alert("【纠音报告】\n" + resText);
+                                speakFeedbackVoice(resText);
+                            } catch(e) {}
                         }
-                        statusEl.innerText = "盲听后，点击跟读并同步模仿发音。再次点击停止，AI 实时识别并进行语音纠音。";
+                        statusEl.innerText = "盲听后，点击跟读并同步模仿发音。";
                     };
-
                     shadowRecognition.start();
-                } catch (e) {
-                    isRecording = false;
-                    btn.style.background = "#4F46E5";
-                    btn.innerText = "🎙️ 影子跟读打分";
-                    statusEl.innerText = "麦克风启动失败，请检查浏览器麦克风权限。";
-                }
+                } catch (e) { isRecording = false; }
             } else {
-                if (shadowRecognition) {
-                    try { shadowRecognition.stop(); } catch(err){}
-                }
+                if (shadowRecognition) shadowRecognition.stop();
             }
         }
 
-        // 🎭 旅游全过程对话的智能男女声交替朗读
         function playDialogueDualVoice() {
             try { window.speechSynthesis.cancel(); } catch(e){}
-
-            if (isDialoguePlaying) {
-                isDialoguePlaying = false;
-                return;
-            }
+            if (isDialoguePlaying) { isDialoguePlaying = false; return; }
 
             const dialogueText = document.getElementById('dialogue-text').innerText;
             const lines = dialogueText.split('\n');
@@ -921,87 +822,45 @@
                 if (!cleanLine || cleanLine.startsWith('Scene:')) return;
                 let speaker = 'A'; let text = cleanLine;
                 if (cleanLine.startsWith('A:') || cleanLine.startsWith('A (Alex):')) { 
-                    speaker = 'A'; 
-                    text = cleanLine.replace(/^(A:|A \(Alex\):)/, '').trim(); 
+                    speaker = 'A'; text = cleanLine.replace(/^(A:|A \(Alex\):)/, '').trim(); 
                 } else if (cleanLine.startsWith('B:') || cleanLine.startsWith('B (Sarah):')) { 
-                    speaker = 'B'; 
-                    text = cleanLine.replace(/^(B:|B \(Sarah\):)/, '').trim(); 
+                    speaker = 'B'; text = cleanLine.replace(/^(B:|B \(Sarah\):)/, '').trim(); 
                 }
                 if (text) sentencesToSpeak.push({ speaker: speaker, text: text });
             });
             
             if (sentencesToSpeak.length === 0) return;
-
-            let voices = window.speechSynthesis.getVoices();
-            let englishVoices = voices.filter(v => v.lang.startsWith('en'));
-
-            let maleVoice = englishVoices.find(v => v.name.includes('Alex') || v.name.includes('David') || v.name.includes('Male')) || englishVoices[0];
-            let femaleVoice = englishVoices.find(v => v.name.includes('Samantha') || v.name.includes('Zira') || v.name.includes('Female')) || englishVoices[1] || englishVoices[0];
-
             isDialoguePlaying = true;
             let index = 0;
 
             function speakNext() {
-                if (!isDialoguePlaying || index >= sentencesToSpeak.length) {
-                    isDialoguePlaying = false;
-                    return;
-                }
-
-                let item = sentencesToSpeak[index];
-                index++;
-
+                if (!isDialoguePlaying || index >= sentencesToSpeak.length) { isDialoguePlaying = false; return; }
+                let item = sentencesToSpeak[index++];
                 let msg = new SpeechSynthesisUtterance(item.text);
-                msg.lang = 'en-US'; 
-                msg.rate = 1.0; 
-
-                if (item.speaker === 'A') {
-                    if (maleVoice) msg.voice = maleVoice;
-                    msg.pitch = 0.9; 
-                } else {
-                    if (femaleVoice) msg.voice = femaleVoice;
-                    msg.pitch = 1.3; 
-                }
-
-                let hasEnded = false;
-                msg.onend = function() {
-                    if (hasEnded) return;
-                    hasEnded = true;
-                    if (isDialoguePlaying) setTimeout(speakNext, 250);
-                };
-                msg.onerror = function() {
-                    if (hasEnded) return;
-                    hasEnded = true;
-                    if (isDialoguePlaying) setTimeout(speakNext, 250);
-                };
-
+                msg.lang = 'en-US';
+                msg.pitch = (item.speaker === 'A') ? 0.9 : 1.3;
+                msg.onend = () => { if (isDialoguePlaying) setTimeout(speakNext, 250); };
+                msg.onerror = () => { if (isDialoguePlaying) setTimeout(speakNext, 250); };
                 window.speechSynthesis.cancel();
                 window.speechSynthesis.speak(msg);
             }
-
-            if (voices.length === 0) {
-                window.speechSynthesis.onvoiceschanged = function() {
-                    voices = window.speechSynthesis.getVoices();
-                    speakNext();
-                };
-            } else {
-                speakNext();
-            }
+            speakNext();
         }
 
         function setTrainingScenario() {
             const scInput = document.getElementById('scenario-input').value.trim();
-            if (!scInput) { alert("请输入您想要练习的口语场景！"); return; }
+            if (!scInput) { alert("请输入场景！"); return; }
             currentTrainingScenario = scInput;
             const chatBox = document.getElementById('chat-box');
-            chatBox.innerHTML += `<div class="chat-msg chat-ai" style="background:#FEF3C7; color:#92400E;">🎯 <b>口语训练场景已切换为</b>：【${currentTrainingScenario}】。点击下方语音按钮直接开口对话吧！</div>`;
+            chatBox.innerHTML += `<div class="chat-msg chat-ai" style="background:#FEF3C7; color:#92400E;">🎯 <b>场景已切换为</b>：【${currentTrainingScenario}】。点击下方语音按钮开始！</div>`;
             chatBox.scrollTop = chatBox.scrollHeight;
             document.getElementById('scenario-input').value = "";
         }
 
-        // 🎤 真正的语音对话交互逻辑：点击开始录音说话，识别后自动发给 AI 并在回复后自动朗读
+        // 🎤 语音对话模式
         function toggleVoiceChat() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert("当前浏览器暂不支持语音识别功能，推荐使用 Chrome 或 Safari 浏览器。");
+                alert("当前浏览器不支持语音识别。");
                 return;
             }
 
@@ -1014,39 +873,32 @@
                     voiceChatRecognition = new SpeechRecognition();
                     voiceChatRecognition.lang = 'en-US';
                     voiceChatRecognition.interimResults = true;
-                    voiceChatRecognition.maxAlternatives = 1;
 
                     voiceChatRecognition.onstart = function() {
                         isVoiceChatActive = true;
                         voiceBtn.style.background = "#EF4444";
                         voiceBtn.innerText = "🔴 正在听您说话... (请用英语开口)";
-                        statusText.innerText = "🔴 麦克风已开启，请直接大声说英语...";
+                        statusText.innerText = "🔴 麦克风已开启，请直接说英语...";
                     };
 
                     let spokenText = "";
                     voiceChatRecognition.onresult = function(event) {
                         for (let i = event.resultIndex; i < event.results.length; ++i) {
-                            if (event.results[i].isFinal) {
-                                spokenText += event.results[i][0].transcript;
-                            }
+                            if (event.results[i].isFinal) spokenText += event.results[i][0].transcript;
                         }
-                    };
-
-                    voiceChatRecognition.onerror = function(event) {
-                        console.log("语音识别错误:", event.error);
                     };
 
                     voiceChatRecognition.onend = function() {
                         isVoiceChatActive = false;
                         voiceBtn.style.background = "#10B981";
-                        voiceBtn.innerText = "🎤 开启语音对话 (点击开始说话)";
-                        statusText.innerText = "点击上方按钮后即可开始用英语开口说话";
+                        voiceBtn.innerText = "🎤 点击开始说话 (按一下说话)";
+                        statusText.innerText = "点击上方按钮即可开始用英语开口对练";
 
                         if (spokenText) {
                             document.getElementById('user-chat-input').value = spokenText;
-                            sendChat();
+                            sendChat(); // 自动发送给 AI
                         } else {
-                            statusText.innerText = "⚠️ 未检测到语音输入，请重试。";
+                            statusText.innerText = "⚠️ 未检测到语音，请重试。";
                         }
                     };
 
@@ -1054,13 +906,10 @@
                 } catch (e) {
                     isVoiceChatActive = false;
                     voiceBtn.style.background = "#10B981";
-                    voiceBtn.innerText = "🎤 开启语音对话 (点击开始说话)";
-                    statusText.innerText = "麦克风启动失败，请检查浏览器权限。";
+                    voiceBtn.innerText = "🎤 点击开始说话";
                 }
             } else {
-                if (voiceChatRecognition) {
-                    try { voiceChatRecognition.stop(); } catch(err){}
-                }
+                if (voiceChatRecognition) voiceChatRecognition.stop();
             }
         }
 
@@ -1075,12 +924,12 @@
             chatBox.scrollTop = chatBox.scrollHeight;
 
             const loadingId = 'loading-' + Date.now();
-            chatBox.innerHTML += `<div class="chat-msg chat-ai" id="${loadingId}">AI 口语教练正在语音分析与纠错...</div>`;
+            chatBox.innerHTML += `<div class="chat-msg chat-ai" id="${loadingId}">AI 正在思考并准备语音回复...</div>`;
             chatBox.scrollTop = chatBox.scrollHeight;
 
             let aiReply = "";
             try {
-                if (!apiKey) throw new Error("未配置 Key");
+                if (!apiKey) throw new Error();
                 const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
                     method: "POST",
                     headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
@@ -1089,16 +938,17 @@
                         messages: [
                             { 
                                 role: "system", 
-                                content: `You are an expert, encouraging AI English Speaking Coach for a learner at CEFR level ${userLevel}. 
-                                Current practice scenario: "${currentTrainingScenario}".
+                                content: `You are an expert, encouraging AI English Speaking Coach and dialogue partner. 
+                                Current user scenario / role setting: "${currentTrainingScenario}".
+                                User CEFR level: ${userLevel}.
                                 Requirements:
-                                1. Respond in natural, conversational English as the dialogue partner in the scenario.
+                                1. Respond in natural, conversational English as the dialogue partner (1-2 sentences).
                                 2. After your English response, provide a detailed Chinese coaching breakdown in this exact format:
                                 
                                 [AI Coach Feedback / 实时纠错与指导]:
-                                - 📝 语法与表达修正: (指出用户的语法错误、语病或不自然之处，给出修正版)
-                                - 🌟 地道高级替换: (提供更ネイティブ、地道的表达或短语)
-                                - 💡 发音与连读提示: (提示可能存在吞音、重音或连读的地方)` 
+                                - 📝 语法与表达修正: (...)
+                                - 🌟 地道高级替换: (...)
+                                - 💡 发音与连读提示: (...)` 
                             },
                             { role: "user", content: userText }
                         ]
@@ -1106,9 +956,9 @@
                 });
                 const resData = await response.json();
                 if (resData.choices && resData.choices.length > 0) aiReply = resData.choices[0].message.content.trim();
-                else throw new Error("响应异常");
+                else throw new Error();
             } catch (err) {
-                aiReply = `I understand! Let's keep practicing.\n\n[AI Coach Feedback / 实时纠错与指导]:\n- 📝 语法与表达修正: 表达很流畅，继续保持！\n- 🌟 地道高级替换: Sounds good!\n- 💡 发音与连读提示: 注意句尾词汇的连读。`;
+                aiReply = `I understand! Let's keep practicing.\n\n[AI Coach Feedback / 实时纠错与指导]:\n- 📝 语法与表达修正: 表达很流畅，继续保持！\n- 🌟 地道高级替换: Sounds good!\n- 💡 发音与连读提示: 注意连读。`;
             }
 
             const loadingEl = document.getElementById(loadingId);
@@ -1117,33 +967,24 @@
             chatBox.innerHTML += `<div class="chat-msg chat-ai">${aiReply.replace(/\n/g, '<br>')}</div>`;
             chatBox.scrollTop = chatBox.scrollHeight;
             
+            // 🔊 核心修复：精准提取 AI 回复的纯英文第一句进行语音朗读，绝不把后面的中文纠错当成英文去读
             try {
                 window.speechSynthesis.cancel();
-                let firstEnglishSentence = aiReply.split('\n')[0];
-                let msg = new SpeechSynthesisUtterance(firstEnglishSentence);
-                msg.lang = 'en-US'; 
-                msg.rate = 1.0;
-                window.speechSynthesis.speak(msg);
+                let cleanEnglishLines = aiReply.split('\n')[0].replace(/\[.*?\]/g, '').trim();
+                if (cleanEnglishLines) {
+                    let msg = new SpeechSynthesisUtterance(cleanEnglishLines);
+                    msg.lang = 'en-US'; 
+                    msg.rate = 1.0;
+                    window.speechSynthesis.speak(msg);
+                }
             } catch (e) {}
 
             if (apiKey) checkApiBalance();
         }
 
-        function saveApiKey() { 
-            apiKey = document.getElementById('api-key-input').value.trim(); 
-            saveStorageData();
-            checkApiBalance(); 
-        }
-
-        function saveBinId() {
-            binId = document.getElementById('bin-id-input').value.trim();
-            saveStorageData();
-        }
-
-        function saveBinKey() {
-            binKey = document.getElementById('bin-key-input').value.trim();
-            saveStorageData();
-        }
+        function saveApiKey() { apiKey = document.getElementById('api-key-input').value.trim(); saveStorageData(); checkApiBalance(); }
+        function saveBinId() { binId = document.getElementById('bin-id-input').value.trim(); saveStorageData(); }
+        function saveBinKey() { binKey = document.getElementById('bin-key-input').value.trim(); saveStorageData(); }
 
         function startAssessment() {
             userLevel = prompt("选择英语水平等级 (输入 1, 2 或 3):\n1. L1 (入门级)\n2. L2 (基础级)\n3. L3 (进阶级)", "2");
