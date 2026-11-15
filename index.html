@@ -20,7 +20,7 @@ input,select,textarea{font:inherit}input,textarea{min-width:0}.api-input,.chat-i
 .sentence{font-size:16px;line-height:1.85;background:#F9FAFB;padding:13px;border-left:4px solid var(--primary);border-radius:0 8px 8px 0;margin:10px 0;overflow-wrap:anywhere}
 .clickable-text span{cursor:pointer;border-radius:3px}.clickable-text span:active{background:#C7D2FE}
 .phonetics-box{background:#FFFBEB;border-left:4px solid #F59E0B;padding:12px;border-radius:7px;font-size:13px;line-height:1.7;margin-top:8px}
-.dialogue-box{background:#F0FDF4;border-left:4px solid var(--green);padding:13px;border-radius:7px;font-size:15px;line-height:1.8;margin:10px 0;max-height:300px;overflow:auto;white-space:pre-wrap}
+.dialogue-box{background:#F0FDF4;border-left:4px solid var(--green);padding:13px;border-radius:7px;font-size:15px;line-height:1.8;margin:10px 0;max-height:360px;overflow:auto;white-space:pre-wrap}.dialogue-tools{display:flex;gap:8px;flex-wrap:wrap}.dialogue-tools .btn{flex:1}.auto-speak-setting{display:flex;align-items:center;gap:7px;font-size:12px;color:#4B5563;margin:8px 0}.auto-speak-setting input{width:18px;height:18px}
 .x-card-box{background:#F8FAFC;border:1px solid #E2E8F0;border-left:4px solid #1DA1F2;padding:13px;border-radius:8px;margin:10px 0}
 .chat-container{background:#F9FAFB;border:1px solid #E5E7EB;border-radius:10px;padding:11px;height:320px;overflow-y:auto;margin-top:10px;font-size:14px;display:flex;flex-direction:column;gap:9px}
 .chat-msg{padding:10px 12px;border-radius:9px;max-width:96%;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55}.chat-ai{background:#E0E7FF;color:#312E81;align-self:flex-start}.chat-user{background:#DCFCE7;color:#166534;align-self:flex-end}
@@ -112,14 +112,14 @@ details{margin-top:9px}summary{cursor:pointer;font-weight:600;font-size:13px}.se
  <section class="section"><span class="tag">02 科普阅读</span><div id="reading-text" class="sentence clickable-text"></div>
   <div class="controls"><select id="reading-speed" class="speed-select"><option value=".5">0.5x</option><option value=".75">0.75x</option><option value="1" selected>1.0x</option></select><button class="btn btn-outline" onclick="speakSingleText('reading-text','reading-speed')">朗读文章</button></div>
  </section>
- <section class="section"><span class="tag" id="dialogue-tag">03 旅游全过程实战对话</span><p class="muted">覆盖出发、机场、酒店、租车、餐饮、景点、购物、突发情况和返程。</p><div id="dialogue-text" class="dialogue-box clickable-text"></div><button class="btn btn-outline" style="width:100%" onclick="playDialogueDualVoice()">男女声交替朗读 / 停止</button>
+ <section class="section"><span class="tag" id="dialogue-tag">03 旅游全过程实战对话</span><p class="muted">每次生成一个真实旅游场景。示范对话包含英文原句和逐句中文翻译；点击英文单词可查词，点击朗读可听完整对话。</p><div id="dialogue-text" class="dialogue-box clickable-text"></div><div class="dialogue-tools"><button class="btn btn-outline" onclick="playDialogueDualVoice()">男女声交替朗读 / 停止</button><button class="btn btn-green" onclick="startScenarioPractice()">将本场景带入04并开始练习</button></div>
  </section>
  <section class="section">
   <span class="tag">04 AI 一对一口语对练与纠错</span>
   <p class="muted">按住不需要：点击开始录音，说完后点击停止；识别文本会自动发送。也可手动输入。AI 会先用英语接话，再用中文指出表达问题。</p>
   <input id="scenario-input" class="chat-input" placeholder="角色/场景，例如：我做旅客，你做机场工作人员">
   <button class="btn btn-outline" style="width:100%;margin-top:7px" onclick="setTrainingScenario()">应用对话场景</button>
-  <div class="chat-container" id="chat-box"><div class="chat-msg chat-ai">Hi! I'm your English speaking coach. Let's practice one sentence at a time. Tell me what you would like to practice.</div></div>
+  <label class="auto-speak-setting"><input type="checkbox" id="auto-speak-toggle" checked> AI 英文回复后自动朗读（只读英文，不读中文纠错）</label><div class="chat-container" id="chat-box"><div class="chat-msg chat-ai">Hi! I'm your English speaking coach. Choose a travel scene in section 03, then tap “将本场景带入04并开始练习”.</div></div>
   <div class="controls" style="margin-top:9px"><button id="voice-chat-btn" class="btn btn-green" onclick="toggleVoiceChat()">开始语音对练</button><button class="btn btn-outline" onclick="stopVoiceChat()">停止录音</button></div>
   <div id="voice-status-text" class="muted" style="text-align:center">语音功能需要 HTTPS 页面和浏览器麦克风权限。若语音识别不可用，可使用下方文字输入。</div>
   <div class="chat-input-row"><input id="user-chat-input" class="chat-input" placeholder="输入英文句子..." autocomplete="off"><button class="btn" onclick="sendChat()">发送</button></div>
@@ -168,7 +168,7 @@ const $=id=>document.getElementById(id);
 const DEFAULTS={
  listening:"Many companies now use artificial intelligence, or AI, at work. AI can help people write emails, plan meetings, and answer questions. Some workers say AI saves time. They can finish tasks faster. But other people are worried. They think AI may make mistakes or take jobs. This week, a new report said workers need to learn new skills. Schools and companies can teach these skills. Experts say people should use AI carefully. They say humans must always check the work. AI is a tool, not a replacement for people.",
  reading:"Language acquisition works best with consistent comprehensible input that matches your level. Short daily practice can help learners build confidence. Try to understand the main idea first. Then read again and notice useful words and expressions.",
- dialogue:"Scene: Airport check-in\nA (Alex): Good morning. I'd like to check in for my flight.\nB (Sarah): Certainly. May I see your passport, please?\nA (Alex): Of course. Here you are.\nB (Sarah): Are you checking any bags today?\nA (Alex): Yes, just one suitcase.\nB (Sarah): Would you prefer a window or an aisle seat?\nA (Alex): An aisle seat, please.\nB (Sarah): Here's your boarding pass. Your gate is 12.\nA (Alex): Thank you. Have a nice day!",
+ dialogue:"Scene: Airport check-in\nA (Alex): Good morning. I'd like to check in for my flight.\n中文：早上好，我想办理航班值机。\nB (Sarah): Certainly. May I see your passport, please?\n中文：当然可以。请出示您的护照好吗？\nA (Alex): Of course. Here you are.\n中文：当然，给您。\nB (Sarah): Are you checking any bags today?\n中文：您今天有行李需要托运吗？\nA (Alex): Yes, just one suitcase.\n中文：有的，只有一个行李箱。\nB (Sarah): Would you prefer a window or an aisle seat?\n中文：您想要靠窗座位还是靠过道座位？\nA (Alex): An aisle seat, please.\n中文：请给我一个靠过道的座位。\nB (Sarah): Here's your boarding pass. Your gate is 12.\n中文：这是您的登机牌。登机口是12号。\nA (Alex): Thank you. Have a nice day!\n中文：谢谢，祝您今天愉快！",
  xText:"Small, consistent steps can make language learning part of your daily life. Practice speaking, listen carefully, and do not be afraid of making mistakes.",
  xAnalysis:"核心表达：consistent steps（持续的小步骤）；make something part of your daily life（让某事成为日常的一部分）。"
 };
@@ -189,6 +189,7 @@ let lastSelectedWord="",lastSelectedInfo="",currentFlashcardIndex=0,isCardFlippe
 let shadowRecognition=null,voiceChatRecognition=null,isRecording=false,isVoiceChatActive=false,isDialoguePlaying=false;
 let currentTrainingScenario="You are a friendly English conversation partner. The user is a traveler.";
 let chatHistory=[],lastCheckinDate="",dialogueUtterances=[];
+let autoSpeakAI=true;
 function todayKey(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
 function safeLoad(key,fallback){try{const v=localStorage.getItem(key);return v===null?fallback:v;}catch(e){return fallback;}}
 function safeSave(key,value){try{localStorage.setItem(key,value);return true;}catch(e){return false;}}
@@ -200,7 +201,8 @@ function loadStorageData(){
 function saveStorageData(){safeSave("user_level",userLevel);safeSave("streak",String(streak));safeSave("vocab_book",JSON.stringify(vocabBook));safeSave("bin_id",binId);safeSave("last_checkin_date",lastCheckinDate);}
 function initApp(){
  try{localStorage.setItem("__test__","1");localStorage.removeItem("__test__");}catch(e){$("private-mode-warning").style.display="block";}
- loadStorageData();$("user-level-tag").textContent="当前等级："+userLevel;$("streak-text").textContent="连续打卡："+streak+" 天";
+ loadStorageData();autoSpeakAI=safeLoad("auto_speak","1")!=="0";$("auto-speak-toggle").checked=autoSpeakAI;$("auto-speak-toggle").addEventListener("change",e=>{autoSpeakAI=!!e.target.checked;safeSave("auto_speak",autoSpeakAI?"1":"0");});
+ $("user-level-tag").textContent="当前等级："+userLevel;$("streak-text").textContent="连续打卡："+streak+" 天";
  $("bin-id-input").value=binId;renderVocabBook();
  renderInteractiveText("listening-text",safeLoad("saved_listening",DEFAULTS.listening));
  renderInteractiveText("reading-text",safeLoad("saved_reading",DEFAULTS.reading));
@@ -336,7 +338,26 @@ function playDialogueDualVoice(){
 }
 function setTrainingScenario(){
  const v=$("scenario-input").value.trim();if(!v){alert("请先输入角色或场景。");return;}
- currentTrainingScenario=v;appendChat("ai","场景已切换："+v);$("scenario-input").value="";
+ currentTrainingScenario="The user is a traveler. You are the relevant local service staff. Scene and role-play instructions: "+v+" Use simple natural English.";
+ appendChat("ai","场景已切换："+v);$("scenario-input").value="";
+}
+function getDialogueScene(){
+ const first=$("dialogue-text").innerText.split("\n").map(x=>x.trim()).find(x=>/^Scene\s*:/i.test(x));
+ return first?first.replace(/^Scene\s*:\s*/i,"").trim():"Travel situation";
+}
+async function startScenarioPractice(){
+ const scene=getDialogueScene();
+ currentTrainingScenario="Travel role-play scene: "+scene+". The user is the traveler/customer. You are the relevant local service professional. Stay in character. Use beginner-friendly natural English. Ask only one short question at a time. If the learner makes a mistake, give a brief Chinese correction and ask them to repeat the corrected sentence before continuing.";
+ $("scenario-input").value="Scene: "+scene+". I am the traveler. You are the service staff.";
+ $("chat-box").replaceChildren();chatHistory=[];
+ appendChat("ai","已载入03场景："+scene+"\n你的角色：旅客。\nAI角色：当地服务人员。\n现在开始英文实战对话。");
+ if(!apiKey){appendChat("ai","请先在页面顶部配置 DeepSeek API Key，然后再次点击本按钮开始练习。");$("voice-status-text").textContent="场景已载入，等待配置 API Key。";$("user-chat-input").focus();return;}
+ $("voice-status-text").textContent="正在进入场景…";
+ const loading=appendChat("ai","AI 正在开始对话…");
+ try{
+  const raw=await apiRequest([{role:"system",content:coachSystemPrompt()},{role:"user",content:"Start the role-play now. You speak first as the service staff. Greet me naturally and ask one simple question only. Do not explain the exercise."}],{max_tokens:400});
+  loading.remove();renderCoachReply(raw);chatHistory.push({role:"assistant",content:raw});$("voice-status-text").textContent="场景对练已开始。请用英文回答 AI。";$("user-chat-input").focus();
+ }catch(e){loading.textContent="开始失败："+e.message+"。请检查 API Key 和网络。";$("voice-status-text").textContent="场景启动失败。";}
 }
 function appendChat(role,text){
  const box=$("chat-box"),div=document.createElement("div");div.className="chat-msg "+(role==="user"?"chat-user":"chat-ai");div.textContent=text;box.append(div);box.scrollTop=box.scrollHeight;return div;
@@ -390,10 +411,21 @@ function toggleVoiceChat(){
  }
 }
 function stopVoiceChat(){try{voiceChatRecognition?.stop();}catch(e){}}
+function coachSystemPrompt(){
+ return "You are a patient English speaking partner and practical travel-English coach. Scenario: "+currentTrainingScenario+". Learner level: "+userLevel+". The user is a Chinese learner with basic junior-high-school English. Keep the role-play natural and realistic. You play the service staff; the user plays the traveler. Speak in simple, short English, normally 1-2 sentences. Ask exactly ONE short question per turn, never several questions. Keep the conversation moving naturally. If the learner makes a grammar or word-choice mistake, include the exact heading [AI Coach Feedback / 实时纠错与指导] and concise Chinese feedback. Give one corrected natural sentence and explicitly ask the learner to repeat that corrected sentence. Do not advance the role-play until the learner has tried repeating it. If the learner is correct, say so briefly in Chinese and continue the role-play with one question. Keep all spoken English before the feedback heading; do not put Chinese in the English part. Use about 80% English and no more than 20% Chinese. Never ask more than one question in a turn.";
+}
 function splitCoachReply(raw){
- const marker=/\[AI Coach Feedback[\s\S]*$/i;const match=raw.match(marker);let english=match?raw.slice(0,match.index).trim():raw.trim();let feedback=match?raw.slice(match.index).trim():"";
+ const match=String(raw).match(/\[AI Coach Feedback[^\]]*\][\s\S]*$/i);
+ let english=match?raw.slice(0,match.index).trim():raw.trim();
  if(!english){const lines=raw.split("\n").filter(x=>x.trim());english=lines.find(x=>!(/[\u3400-\u9FFF]/.test(x)))||"Let's keep practicing.";}
- return {english,feedback};
+ return {english,feedback:match?match[0]:""};
+}
+function renderCoachReply(raw){
+ const parts=splitCoachReply(raw),wrap=document.createElement("div");wrap.className="chat-msg chat-ai";
+ const text=document.createElement("div");text.textContent=raw;wrap.append(text);
+ const speak=document.createElement("button");speak.className="btn";speak.style.marginTop="8px";speak.textContent="重听英文回复";speak.onclick=()=>speakText(parts.english,1,"en-US");wrap.append(speak);
+ $("chat-box").append(wrap);$("chat-box").scrollTop=$("chat-box").scrollHeight;
+ if(autoSpeakAI&&parts.english)speakText(parts.english,1,"en-US");
 }
 async function sendChat(){
  const input=$("user-chat-input"),userText=input.value.trim();if(!userText)return;
@@ -401,12 +433,10 @@ async function sendChat(){
  const loading=appendChat("ai","AI 正在思考…");
  if(!apiKey){loading.textContent="尚未配置 DeepSeek API Key。请在页面顶部输入并应用密钥，然后重新发送。";$("voice-status-text").textContent="等待 API 配置";return;}
  try{
-  const messages=[{role:"system",content:`You are a patient, practical English conversation partner and coach. Scenario: ${currentTrainingScenario}. Learner level: ${userLevel}. Reply with a natural conversational English response of 1-3 sentences, appropriate to the learner's level. Then add a separate section exactly titled [AI Coach Feedback / 实时纠错与指导], followed by concise Chinese feedback: grammar/expression correction, a more natural alternative, and one pronunciation or rhythm tip. If the user's sentence is already correct, say so honestly. Keep the English response clearly separated from Chinese feedback.`},...chatHistory.slice(-8),{role:"user",content:userText}];
-  const raw=await apiRequest(messages,{max_tokens:700});loading.remove();const parts=splitCoachReply(raw);
-  const wrap=document.createElement("div");wrap.className="chat-msg chat-ai";const text=document.createElement("div");text.textContent=raw;wrap.append(text);
-  const speak=document.createElement("button");speak.className="btn";speak.style.marginTop="8px";speak.textContent="朗读 AI 英文回复";speak.onclick=()=>speakText(parts.english,1,"en-US");wrap.append(speak);$("chat-box").append(wrap);$("chat-box").scrollTop=$("chat-box").scrollHeight;
-  chatHistory.push({role:"user",content:userText},{role:"assistant",content:raw});if(chatHistory.length>16)chatHistory=chatHistory.slice(-16);
-  $("voice-status-text").textContent="回复完成。点击朗读按钮听英文示范。";
+  const messages=[{role:"system",content:coachSystemPrompt()},...chatHistory.slice(-10),{role:"user",content:userText}];
+  const raw=await apiRequest(messages,{max_tokens:650});loading.remove();renderCoachReply(raw);
+  chatHistory.push({role:"user",content:userText},{role:"assistant",content:raw});if(chatHistory.length>20)chatHistory=chatHistory.slice(-20);
+  $("voice-status-text").textContent=autoSpeakAI?"回复完成，英文部分已自动朗读。":"回复完成。可点击“重听英文回复”。";
  }catch(e){loading.textContent="AI 请求失败："+e.message+"。请检查网络、API Key 和余额后重试。";$("voice-status-text").textContent="AI 请求失败";}
 }
 async function generateDailyContent(manual=true){
@@ -417,7 +447,7 @@ async function generateDailyContent(manual=true){
   const prompts=[
    `For CEFR ${userLevel}, write a VOA Learning English-style passage of about 90-110 words on a useful current general topic. Plain English only. Seed ${seed}.`,
    `For CEFR ${userLevel}, write a clear science or everyday-life reading passage of 100-130 words, with a title and plain English. Seed ${seed}.`,
-   `Write a realistic travel role-play dialogue with 8-10 turns for ${stage}. Format each line exactly A (Alex): sentence or B (Sarah): sentence. First line Scene: ${stage}. Use natural beginner-friendly English.`,
+   `Write a realistic travel role-play demonstration for ${stage}, with 8-10 short turns. Output plain text only. First line exactly Scene: ${stage}. For every turn, output two consecutive lines: first an English line in exactly this format A (Alex): English sentence or B (Sarah): English sentence; second a Simplified Chinese translation line beginning exactly 中文：. Alternate A and B. Keep each English sentence beginner-friendly, natural and useful. Do not add explanations, numbering, markdown or extra questions.`,
    `For this English passage, explain 3 useful pronunciation features in Chinese: stress, linking, weak forms. Do not invent phonetic certainty. Passage: ${DEFAULTS.listening}`
   ];
   const [listen,read,dialogue,phonetics]=await Promise.all(prompts.map(p=>apiRequest([{role:"user",content:p}],{max_tokens:650})));
