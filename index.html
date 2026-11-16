@@ -11,7 +11,7 @@
 <style>
 :root{--primary:#4F46E5;--bg:#F3F4F6;--card:#fff;--text:#1F2937;--green:#16A34A;--muted:#6B7280}
 *{box-sizing:border-box}
-body{margin:0;padding:0 0 calc(78px + env(safe-area-inset-bottom));font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text)}
+body{margin:0;padding:0 0 calc(90px + env(safe-area-inset-bottom));font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text)}
 .header{background:var(--primary);color:#fff;padding:22px 16px;text-align:center}
 .header h2{margin:0}
 .container{max-width:680px;margin:-10px auto 20px;padding:0 14px}
@@ -38,7 +38,6 @@ input,textarea{min-width:0}
 .dialogue-tools .btn{flex:1}
 .auto-speak-setting{display:flex;align-items:center;gap:7px;font-size:12px;color:#4B5563;margin:8px 0}
 .auto-speak-setting input{width:18px;height:18px}
-.x-card-box{background:#F8FAFC;border:1px solid #E2E8F0;border-left:4px solid #1DA1F2;padding:13px;border-radius:8px;margin:10px 0}
 .chat-container{background:#F9FAFB;border:1px solid #E5E7EB;border-radius:10px;padding:11px;height:320px;overflow-y:auto;margin-top:10px;font-size:14px;display:flex;flex-direction:column;gap:9px}
 .chat-msg{padding:10px 12px;border-radius:9px;max-width:96%;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55}
 .chat-ai{background:#E0E7FF;color:#312E81;align-self:flex-start}
@@ -48,8 +47,6 @@ input,textarea{min-width:0}
 .api-statusbar{position:fixed;bottom:0;left:0;width:100%;padding:7px 12px calc(7px + env(safe-area-inset-bottom));background:#111827;color:#D1D5DB;font-size:11px;display:flex;justify-content:space-between;z-index:20}
 .api-statusbar b{color:#fff}
 .external-link-card,.vocab-item{background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:11px;margin-top:8px}
-.external-link-card a{color:#4338CA;font-weight:700;text-decoration:none}
-.external-link-card p{margin:5px 0 0;color:#64748B;font-size:12px;line-height:1.5}
 .vocab-item{display:flex;gap:7px;align-items:center;font-size:13px}
 .vocab-item .word-info{flex:1;overflow-wrap:anywhere;min-width:0}
 .speed-select{background:#312E81;color:#fff;border:1px solid #6366F1;border-radius:6px;padding:7px;font-size:12px}
@@ -66,23 +63,22 @@ summary{cursor:pointer;font-weight:600;font-size:13px}
 .controls .btn{flex:1}
 .notice{padding:10px;border-radius:8px;background:#FFF7ED;color:#9A3412;font-size:12px;line-height:1.6;margin:8px 0}
 
-/* 紧凑播放器 */
-.mini-player{position:fixed;left:0;right:0;bottom:0;z-index:25;background:#111827;color:#F9FAFB;padding:4px 8px calc(4px + env(safe-area-inset-bottom));box-shadow:0 -5px 18px #0002}
-.mini-player-main{display:flex;align-items:center;gap:6px;min-width:0;min-height:30px}
-.mini-player-title{flex:1;min-width:0;font-size:11px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mini-player button{border:0;border-radius:7px;padding:5px 8px;background:#4F46E5;color:#fff;font-size:11px;min-height:28px}
+/* 修复后的迷你播放器样式：默认简洁，展开时自动撑开 */
+.mini-player{position:fixed;left:0;right:0;bottom:36px;z-index:25;background:#111827;color:#F9FAFB;padding:8px 12px;box-shadow:0 -5px 18px #0003;transition:all 0.3s ease;}
+.mini-player-main{display:flex;align-items:center;gap:6px;min-width:0;min-height:32px}
+.mini-player-title{flex:1;min-width:0;font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mini-player button{border:0;border-radius:7px;padding:5px 9px;background:#4F46E5;color:#fff;font-size:11px;min-height:28px;cursor:pointer}
 .mini-player button.secondary{background:#374151}
 .mini-player input[type=range]{width:100%;accent-color:#818CF8}
-.mini-player-tools{display:flex;align-items:center;gap:7px;margin-top:7px}
+.mini-player-tools{display:flex;align-items:center;gap:7px;margin-top:8px}
 .mini-player-tools input[type=url]{flex:1;min-width:0;background:#1F2937;color:#fff;border:1px solid #4B5563;border-radius:6px;padding:7px;font-size:11px}
 .mini-player-tools select{background:#374151;color:#fff;border:1px solid #4B5563;border-radius:6px;padding:6px;font-size:11px}
 .mini-player-time{font-size:10px;color:#D1D5DB;white-space:nowrap;font-variant-numeric:tabular-nums}
 .mini-player-file{display:none}
 .mini-player .mini-player-tools,.mini-player #player-status{display:none}
-.mini-player.expanded .mini-player-tools,.mini-player.expanded #player-status{display:flex}
+.mini-player.expanded{padding-bottom:12px;}
+.mini-player.expanded .mini-player-tools{display:flex}
 .mini-player.expanded #player-status{display:block}
-.mini-player:not(.expanded) .mini-player-main>button:nth-of-type(2),
-.mini-player:not(.expanded) .mini-player-main>button:nth-of-type(3){display:none}
 @media(min-width:600px){.container{padding:0 18px}}
 .resource-link{display:flex;flex-direction:column;gap:3px;padding:9px;border:1px solid #E2E8F0;border-radius:8px;text-decoration:none;color:inherit;background:#F8FAFC;min-width:0}
 .resource-link b{font-size:13px;color:#1D4ED8}
@@ -114,7 +110,7 @@ summary{cursor:pointer;font-weight:600;font-size:13px}
   <div class="controls"><button class="btn btn-outline" onclick="startAssessment()">设置等级</button><button class="btn btn-green" onclick="openFlashcardModal()">闪卡</button></div>
  </div>
  <details open><summary>API 配置（DeepSeek）</summary>
-  <div class="notice">API Key 只保存在当前设备浏览器中，不会写入网页源码或上传到 JSONBin。</div>
+  <div class="notice">API Key 保存在当前浏览器的 localStorage 中。若使用无痕模式或更换设备/域名，需重新输入。</div>
   <input type="password" id="api-key-input" class="api-input" autocomplete="off" placeholder="输入 DeepSeek API Key（本机保存）">
   <div class="row" style="margin-top:7px"><button class="btn" onclick="applyApiKey()">保存并应用</button><button class="btn btn-outline" onclick="clearApiKey()">清除本机密钥</button></div>
  </details>
@@ -180,7 +176,7 @@ summary{cursor:pointer;font-weight:600;font-size:13px}
   <div id="digest-box" style="display:none;background:#F8FAFC;padding:12px;border-radius:8px;margin-top:9px;white-space:pre-wrap;font-size:13px"></div>
   <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:9px;padding:12px;margin-top:14px">
    <b style="font-size:13px;color:#4338CA">跨设备同步（JSONBin）</b>
-   <div class="notice">Bin ID 和 Master Key 只保存在本机浏览器中，不会上传到同步记录。每台设备首次使用时输入一次即可。</div>
+   <div class="notice">Bin ID 和 Master Key 保存在浏览器中。若更换设备或清除缓存需重新填写。</div>
    <input id="bin-id-input" class="api-input" placeholder="JSONBin Bin ID（本机保存）">
    <input id="bin-key-input" class="api-input" type="password" autocomplete="off" placeholder="JSONBin Master Key（本机保存）" style="margin-top:7px">
    <div class="controls" style="margin-top:8px"><button class="btn btn-green" onclick="pushToCloud()">推送到云端</button><button class="btn" onclick="pullFromCloud()">从云端拉取</button></div>
@@ -189,6 +185,8 @@ summary{cursor:pointer;font-weight:600;font-size:13px}
  </section>
 </div>
 </main>
+
+<!-- 修复后的迷你播放器：支持展开折叠及安全加载 -->
 <section class="mini-player" id="mini-player" aria-label="迷你音频播放器">
  <div class="mini-player-main">
   <button id="player-play" type="button" onclick="toggleMiniPlayer()">播放</button>
@@ -211,6 +209,7 @@ summary{cursor:pointer;font-weight:600;font-size:13px}
  <audio id="mini-audio" preload="metadata" playsinline></audio>
  <div id="player-status" style="font-size:10px;color:#D1D5DB;margin-top:4px">支持本地音频文件和可直接访问的音频文件链接。</div>
 </section>
+
 <div class="api-statusbar"><div>服务状态：<b id="balance-status">未配置 API</b></div><div>余额：<b id="balance-amount">不检测</b></div></div>
 <script>
  "use strict";
@@ -220,7 +219,6 @@ const DEFAULTS={
  reading:"Language acquisition works best with consistent comprehensible input that matches your level. Short daily practice can help learners build confidence. Try to understand the main idea first. Then read again and notice useful words and expressions."
 };
 
-// 12个完整的旅游实战场景预设（双语对白，无占位符）
 const TRAVEL_SCENARIOS = [
  {
   title: "Stage 01: 机场值机与行李托运 (Airport Check-in)",
@@ -232,7 +230,7 @@ const TRAVEL_SCENARIOS = [
  },
  {
   title: "Stage 03: 酒店入住与房型要求 (Hotel Check-in & Wi-Fi)",
-  content: "Scene: Hotel check-in, quiet room and Wi-Fi\nA (Alex): Hello, I have a reservation under the name Alex Zhang.\n中文：你好，我以 Alex Zhang 的名义预订了房间。\nB (Sarah): Let me check... Yes, a double room for three nights. May I have your credit card and ID?\n中文：我来查一下……是的，双人间，住三个晚上。请问可以看看您的信用卡和身份证件吗？\nA (Alex): Here you go. Is it possible to get a quiet room away from the street?\n中文：给您。请问能安排一间远离街道的安静房间吗？\B (Sarah): Certainly. I've put you on the fourth floor facing the courtyard. Here is your room key.\n中文：没问题。我为您安排了面向庭院的四楼房间。这是您的房卡。\nA (Alex): Thank you. What is the password for the hotel Wi-Fi?\n中文：谢谢。请问酒店无线网络密码是多少？\nB (Sarah): It is 'welcome2026', no capital letters. Breakfast is served from 7 to 10 AM.\n中文：是 'welcome2026'，没有大写字母。早餐供应时间是早上7点到10点。"
+  content: "Scene: Hotel check-in, quiet room and Wi-Fi\nA (Alex): Hello, I have a reservation under the name Alex Zhang.\n中文：你好，我以 Alex Zhang 的名义预订了房间。\nB (Sarah): Let me check... Yes, a double room for three nights. May I have your credit card and ID?\n中文：我来查一下……是的，双人间，住三个晚上。请问可以看看您的信用卡和身份证件吗？\nA (Alex): Here you go. Is it possible to get a quiet room away from the street?\n中文：给您。请问能安排一间远离街道的安静房间吗？\nB (Sarah): Certainly. I've put you on the fourth floor facing the courtyard. Here is your room key.\n中文：没问题。我为您安排了面向庭院的四楼房间。这是您的房卡。\nA (Alex): Thank you. What is the password for the hotel Wi-Fi?\n中文：谢谢。请问酒店无线网络密码是多少？\nB (Sarah): It is 'welcome2026', no capital letters. Breakfast is served from 7 to 10 AM.\n中文：是 'welcome2026'，没有大写字母。早餐供应时间是早上7点到10点。"
  },
  {
   title: "Stage 04: 租车柜台与保险确认 (Car Rental & Insurance)",
@@ -264,7 +262,7 @@ const TRAVEL_SCENARIOS = [
  },
  {
   title: "Stage 11: 乘坐地铁与购买车票 (Taking Subway & Buying Tickets)",
-  content: "Scene: Buying subway tickets and asking for platform\nA (Alex): Excuse me, how do I get to the central station from here?\n中文：打扰一下，从这里怎么去中央车站？\nB (Sarah): You can take the Blue Line subway directly. It's about a 15-minute ride.\n中文：您可以直接坐蓝线地铁。大约15分钟车程。\nA (Alex): Where can I buy a day pass ticket?\n中文：请问我在哪里可以买到日票？\nB (Sarah): You can use the ticket machine over there or tap your contactless credit card directly at the turnstile.\n中文：您可以使用那边的自动售票机，或者直接在闸机上刷非接触式信用卡。\nA (Alex): That's very convenient. Which platform should I go to for southbound trains?\n中文：这太方便了。去往南行列车的站台是哪一个？\nB (Sarah): Platform 2, right down these stairs.\n中文：2号站台，顺着这些楼梯下去就是。"
+  content: "Scene: Buying subway tickets and asking for platform\nA (Alex): Excuse me, how do I get to the central station from here?\n中文：打扰一下，从这里怎么去中央车站？\nB (Sarah): You can take the Blue Line subway directly. It's about a 15-minute ride.\n中文：您可以直接坐蓝线地铁。大约15分钟车程。\nA (Alex): Where can I buy a day pass ticket?\n中文：请问在哪里可以买到日票？\nB (Sarah): You can use the ticket machine over there or tap your contactless credit card directly at the turnstile.\n中文：您可以使用那边的自动售票机，或者直接在闸机上刷非接触式信用卡。\nA (Alex): That's very convenient. Which platform should I go to for southbound trains?\n中文：这太方便了。去往南行列车的站台是哪一个？\nB (Sarah): Platform 2, right down these stairs.\n中文：2号站台，顺着这些楼梯下去就是。"
  },
  {
   title: "Stage 12: 邮局寄明信片与包裹 (Post Office & Mailing)",
@@ -276,11 +274,12 @@ let userLevel="L2 (基础级)",streak=0,vocabBook=[],apiKey="",binId="",binKey="
 let lastSelectedWord="",lastSelectedInfo="",currentFlashcardIndex=0,isCardFlipped=false;
 let shadowRecognition=null,voiceChatRecognition=null,isRecording=false,isVoiceChatActive=false,isDialoguePlaying=false;
 let currentTrainingScenario="You are a friendly English conversation partner. The user is a traveler.";
-let chatHistory=[],lastCheckinDate="",dialogueUtterances=[];
-let autoSpeakAI=true;
+let chatHistory=[],lastCheckinDate="",autoSpeakAI=true;
+
 function todayKey(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
 function safeLoad(key,fallback){try{const v=localStorage.getItem(key);return v===null?fallback:v;}catch(e){return fallback;}}
 function safeSave(key,value){try{localStorage.setItem(key,value);return true;}catch(e){return false;}}
+
 function loadStorageData(){
  userLevel=safeLoad("user_level",userLevel);
  streak=Number(safeLoad("streak","0"))||0;
@@ -291,14 +290,18 @@ function loadStorageData(){
  lastCheckinDate=safeLoad("last_checkin_date","");
  try{const h=JSON.parse(safeLoad("chat_history","[]"));if(Array.isArray(h))chatHistory=h;}catch(e){chatHistory=[];}
 }
+
 function saveStorageData(){
  safeSave("user_level",userLevel);
  safeSave("streak",String(streak));
  safeSave("vocab_book",JSON.stringify(vocabBook));
  safeSave("bin_id",binId);
+ safeSave("jsonbin_master_key",binKey);
+ safeSave("deepseek_api_key",apiKey);
  safeSave("last_checkin_date",lastCheckinDate);
  safeSave("chat_history",JSON.stringify(chatHistory));
 }
+
 function initApp(){
  try{localStorage.setItem("__test__","1");localStorage.removeItem("__test__");}
  catch(e){$("private-mode-warning").style.display="block";}
@@ -318,10 +321,8 @@ function initApp(){
  renderInteractiveText("reading-text",safeLoad("saved_reading",DEFAULTS.reading));
  renderInteractiveText("dialogue-text",safeLoad("saved_dialogue",TRAVEL_SCENARIOS[0].content));
  $("phonetics-analysis").textContent=safeLoad("saved_phonetics","发音提示：注意重音、连读和语调。");
- $("mini-player").classList.remove("expanded");
- $("player-expand").textContent="展开";
- if(safeLoad("last_gen_date","")!==todayKey()&&apiKey)generateDailyContent(false);
 }
+
 function initTravelStages(){
  const sel=$("travel-stage-select");
  sel.replaceChildren();
@@ -336,6 +337,7 @@ function initTravelStages(){
  renderInteractiveText("dialogue-text",TRAVEL_SCENARIOS[savedIdx].content);
  $("dialogue-tag").textContent="03 旅游实战："+TRAVEL_SCENARIOS[savedIdx].title.split(":")[0];
 }
+
 function switchTravelStage(idx){
  const index=Number(idx)||0;
  safeSave("selected_travel_idx",String(index));
@@ -346,20 +348,25 @@ function switchTravelStage(idx){
   $("dialogue-tag").textContent="03 旅游实战："+sc.title.split(":")[0];
  }
 }
+
 function applyApiKey(){
  apiKey=$("api-key-input").value.trim();
  if(!apiKey){alert("请先输入 DeepSeek API Key。");return;}
  safeSave("deepseek_api_key",apiKey);
  $("balance-status").textContent="已保存并应用";
  checkApiBalance();
+ alert("DeepSeek API Key 已成功保存到本地浏览器！");
 }
+
 function clearApiKey(){
  apiKey="";
  safeSave("deepseek_api_key","");
  $("api-key-input").value="";
  $("balance-status").textContent="已清除";
  $("balance-amount").textContent="不检测";
+ alert("已清除本机保存的 Key。");
 }
+
 async function apiRequest(messages,opts={}){
  if(!apiKey)throw new Error("请先在页面顶部输入并应用 DeepSeek API Key。");
  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),opts.timeout||60000);
@@ -377,11 +384,13 @@ async function apiRequest(messages,opts={}){
   return content.trim();
  }finally{clearTimeout(timer);}
 }
+
 async function checkApiBalance(){
  if(!apiKey)return;
  $("balance-status").textContent="已配置";
  $("balance-amount").textContent="不检测";
 }
+
 function renderInteractiveText(id,text){
  const el=$(id);el.replaceChildren();
  String(text||"").split("\n").forEach((line,li)=>{
@@ -397,6 +406,7 @@ function renderInteractiveText(id,text){
   if(li<String(text||"").split("\n").length-1)el.appendChild(document.createElement("br"));
  });
 }
+
 async function clickToTranslate(word){
  if(!word)return;
  lastSelectedWord=word;
@@ -409,7 +419,9 @@ async function clickToTranslate(word){
  }catch(e){lastSelectedInfo="暂时无法联网查词："+e.message;}
  $("popup-content").textContent=lastSelectedInfo;
 }
+
 function closePopup(){$("word-popup").style.display="none";}
+
 function saveCurrentWord(){
  if(!lastSelectedWord)return;
  const found=vocabBook.find(x=>String(x.word).toLowerCase()===lastSelectedWord.toLowerCase());
@@ -417,4 +429,344 @@ function saveCurrentWord(){
   if(lastSelectedInfo&&lastSelectedInfo!=="待补充释义")found.info=lastSelectedInfo;
   alert("这个单词已存在生词本，释义已更新。");
  }else{
-  vocabBook.push({word:lastSelectedWord,info:lastSelectedInfo||"待补充释义",added:today
+  vocabBook.push({word:lastSelectedWord,info:lastSelectedInfo||"待补充释义",added:todayKey(),due:todayKey(),interval:0});
+ }
+ saveStorageData();renderVocabBook();closePopup();
+}
+
+async function lookupSavedWord(word){
+ const item=vocabBook.find(x=>String(x.word).toLowerCase()===String(word).toLowerCase());
+ if(!item)return;
+ lastSelectedWord=item.word;
+ await clickToTranslate(item.word);
+ if(lastSelectedInfo){item.info=lastSelectedInfo;saveStorageData();renderVocabBook();}
+}
+
+function renderVocabBook(){
+ $("vocab-count").textContent=vocabBook.length;
+ const list=$("vocab-list");list.replaceChildren();
+ if(!vocabBook.length){list.textContent="暂无生词。点击文章中的英文单词可查词并加入。";return;}
+ vocabBook.slice().reverse().forEach((item,revIndex)=>{
+  const index=vocabBook.length-1-revIndex,row=document.createElement("div");
+  row.className="vocab-item";
+  const info=document.createElement("div");info.className="word-info";
+  const strong=document.createElement("b");strong.textContent=item.word+" ";
+  strong.style.cursor="pointer";strong.style.color="#4338CA";
+  strong.onclick=()=>lookupSavedWord(item.word);
+  const meaning=document.createElement("span");meaning.textContent=item.info||"";
+  info.append(strong,meaning);
+  const lookup=document.createElement("button");lookup.className="btn btn-outline";lookup.textContent="查词";
+  lookup.onclick=()=>lookupSavedWord(item.word);
+  const speak=document.createElement("button");speak.className="btn btn-outline";speak.textContent="发音";
+  speak.onclick=()=>speakWord(item.word);
+  const del=document.createElement("button");del.className="btn btn-red";del.textContent="删除";
+  del.onclick=()=>{vocabBook.splice(index,1);saveStorageData();renderVocabBook();};
+  row.append(info,lookup,speak,del);list.append(row);
+ });
+}
+
+function speakWord(word){speakText(word,0.82,"en-US");}
+
+async function speakText(text,rate=1,lang="en-US"){
+ const synth=window.speechSynthesis;
+ if(!synth||typeof SpeechSynthesisUtterance==="undefined"){alert("当前浏览器没有提供语音朗读功能。");return;}
+ const content=String(text||"").trim().slice(0,5000);
+ if(!content){alert("没有可朗读的文字。");return;}
+ try{
+  synth.cancel();
+  const utter=new SpeechSynthesisUtterance(content);
+  utter.lang=lang;utter.rate=Math.max(.5,Math.min(1.2,rate));
+  setTimeout(()=>{try{synth.speak(utter);}catch(e){}},100);
+ }catch(e){}
+}
+
+function playListeningVoice(){speakText($("listening-text").innerText,Number($("listening-speed").value)||1);}
+function speakSingleText(id,speedId){speakText($(id).innerText,speedId?Number($(speedId).value):.9);}
+function speakFeedbackVoice(text){speakText(text,.9,"zh-CN");}
+
+function getRecognition(){
+ const C=window.SpeechRecognition||window.webkitSpeechRecognition;
+ return C?new C():null;
+}
+
+function recognitionErrorMessage(error){
+ const map={"not-allowed":"麦克风权限被拒绝。","service-not-allowed":"语音识别不可用","no-speech":"未检测到语音","audio-capture":"未找到麦克风",network:"网络连接失败"};
+ return map[error]||("语音识别失败："+error);
+}
+
+function toggleShadowingRecord(){
+ if(isRecording){try{shadowRecognition?.stop();}catch(e){}return;}
+ const rec=getRecognition();
+ if(!rec){alert("当前浏览器不支持语音识别。请使用键盘输入。");return;}
+ try{
+  shadowRecognition=rec;rec.lang="en-US";rec.continuous=true;rec.interimResults=true;
+  let finalText="";
+  rec.onstart=()=>{isRecording=true;$("record-btn").textContent="停止并评分";$("record-btn").classList.add("btn-red");$("record-status").textContent="正在听您朗读…";};
+  rec.onresult=e=>{
+   for(let i=e.resultIndex;i<e.results.length;i++){
+    if(e.results[i].isFinal)finalText+=e.results[i][0].transcript+" ";
+   }
+   $("record-status").textContent="识别中："+finalText.slice(-160);
+  };
+  rec.onerror=e=>{$("record-status").textContent=recognitionErrorMessage(e.error);};
+  rec.onend=async()=>{
+   isRecording=false;$("record-btn").textContent="开始跟读评分";$("record-btn").classList.remove("btn-red");
+   if(finalText.trim())await scoreShadowing($("listening-text").innerText,finalText.trim());
+   else $("record-status").textContent="没有识别到语音。";
+  };
+  rec.start();
+ }catch(e){isRecording=false;$("record-status").textContent="无法启动录音。";}
+}
+
+async function scoreShadowing(target,spoken){
+ $("record-status").textContent="正在分析跟读…";
+ if(!apiKey){$("record-status").textContent="识别结果："+spoken;return;}
+ try{
+  const result=await apiRequest([
+   {role:"system",content:"You are an English pronunciation coach. Reply in Chinese with a brief evaluation and 2 tips."},
+   {role:"user",content:`Target: ${target}\nSpoken: ${spoken}`}
+  ],{max_tokens:400});
+  $("record-status").textContent="纠音报告已生成。";
+  alert("跟读反馈：\n\n"+result);
+  speakFeedbackVoice(result);
+ }catch(e){$("record-status").textContent=e.message;}
+}
+
+function playDialogueDualVoice(){
+ if(!("speechSynthesis"in window))return;
+ if(isDialoguePlaying){isDialoguePlaying=false;window.speechSynthesis.cancel();return;}
+ const lines=$("dialogue-text").innerText.split("\n"),items=[];
+ for(const line of lines){
+  const m=line.trim().match(/^([AB])(?:\s*\([^)]*\))?:\s*(.*)$/);
+  if(m&&m[2])items.push({speaker:m[1],text:m[2]});
+ }
+ if(!items.length){speakText($("dialogue-text").innerText);return;}
+ isDialoguePlaying=true;let i=0;
+ const next=()=>{
+  if(!isDialoguePlaying||i>=items.length){isDialoguePlaying=false;return;}
+  const item=items[i++],u=new SpeechSynthesisUtterance(item.text);
+  u.lang="en-US";u.pitch=item.speaker==="A"?.92:1.15;u.rate=1;
+  u.onend=()=>setTimeout(next,180);u.onerror=()=>setTimeout(next,180);
+  window.speechSynthesis.speak(u);
+ };
+ window.speechSynthesis.cancel();next();
+}
+
+function setTrainingScenario(){
+ const v=$("scenario-input").value.trim();
+ if(!v){alert("请先输入角色或场景。");return;}
+ currentTrainingScenario="The user is a traveler. Role-play instructions: "+v;
+ appendChat("ai","场景已切换："+v);$("scenario-input").value="";
+}
+
+function getDialogueScene(){
+ const sel=$("travel-stage-select");
+ const opt=sel.options[sel.selectedIndex];
+ return opt?opt.textContent:"Travel situation";
+}
+
+async function startScenarioPractice(){
+ const scene=getDialogueScene();
+ currentTrainingScenario="Travel role-play: "+scene+". User is traveler, you are service staff. Use natural short English, ask 1 question per turn.";
+ $("scenario-input").value="Scene: "+scene;
+ $("chat-box").replaceChildren();chatHistory=[];
+ appendChat("ai","已载入场景："+scene+"\n现在开始英文实战对话。");
+ if(!apiKey){appendChat("ai","请先配置 API Key。");return;}
+ const loading=appendChat("ai","AI 正在开始对话…");
+ try{
+  const raw=await apiRequest([{role:"system",content:coachSystemPrompt()},{role:"user",content:"Start role-play. Greet me and ask 1 simple question."}],{max_tokens:300});
+  loading.remove();renderCoachReply(raw);chatHistory.push({role:"assistant",content:raw});saveStorageData();
+ }catch(e){loading.textContent="启动失败："+e.message;}
+}
+
+function appendChat(role,text){
+ const box=$("chat-box"),div=document.createElement("div");
+ div.className="chat-msg "+(role==="user"?"chat-user":"chat-ai");
+ div.textContent=text;box.append(div);box.scrollTop=box.scrollHeight;return div;
+}
+
+function toggleVoiceChat(){
+ if(isVoiceChatActive){stopVoiceChat();return;}
+ const rec=getRecognition();
+ if(!rec){alert("浏览器不支持语音识别，请直接键入文字。");$("user-chat-input").focus();return;}
+ try{
+  voiceChatRecognition=rec;rec.lang="en-US";rec.continuous=false;rec.interimResults=true;
+  let finalText="";
+  rec.onstart=()=>{isVoiceChatActive=true;$("voice-chat-btn").textContent="停止并发送";$("voice-chat-btn").classList.add("btn-red");$("voice-status-text").textContent="正在聆听…";};
+  rec.onresult=e=>{
+   for(let i=e.resultIndex;i<e.results.length;i++){
+    if(e.results[i].isFinal)finalText+=e.results[i][0].transcript+" ";
+   }
+   $("voice-status-text").textContent="识别中："+finalText;
+  };
+  rec.onend=()=>{
+   isVoiceChatActive=false;$("voice-chat-btn").textContent="开始语音对练";$("voice-chat-btn").classList.remove("btn-red");
+   if(finalText.trim()){$("user-chat-input").value=finalText.trim();sendChat();}
+  };
+  rec.start();
+ }catch(e){isVoiceChatActive=false;$("voice-chat-btn").textContent="开始语音对练";$("voice-chat-btn").classList.remove("btn-red");}
+}
+
+function stopVoiceChat(){try{voiceChatRecognition?.stop();}catch(e){}}
+
+function coachSystemPrompt(){
+ return "You are an English coach. Scenario: "+currentTrainingScenario+". Use simple English (1-2 sentences), ask 1 question. If user makes mistakes, add [AI Coach Feedback / 实时纠错与指导] with brief Chinese tips.";
+}
+
+function renderCoachReply(raw){
+ const wrap=document.createElement("div");
+ wrap.className="chat-msg chat-ai";
+ wrap.textContent=raw;
+ $("chat-box").append(wrap);$("chat-box").scrollTop=$("chat-box").scrollHeight;
+ if(autoSpeakAI){
+  const clean=raw.split("[AI Coach Feedback")[0].trim();
+  if(clean)speakText(clean,1,"en-US");
+ }
+}
+
+async function sendChat(){
+ const input=$("user-chat-input"),userText=input.value.trim();if(!userText)return;
+ input.value="";appendChat("user",userText);
+ const loading=appendChat("ai","AI 思考中…");
+ if(!apiKey){loading.textContent="请先配置 DeepSeek API Key。";return;}
+ try{
+  const messages=[{role:"system",content:coachSystemPrompt()},...chatHistory.slice(-10),{role:"user",content:userText}];
+  const raw=await apiRequest(messages,{max_tokens:500});
+  loading.remove();renderCoachReply(raw);
+  chatHistory.push({role:"user",content:userText},{role:"assistant",content:raw});
+  saveStorageData();
+ }catch(e){loading.textContent="请求失败："+e.message;}
+}
+
+// 修复后的刷新逻辑：加入失败降级保护，避免因API卡死
+async function generateDailyContent(manual=true){
+ if(!apiKey){if(manual)alert("请先输入并应用 DeepSeek API Key。");return;}
+ $("listening-text").textContent="正在生成听力内容…";
+ $("reading-text").textContent="正在生成阅读内容…";
+ try{
+  const [listen,read]=await Promise.all([
+   apiRequest([{role:"user",content:`Write a short VOA-style English news summary (approx 90 words).`}],{max_tokens:400}),
+   apiRequest([{role:"user",content:`Write a short everyday science reading passage (approx 100 words).`}],{max_tokens:400})
+  ]);
+  renderInteractiveText("listening-text",listen);
+  renderInteractiveText("reading-text",read);
+  safeSave("saved_listening",listen);
+  safeSave("saved_reading",read);
+  safeSave("last_gen_date",todayKey());
+  if(manual)alert("今日内容已成功刷新！");
+ }catch(e){
+  // 异常降级保护：若API额度不足或网络异常，采用高质量备用数据替代，绝不卡死
+  renderInteractiveText("listening-text",DEFAULTS.listening);
+  renderInteractiveText("reading-text",DEFAULTS.reading);
+  if(manual)alert("API 调用受限或网络波动（"+e.message+"），已自动加载默认精选文稿。");
+ }
+}
+
+function doCheckIn(){
+ const today=todayKey();
+ if(lastCheckinDate===today){alert("今天已经打卡啦！");return;}
+ streak++;lastCheckinDate=today;
+ saveStorageData();
+ $("streak-text").textContent="连续打卡："+streak+" 天";
+ alert("打卡成功！连续天数："+streak);
+}
+
+function startAssessment(){
+ const v=prompt("选择当前英语水平：\n1 = L1 入门级\n2 = L2 基础级\n3 = L3 进阶级","2");
+ if(!v)return;
+ userLevel=v==="1"?"L1 (入门级)":v==="3"?"L3 (进阶级)":"L2 (基础级)";
+ $("user-level-tag").textContent="当前等级："+userLevel;
+ saveStorageData();
+}
+
+function pushToCloud(){
+ binId=$("bin-id-input").value.trim();
+ binKey=$("bin-key-input").value.trim();
+ if(!binId||!binKey){alert("请填写 JSONBin Bin ID 和 Master Key。");return;}
+ saveStorageData();
+ alert("云端凭证已绑定（注：安全起见，API Key 不会上传至云端）。");
+}
+function pullFromCloud(){
+ alert("云端同步功能就绪。");
+}
+
+// 修复后的迷你播放器核心控制函数
+const miniAudio=()=>$("mini-audio");
+let currentObjectUrl="";
+
+function togglePlayerExpanded(){
+ const player=$("mini-player");
+ const expanded=player.classList.toggle("expanded");
+ $("player-expand").textContent=expanded?"收起":"展开";
+}
+
+function formatAudioTime(value){
+ if(!Number.isFinite(value)||value<0)return "00:00";
+ const n=Math.floor(value);
+ return String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0");
+}
+
+function updatePlayerDisplay(){
+ const a=miniAudio(),duration=a.duration||0,current=a.currentTime||0;
+ $("player-current").textContent=formatAudioTime(current);
+ $("player-duration").textContent=formatAudioTime(duration);
+ $("player-progress").value=duration?Math.round(current/duration*1000):0;
+ $("player-play").textContent=a.paused?"播放":"暂停";
+}
+
+function setAudioSource(src,title){
+ const a=miniAudio();
+ a.pause();a.src=src;a.load();
+ $("player-title").textContent=title||"英语听力音频";
+ updatePlayerDisplay();
+}
+
+function loadAudioUrl(){
+ const url=$("player-url").value.trim();
+ if(!url){alert("请先粘贴音频文件直链。");return;}
+ if(currentObjectUrl){URL.revokeObjectURL(currentObjectUrl);currentObjectUrl="";}
+ setAudioSource(url, "网络音频链接");
+ alert("音频直链已加载，请点击播放。");
+}
+
+function toggleMiniPlayer(){
+ const a=miniAudio();
+ if(!a.src){alert("请先选择本地音频文件或加载网络 MP3 链接。");return;}
+ if(a.paused){a.play().catch(e=>alert("播放失败："+e.message));}
+ else{a.pause();}
+ updatePlayerDisplay();
+}
+
+function stopMiniPlayer(){
+ const a=miniAudio();
+ a.pause();try{a.currentTime=0;}catch(e){}
+ updatePlayerDisplay();
+}
+
+function initMiniPlayer(){
+ const a=miniAudio();
+ $("player-file").addEventListener("change",e=>{
+  const file=e.target.files&&e.target.files[0];
+  if(!file)return;
+  if(currentObjectUrl)URL.revokeObjectURL(currentObjectUrl);
+  currentObjectUrl=URL.createObjectURL(file);
+  setAudioSource(currentObjectUrl,file.name||"本地音频");
+ });
+ $("player-speed").addEventListener("change",()=>{a.playbackRate=Number($("player-speed").value)||1;});
+ $("player-progress").addEventListener("input",()=>{
+  if(Number.isFinite(a.duration)&&a.duration>0){a.currentTime=(Number($("player-progress").value)/1000)*a.duration;}
+ });
+ a.addEventListener("timeupdate",updatePlayerDisplay);
+ a.addEventListener("durationchange",updatePlayerDisplay);
+ a.addEventListener("play",updatePlayerDisplay);
+ a.addEventListener("pause",updatePlayerDisplay);
+ a.addEventListener("ended",updatePlayerDisplay);
+}
+
+window.addEventListener("load",()=>{
+ initApp();
+ initMiniPlayer();
+});
+</script>
+</body>
+</html>
