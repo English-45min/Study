@@ -1,0 +1,10 @@
+self.addEventListener('install', (e) => {
+  self.skipWaiting();
+});
+self.addEventListener('activate', (e) => {
+  e.waitUntil(clients.claim());
+});
+self.addEventListener('fetch', (e) => {
+  // 基础直通代理，确保满足 PWA 离线/安装容器标准
+  e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+});
