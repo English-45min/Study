@@ -7,10 +7,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="AI 英语15分钟">
-<!-- 确保 PWA 图标与网页 Favicon 稳定显示 -->
 <link rel="icon" type="image/png" href="./icon.png">
 <link rel="apple-touch-icon" href="./icon.png">
- <link rel="manifest" href="./manifest.json">
+<link rel="manifest" href="./manifest.json">
 <title>AI 英语15分钟</title>
 <style>
 :root{--primary:#4F46E5;--bg:#F3F4F6;--card:#fff;--text:#1F2937;--green:#16A34A;--muted:#6B7280}
@@ -223,7 +222,6 @@ const DEFAULTS={
  reading:"Language acquisition works best with consistent comprehensible input that matches your level. Short daily practice can help learners build confidence. Try to understand the main idea first. Then read again and notice useful words and expressions."
 };
 
-// 12个完整的旅游实战场景预设（每场景均包含完整的18轮高频双语对白）
 const TRAVEL_SCENARIOS = [
  {
   title: "Stage 01: 机场值机、选座与超重行李交涉 (Airport Check-in & Baggage)",
@@ -459,7 +457,7 @@ A (Alex): Fantastic. Where should we return the audio guides when we leave?
 B (Sarah): You can return them either here at the front desk or at the exit booth on the ground floor.
 中文：您可以在前台归还，也可以在一楼的出口处归还。
 A (Alex): Thank you for all the clear information. Have a nice afternoon!
-中文：谢谢您提供这么清晰的信息。祝您下午过得愉快！`
+中文：谢谢您提供这么清晰的信息。祝您过得愉快！`
  },
  {
   title: "Stage 07: 商场购物、尺码挑选与退税咨询 (Shopping & Tax Refund)",
@@ -481,7 +479,7 @@ A (Alex): No, this fits just right. I'll take it. By the way, do you participate
 B (Sarah): Yes, we do. If your total purchase exceeds $100 in a single receipt, you are eligible for a tax refund.
 中文：是的，我们参与。如果您单张小票消费超过100美元，就有资格申请退税。
 A (Alex): That's great! What documents do I need to present at your customer service counter?
-中文：太棒了！我需要在你们的客服柜台出示什么文件？
+中文：太棒了！我需要在你们的服务台出示什么文件？
 B (Sarah): Just your original passport and the payment receipt. We will issue a tax invoice form for customs at the airport.
 中文：只需出示您的原件护照和付款收据。我们将为您开具供机场海关核验的退税发票单。
 A (Alex): Can I get cash back immediately, or is it processed at the airport terminal?
@@ -1078,15 +1076,72 @@ function startAssessment(){
  saveStorageData();
 }
 
-function pushToCloud(){
+// 真正可用的 JSONBin 云端同步逻辑
+async function pushToCloud(){
  binId=$("bin-id-input").value.trim();
  binKey=$("bin-key-input").value.trim();
- if(!binId||!binKey){alert("请填写 JSONBin Bin ID 和 Master Key。");return;}
+ if(!binId||!binKey){alert("请完整填写 JSONBin Bin ID 和 Master Key。");return;}
  saveStorageData();
- alert("云端凭证已绑定（注：安全起见，API Key 不会上传至云端）。");
+ const payload={
+  userLevel,
+  streak,
+  vocabBook,
+  lastCheckinDate,
+  updatedAt: new Date().toISOString()
+ };
+ $("cloud-status").textContent="正在推送到云端…";
+ try{
+  const res=await fetch(`https://api.jsonbin.io/v3/b/${binId}`,{
+   method:"PUT",
+   headers:{
+    "Content-Type":"application/json",
+    "X-Master-Key":binKey
+   },
+   body:JSON.stringify(payload)
+  });
+  if(!res.ok)throw new Error(`同步失败 (HTTP ${res.status})`);
+  $("cloud-status").textContent="推送成功！云端数据已更新。";
+  alert("生词本与打卡数据已成功推送到云端！");
+ }catch(e){
+  $("cloud-status").textContent="推送出错：" + e.message;
+  alert("推送到云端失败：" + e.message + "\n请检查 Bin ID 与 Master Key 是否正确。");
+ }
 }
-function pullFromCloud(){
- alert("云端同步功能就绪。");
+
+async function pullFromCloud(){
+ binId=$("bin-id-input").value.trim();
+ binKey=$("bin-key-input").value.trim();
+ if(!binId||!binKey){alert("请完整填写 JSONBin Bin ID 和 Master Key。");return;}
+ saveStorageData();
+ $("cloud-status").textContent="正在从云端拉取…";
+ try{
+  const res=await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`,{
+   method:"GET",
+   headers:{
+    "X-Master-Key":binKey
+   }
+  });
+  if(!res.ok)throw new Error(`拉取失败 (HTTP ${res.status})`);
+  const data=await res.json();
+  const record=data.record;
+  if(record){
+   if(record.userLevel){userLevel=record.userLevel;safeSave("user_level",userLevel);}
+   if(typeof record.streak==="number"){streak=record.streak;safeSave("streak",String(streak));}
+   if(Array.isArray(record.vocabBook)){vocabBook=record.vocabBook;safeSave("vocab_book",JSON.stringify(vocabBook));}
+   if(record.lastCheckinDate){lastCheckinDate=record.lastCheckinDate;safeSave("last_checkin_date",lastCheckinDate);}
+   
+   $("user-level-tag").textContent="当前等级："+userLevel;
+   $("streak-text").textContent="连续打卡："+streak+" 天";
+   renderVocabBook();
+   $("cloud-status").textContent="拉取成功！本地数据已同步。";
+   alert("成功从云端拉取最新数据！");
+  }else{
+   throw new Error("云端数据格式无效");
+  }
+ }catch(e){
+  $("cloud-status").textContent="拉取出错：" + e.message;
+  alert("从云端拉取失败：" + e.message + "\n请检查 Bin ID 与 Master Key。");
+ }
 }
 
 const miniAudio=()=>$("mini-audio");
@@ -1165,11 +1220,6 @@ window.addEventListener("load",()=>{
  initApp();
  initMiniPlayer();
 });
- if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration failed: ', err));
-  });
-}
 </script>
 </body>
 </html>
