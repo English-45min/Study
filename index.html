@@ -65,10 +65,12 @@ summary{cursor:pointer;font-weight:600;font-size:13px}
 .controls{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
 .controls .btn{flex:1}
 .notice{padding:10px;border-radius:8px;background:#FFF7ED;color:#9A3412;font-size:12px;line-height:1.6;margin:8px 0}
-.mini-player{position:fixed;left:0;right:0;bottom:0;z-index:25;background:#111827;color:#F9FAFB;padding:7px 10px calc(7px + env(safe-area-inset-bottom));box-shadow:0 -5px 18px #0002}
-.mini-player-main{display:flex;align-items:center;gap:7px;min-width:0}
+
+/* 紧凑播放器：默认只显示播放键、标题和展开键 */
+.mini-player{position:fixed;left:0;right:0;bottom:0;z-index:25;background:#111827;color:#F9FAFB;padding:4px 8px calc(4px + env(safe-area-inset-bottom));box-shadow:0 -5px 18px #0002}
+.mini-player-main{display:flex;align-items:center;gap:6px;min-width:0;min-height:30px}
 .mini-player-title{flex:1;min-width:0;font-size:11px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mini-player button{border:0;border-radius:7px;padding:7px 9px;background:#4F46E5;color:#fff;font-size:11px;min-height:30px}
+.mini-player button{border:0;border-radius:7px;padding:5px 8px;background:#4F46E5;color:#fff;font-size:11px;min-height:28px}
 .mini-player button.secondary{background:#374151}
 .mini-player input[type=range]{width:100%;accent-color:#818CF8}
 .mini-player-tools{display:flex;align-items:center;gap:7px;margin-top:7px}
@@ -79,6 +81,8 @@ summary{cursor:pointer;font-weight:600;font-size:13px}
 .mini-player .mini-player-tools,.mini-player #player-status{display:none}
 .mini-player.expanded .mini-player-tools,.mini-player.expanded #player-status{display:flex}
 .mini-player.expanded #player-status{display:block}
+.mini-player:not(.expanded) .mini-player-main>button:nth-of-type(2),
+.mini-player:not(.expanded) .mini-player-main>button:nth-of-type(3){display:none}
 @media(min-width:600px){.container{padding:0 18px}}
 .resource-link{display:flex;flex-direction:column;gap:3px;padding:9px;border:1px solid #E2E8F0;border-radius:8px;text-decoration:none;color:inherit;background:#F8FAFC;min-width:0}
 .resource-link b{font-size:13px;color:#1D4ED8}
@@ -200,7 +204,7 @@ summary{cursor:pointer;font-weight:600;font-size:13px}
 <div class="api-statusbar"><div>服务状态：<b id="balance-status">未配置 API</b></div><div>余额：<b id="balance-amount">不检测</b></div></div>
 <script>
  "use strict";
-const $=id=>document.getElementById(id);
+const $=id=>id.startsWith(".")?document.querySelector(id):document.getElementById(id);
 const DEFAULTS={
  listening:"Many companies now use artificial intelligence, or AI, at work. AI can help people write emails, plan meetings, and answer questions. Some workers say AI saves time. They can finish tasks faster. But other people are worried. They think AI may make mistakes or take jobs. This week, a new report said workers need to learn new skills. Schools and companies can teach these skills. Experts say people should use AI carefully. They say humans must always check the work. AI is a tool, not a replacement for people.",
  reading:"Language acquisition works best with consistent comprehensible input that matches your level. Short daily practice can help learners build confidence. Try to understand the main idea first. Then read again and notice useful words and expressions.",
@@ -398,7 +402,7 @@ async function speakText(text,rate=1,lang="en-US"){
   if(preferred)utter.voice=preferred;
   utter.onerror=e=>{
    if(e.error!=="canceled"&&e.error!=="interrupted")console.warn("Speech error",e.error);
-  };
+     };
   setTimeout(()=>{try{synth.resume();synth.speak(utter);synth.resume();}catch(e){console.warn(e);}},120);
  }catch(e){console.warn("Speech module error",e);}
 }
@@ -568,7 +572,7 @@ async function sendChat(){
   $("voice-status-text").textContent=autoSpeakAI?"回复完成，英文部分已自动朗读。":"回复完成。可点击“重听英文回复”。";
  }catch(e){loading.textContent="AI 请求失败："+e.message+"。请检查网络、API Key 和余额后重试。";$("voice-status-text").textContent="AI 请求失败";}
 }
- async function generateDailyContent(manual=true){
+async function generateDailyContent(manual=true){
  if(!apiKey){if(manual)alert("请先在顶部输入并应用 DeepSeek API Key。");return;}
  const stage=TRAVEL[Math.floor(Math.random()*TRAVEL.length)];
  const seed=todayKey()+"-"+Math.random().toString(36).slice(2,7);
@@ -601,7 +605,7 @@ async function sendChat(){
   if(manual)alert("生成失败："+e.message+"。已保留原有学习内容。");
  }
 }
-function extractJson(s){
+ function extractJson(s){
  const clean=s.replace(/```(?:json)?/gi,"").trim();
  const a=clean.indexOf("{"),b=clean.lastIndexOf("}");
  if(a<0||b<a)throw new Error("AI 返回格式不是 JSON");
@@ -810,7 +814,7 @@ function rateFlashcard(level){
  }
  saveStorageData();currentFlashcardIndex++;loadFlashcard();
 }
- // ===== 紧凑播放器 =====
+  // ===== 紧凑播放器 =====
 const miniAudio=()=>$("mini-audio");
 let currentObjectUrl="",currentAudioTitle="英语听力音频";
 function togglePlayerExpanded(){
