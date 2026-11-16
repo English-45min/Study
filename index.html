@@ -4,12 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#4F46E5">
+
+<!-- PWA 图标及沉浸式全屏适配（iOS & Android 统一增强） -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="AI 英语15分钟">
-<link rel="icon" type="image/png" href="./icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon.png">
 <link rel="apple-touch-icon" href="./icon.png">
 <link rel="manifest" href="./manifest.json">
+
 <title>AI 英语15分钟</title>
 <style>
 :root{--primary:#4F46E5;--bg:#F3F4F6;--card:#fff;--text:#1F2937;--green:#16A34A;--muted:#6B7280}
@@ -645,7 +648,7 @@ B (Sarah): International postcard postage is $2.50 per stamp. Here are three sta
 A (Alex): Perfect. Now, what about the small box? It weighs about 1.2 kilograms.
 中文：完美。那么这个小盒子呢？它重大约1.2公斤。
 B (Sarah): Let's check the weight... Exactly 1.25 kg. Do you want standard surface shipping or priority airmail?
-中文：我们看一下重量……正好1.25公斤。您要标准海运还是优先航空快件？
+中文：我们看一下重量……正好1.25公斤。您要 standard surface shipping 还是 priority airmail？
 A (Alex): Priority airmail please. How long will it take to arrive in Beijing?
 中文：请选优先航空快件。大概需要多长时间才能到达北京？
 B (Sarah): Usually it takes about 7 to 10 business days with tracking number included.
@@ -1076,7 +1079,6 @@ function startAssessment(){
  saveStorageData();
 }
 
-// 真正可用的 JSONBin 云端同步逻辑
 async function pushToCloud(){
  binId=$("bin-id-input").value.trim();
  binKey=$("bin-key-input").value.trim();
