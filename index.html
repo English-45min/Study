@@ -10,6 +10,7 @@
 <!-- 确保 PWA 图标与网页 Favicon 稳定显示 -->
 <link rel="icon" type="image/png" href="./icon.png">
 <link rel="apple-touch-icon" href="./icon.png">
+ <link rel="manifest" href="./manifest.json">
 <title>AI 英语15分钟</title>
 <style>
 :root{--primary:#4F46E5;--bg:#F3F4F6;--card:#fff;--text:#1F2937;--green:#16A34A;--muted:#6B7280}
@@ -1164,6 +1165,11 @@ window.addEventListener("load",()=>{
  initApp();
  initMiniPlayer();
 });
+ if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration failed: ', err));
+  });
+}
 </script>
 </body>
 </html>
