@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -167,10 +168,11 @@ summary{cursor:pointer;font-weight:600;font-size:13px}
  </section>
  <section class="section">
   <span class="tag">04 AI 一对一口语对练与纠错</span>
-  <p class="muted">点击开始录音，说完后点击停止；识别文本会自动发送。也可手动输入。AI 会先用英语接话，再用中文指出表达问题。</p>
+  <p class="muted">选择语音模式后开始练习。一键一轮：说完自动发送，AI 朗读后等待你点击下一轮；连续对话：AI 朗读后尝试自动重新监听。也可随时使用文字输入。</p>
   <input id="scenario-input" class="chat-input" placeholder="角色/场景，例如：我做旅客，你做机场工作人员">
   <button class="btn btn-outline" style="width:100%;margin-top:7px" onclick="setTrainingScenario()">应用对话场景</button>
   <label class="auto-speak-setting"><input type="checkbox" id="auto-speak-toggle" checked> AI 英文回复后自动朗读（只读英文，不读中文纠错）</label><div class="chat-container" id="chat-box"><div class="chat-msg chat-ai">Hi! I'm your English speaking coach. Choose a travel scene in section 03, then tap “将本场景带入04并开始练习”.</div></div>
+  <div class="row" style="margin-top:9px;align-items:center"><label for="voice-chat-mode" class="muted" style="white-space:nowrap">语音模式</label><select id="voice-chat-mode" class="api-input" style="flex:1"><option value="one">一键一轮（推荐初学者）</option><option value="continuous">连续对话</option></select></div>
   <div class="controls" style="margin-top:9px"><button id="voice-chat-btn" class="btn btn-green" onclick="toggleVoiceChat()">开始语音对练</button><button class="btn btn-outline" onclick="stopVoiceChat()">停止录音</button></div>
   <div id="voice-status-text" class="muted" style="text-align:center">语音功能需要 HTTPS 页面和浏览器麦克风权限。若语音识别不可用，可使用下方文字输入。</div>
   <div class="chat-input-row"><input id="user-chat-input" class="chat-input" placeholder="输入英文句子..." autocomplete="off"><button class="btn" onclick="sendChat()">发送</button></div>
@@ -406,7 +408,7 @@ B (Sarah): Absolutely, half-sweet and less ice noted. Anything else to eat? We h
 A (Alex): I'd like one warm ham and cheese croissant, and a blueberry muffin to go, please.
 中文：我想要一个加热的火腿奶酪牛角包，和一个蓝莓麦芬打包。
 B (Sarah): Would you like the croissant toasted in our oven? It melts the cheese nicely.
-中文：需要把牛角包在烤箱里烤一下吗？这样里面的芝士融化起来更好吃。
+中文：需要把牛角面包在烤箱里烤一下吗？这样里面的芝士融化起来更好吃。
 A (Alex): Yes, please. Toasted would be amazing.
 中文：好的，请烤一下。烤热会很棒。
 B (Sarah): Your total comes to $18.50. You can tap your card or phone right on the reader.
@@ -420,6 +422,417 @@ A (Alex): Thank you so much. Where should I wait for my order?
 B (Sarah): We will call your name or order number at the pickup counter once it's ready, about five minutes.
 中文：准备好后我们会在取餐台叫您的名字或订单号，大约五分钟。
 A (Alex): Perfect, I'll wait over there by the window.
+中文：太好了，我就在那边的窗户旁等候。
+B (Sarah): Enjoy your morning coffee and bakery items!
+中文：祝您享用早晨的咖啡和点心！`
+ },
+ {
+  title: "Stage 06: 购买博物馆门票、语音导览与问路 (Attraction Tickets)",
+  content: `Scene: Buying tickets, audio guides and asking museum directions
+A (Alex): Hello, I’d like to purchase three adult tickets for the main museum exhibition today.
+中文：你好，我想买三张今天主博物馆展览的成人票。
+B (Sarah): Good afternoon. General admission is $25 per adult, so that's $75 in total.
+中文：下午好。普通门票每位成人25美元，总共是75美元。
+A (Alex): Does this ticket include access to the special dinosaur exhibition on the second floor?
+中文：这张票包含参观二楼恐龙特展的权限吗？
+B (Sarah): Not general admission. The special exhibition requires a combo ticket, which is an extra $10 per person.
+中文：普通门票不包含。特展需要买联票，每人额外加10美元。
+A (Alex): Let's upgrade all three tickets to the combo pass, please.
+中文：请把三张票都升级为联票吧。
+B (Sarah): Sure. Would you also like to rent audio guide devices? They are available in Chinese, English, and Japanese.
+中文：好的。您还需要租借语音导览设备吗？提供中文、英文和日语版本。
+A (Alex): Yes, we'll take two audio guides. Do we need to leave an ID as deposit?
+中文：好的，我们要两个语音导览。需要留身份证件作为押金吗？
+B (Sarah): Just a driver's license or credit card will do. Each guide is $8.
+中文：只需留个驾照或信用卡就行。每个导览器8美元。
+A (Alex): Here is my credit card for the deposit. By the way, where is the elevator or restroom from here?
+中文：这是作为押金的信用卡。顺便问一下，电梯和洗手间从这里怎么走？
+B (Sarah): Restrooms are located right behind the ticket counter to your left. Elevators are past the gift shop.
+中文：洗手间在您左手边的售票柜台后面。电梯穿过礼品店就能看到。
+A (Alex): Thank you. Also, is photography allowed inside the exhibition halls?
+中文：谢谢。另外，展厅里面允许拍照吗？
+B (Sarah): Photography is permitted, but flash photography and selfie sticks are strictly prohibited to protect the artifacts.
+中文：允许拍照，但为了保护文物，严禁使用闪光灯和自拍杆。
+A (Alex): Understood, no flash. What time does the museum close this evening?
+中文：明白了，不用闪光灯。博物馆今晚几点闭馆？
+B (Sarah): We close at 5:00 PM sharp, but last entry is at 4:15 PM, so you have plenty of time.
+中文：我们下午5点整闭馆，但最晚入场时间是4点15分，所以你们有充足的时间。
+A (Alex): Fantastic. Where should we return the audio guides when we leave?
+中文：太棒了。我们离开时应该把导览器还到哪里？
+B (Sarah): You can return them either here at the front desk or at the exit booth on the ground floor.
+中文：您可以在前台归还，也可以在一楼的出口处归还。
+A (Alex): Thank you for all the clear information. Have a nice afternoon!
+中文：谢谢您提供这么清晰的信息。祝您过得愉快！`
+ },
+ {
+  title: "Stage 07: 商场购物、尺码挑选与退税咨询 (Shopping & Tax Refund)",
+  content: `Scene: Shopping, trying clothes and asking about tourist tax refund
+A (Alex): Excuse me, could you help me find this jacket in a size medium? I only see large on the shelf.
+中文：打扰一下，能帮我找一下这件夹克的M码吗？架子上我只看到了L码。
+B (Sarah): Let me check our back storage room for you. What color were you looking for, navy blue or charcoal?
+中文：我帮您去后仓查一下。您想找什么颜色的，藏青色还是碳灰色？
+A (Alex): Navy blue, medium size please.
+中文：藏青色，M码谢谢。
+B (Sarah): Just a moment... Here you are. We have one medium left in navy blue. Would you like to try it on?
+中文：请稍等……给您。藏青色我们还剩最后一件M码。您想试穿一下吗？
+A (Alex): Yes, where are the fitting rooms located?
+中文：好的，请问试衣间在哪里？
+B (Sarah): Fitting rooms are right over there next to the shoe department. Need any other sizes?
+中文：试衣间就在那边鞋类专柜旁边。还需要其他尺码吗？
+A (Alex): No, this fits just right. I'll take it. By the way, do you participate in the tourist tax refund scheme?
+中文：不用了，这件正合身。我要了。顺便问一下，你们参与游客退税计划吗？
+B (Sarah): Yes, we do. If your total purchase exceeds $100 in a single receipt, you are eligible for a tax refund.
+中文：是的，我们参与。如果您单张小票消费超过100美元，就有资格申请退税。
+A (Alex): That's great! What documents do I need to present at your customer service counter?
+中文：太棒了！我需要在你们的服务台出示什么文件？
+B (Sarah): Just your original passport and the payment receipt. We will issue a tax invoice form for customs at the airport.
+中文：只需出示您的原件护照和付款收据。我们将为您开具供机场海关核验的退税发票单。
+A (Alex): Can I get cash back immediately, or is it processed at the airport terminal?
+中文：我可以立刻拿到现金返还吗，还是在机场航站楼办理？
+B (Sarah): We provide the invoice here, and you present it along with the goods at the airport customs desk before departure.
+中文：我们在这里开具发票，您需要在出发前在机场海关柜台连同商品一同出示办理。
+A (Alex): Clear enough. I'll pay by credit card now.
+中文：很清楚了。我现在用信用卡付款。
+B (Sarah): Thank you. Please insert or tap your card on the terminal. Would you like a paper receipt or digital receipt?
+中文：谢谢。请在终端上插卡或刷卡。您需要纸质小票还是电子小票？
+A (Alex): Paper receipt, please, for the tax refund paperwork.
+中文：请给我纸质小票，为了办理退税文件。
+B (Sarah): Here is your receipt and shopping bag. Customer service is on level two if you need the tax form right now.
+中文：这是您的收据和购物袋。如果您现在就需要退税单，客服中心在二楼。
+A (Alex): Thank you so much for your professional assistance.
+中文：非常感谢您的专业协助。`
+ },
+ {
+  title: "Stage 08: 药店买药、症状描述与寻找失物 (Pharmacy & Lost Property)",
+  content: `Scene: Pharmacy consultation, medicine recommendation and lost item
+A (Alex): Good afternoon. I'm looking for something effective for a severe sore throat and runny nose.
+中文：下午好。我在找对严重喉咙痛和流鼻涕有效的东西。
+B (Sarah): Good afternoon. How long have you had these cold symptoms? Any fever or body aches?
+中文：下午好。您出现这些感冒症状有多久了？有发烧或全身酸痛吗？
+A (Alex): Started since last night, no fever yet, just feeling quite tired and dizzy.
+中文：从昨晚开始的，目前还没发烧，就是觉得挺累和头晕。
+B (Sarah): I see. Are you allergic to any medications, like penicillin or aspirin?
+中文：我明白了。您对任何药物过敏吗，比如盘尼西林或阿司匹林？
+A (Alex): No known allergies. What would you recommend for travel use?
+中文：没有已知过敏史。您推荐什么适合旅行时吃的？
+B (Sarah): I recommend this daytime capsule for congestion and nighttime syrup for better sleep.
+中文：我推荐这款用于鼻塞的日间胶囊和用于改善睡眠的夜间糖浆。
+A (Alex): Perfect, I'll take both. Also, by any chance, has anyone turned in a lost black leather wallet today?
+中文：太好了，这两样我都买。另外，今天有没有人上交了一个丢失的黑色皮夹？
+B (Sarah): Let me check our store lost and found box... What brand or what cards were inside?
+中文：我查看一下我们店的失物招领箱……是什么品牌或者里面有什么卡？
+A (Alex): It's a Coach wallet containing a driver's license under the name Alex Zhang and some hotel receipts.
+中文：是一个Coach钱包，里面有一张叫 Alex Zhang 的驾照和一些酒店收据。
+B (Sarah): Oh! A customer actually dropped a black leather wallet off about an hour ago. Let me verify the ID inside.
+中文：哦！确实有一个顾客大约一小时前送来了一个黑色皮夹。让我核对一下里面的证件。
+A (Alex): Really? That's incredible! Here is my passport to prove my identity.
+中文：真的吗？太不可思议了！这是我的护照用来证明我的身份。
+B (Sarah): Let's check the driver's license photo... Yes, it's an exact match! Here is your wallet.
+中文：核对一下驾照照片……是的，完全吻合！这是您的钱包。
+A (Alex): I cannot thank you enough! You saved our entire trip!
+中文：真是感激不尽！你们拯救了我们的整个旅行！
+B (Sarah): You're very welcome. Please be more careful with your valuables while traveling.
+中文：不用客气。旅行时请多保管好您的贵重物品。
+A (Alex): I certainly will. How much do I owe you for the medicine?
+中文：我一定会注意的。请问这些药多少钱？
+B (Sarah): That comes to $24.80 in total. Card or cash?
+中文：总共是24.80美元。刷卡还是付现金？
+A (Alex): Card, please. Thanks again for your honesty and help!
+中文：刷卡，谢谢。再次感谢您的诚实和帮助！`
+ },
+ {
+  title: "Stage 09: 餐厅订位、过敏申报与特殊要求 (Restaurant Reservation)",
+  content: `Scene: Restaurant table reservation, dietary restrictions and allergies
+A (Alex): Hello, I'd like to book a table for four adults and one child this coming Saturday at 7:00 PM.
+中文：你好，我想预订本周六晚上7点四个大人和一个小孩的桌位。
+B (Sarah): Good afternoon. Let me check our seating chart... Yes, we can accommodate your party at 7:00 PM. May I have your name and phone number?
+中文：下午好。我查一下座位图……可以的，我们能在晚上7点接待您的聚会。请问您的姓名和电话号码是？
+A (Alex): My name is Alex Zhang, phone number is 555-0198.
+中文：我叫 Alex Zhang，电话号码是 555-0198。
+B (Sarah): Thank you, Mr. Zhang. Do you prefer indoor seating or our garden terrace?
+中文：谢谢您，张先生。您偏好室内座位还是我们的花园露台？
+A (Alex): Garden terrace would be lovely, weather permitting. Also, is it possible to have a high chair for our toddler?
+中文：如果天气允许的话，花园露台会很棒。另外，能为我们的幼儿准备一张儿童高脚椅吗？
+B (Sarah): Absolutely, a high chair will be reserved at your table. Are there any dietary restrictions or food allergies?
+中文：没问题，您的桌位会预留一把儿童高脚椅。有什么饮食限制或食物过敏吗？
+A (Alex): Yes, one of us has a severe peanut allergy. We need to make sure no dishes contain peanuts or cross-contamination.
+中文：有的，我们其中一人对花生有严重过敏。我们需要确保没有任何菜肴包含花生或发生交叉污染。
+B (Sarah): Understood completely. I will make a prominent note on your reservation and inform our executive chef directly.
+中文：完全明白。我会在您的预订上做显眼备注，并直接通知我们的行政主厨。
+A (Alex): Thank you for taking safety so seriously. Do you have vegetarian options on the menu as well?
+中文：谢谢你们如此重视安全。菜单上也有素食选择吗？
+B (Sarah): Yes, we offer a dedicated plant-based seasonal menu alongside our regular steaks and seafood.
+中文：有的，除了常规牛排和海鲜外，我们提供专门的植物性季节菜单。
+A (Alex): Perfect. What is your dress code policy for dinner time?
+中文：太完美了。晚餐时间的着装要求是什么？
+B (Sarah): Smart casual is fine, just no athletic sportswear or beach flip-flops, please.
+中文：智能休闲装即可，请不要穿运动休闲服或海滩人字拖。
+A (Alex): Got it. We will dress accordingly. Should we reconfirm on Saturday afternoon?
+中文：明白了。我们会按要求着装。我们需要在周六下午再次确认吗？
+B (Sarah): No need, your booking is securely locked in. We will send an SMS reminder on Saturday morning.
+中文：不需要，您的预订已稳妥锁定。我们会在周六上午发送短信提醒。
+A (Alex): Excellent service. See you on Saturday evening!
+中文：出色的服务。周六晚上见！`
+ },
+ {
+  title: "Stage 10: 酒店退房、行李寄存与机场交通 (Hotel Check-out & Taxi)",
+  content: `Scene: Hotel check-out, luggage storage and booking airport taxi
+A (Alex): Good morning, I'd like to check out of room 508.
+中文：早上好，我想办理508房间的退房手续。
+B (Sarah): Good morning, Mr. Zhang. How was your stay with us? Did you consume anything from the minibar?
+中文：早上好，张先生。您在我们这里的入住体验如何？迷你吧有消费吗？
+A (Alex): Everything was wonderful. We didn't touch anything in the minibar, just drank the complimentary bottled water.
+中文：一切都很好。迷你吧的东西我们没碰，只喝了赠送的瓶装水。
+B (Sarah): Perfect. Let me generate your final itemized bill... Here it is, total comes to zero since room charges were prepaid.
+中文：完美。我来生成您的最终明细账单……给您，因为房费已预付，总额为零。
+A (Alex): Excellent. Can we store our three suitcases in the luggage room until 4:00 PM? Our flight is at night.
+中文：太好了。我们可以把三个行李箱寄存在行李房到下午4点吗？我们的航班在晚上。
+B (Sarah): Of course, luggage storage is complimentary. I will give you three claim tags. Please keep them safe.
+中文：当然可以，行李寄存是免费的。我会给您三个寄存牌，请妥善保管。
+A (Alex): Thank you. Also, could your concierge book a reliable taxi or airport shuttle for us at 4:30 PM?
+中文：谢谢。另外，礼宾部能帮我们预约一辆下午4点30分可靠的出租车或机场班车吗？
+B (Sarah): I can book an executive van taxi for you right now. It comfortably fits three people and all your bags.
+中文：我现在就可以为您预订一辆行政面包车出租车，它能舒适容纳三个人和您所有的行李。
+A (Alex): That would be ideal. How much is the estimated fare to the international airport?
+中文：那太理想了。去国际机场的预估车费是多少？
+B (Sarah): Around $45 to $55 depending on traffic, payable directly to the driver by card or cash.
+中文：视交通情况大约45到55美元，可直接刷卡或付现给司机。
+A (Alex): Sounds reasonable. Please go ahead and book it.
+中文：听起来很合理。请帮我们预订吧。
+B (Sarah): Booked. Confirmation number is 7892. The driver will wait outside the main lobby at 4:30 sharp.
+中文：已预订。确认号是 7892。司机将于4点30分整在大堂外等候。
+A (Alex): Thank you for the seamless check-out service. We had a great time staying here.
+中文：感谢您顺畅的退房服务。我们在这里度过了美好的时光。
+B (Sarah): Thank you for choosing our hotel, Mr. Zhang. Have a safe journey back home!
+中文：感谢您选择我们的酒店，张先生。祝您回程一路平安！`
+ },
+ {
+  title: "Stage 11: 乘坐地铁、购买车票与路线咨询 (Subway Tickets & Navigation)",
+  content: `Scene: Buying subway tickets, day pass and asking directions
+A (Alex): Excuse me, how can we get to the central museum using the subway system from this station?
+中文：打扰一下，我们怎么从这个地铁站坐地铁去中央博物馆？
+B (Sarah): You need to take the Red Line northbound, transfer at City Interchange, and get off at Art Gallery station.
+中文：您需要乘坐红线北行，在城市换乘枢纽转车，然后在美术馆站下车。
+A (Alex): Is it complicated? Where can I buy the tickets or transit cards?
+中文：复杂吗？请问在哪里可以买到车票或交通卡？
+B (Sarah): You can buy single-trip tickets or a 24-hour tourist day pass right over at those automated ticket machines.
+中文：您可以在那边的自动售票机上直接买单程票或24小时旅游日票。
+A (Alex): Let's see... Are these machines touch screen and do they accept credit cards?
+中文：我看看……这些机器是触摸屏的吗，支持信用卡吗？
+B (Sarah): Yes, they support English interface, contactless credit cards, and cash. Just touch the screen to start.
+中文：是的，支持英文界面、非接触式信用卡和现金。触摸屏幕即可开始。
+A (Alex): Got it. For three adults for one day, is the day pass more economical?
+中文：明白了。对于三个大人用一天来说，日票更划算吗？
+B (Sarah): Yes, if you plan to take more than four trips today, the day pass saves you both time and money.
+中文：是的，如果您今天计划坐四次以上的车，日票既省时又省钱。
+A (Alex): Wonderful. How do we get through the turnstile once we get the tickets?
+中文：太好了。拿到票后我们怎么过闸机？
+B (Sarah): Tap your ticket on the glowing yellow sensor pad on the gate, and the glass doors will slide open.
+中文：将车票在闸机上发光的黄色感应区刷一下，玻璃门就会滑开。
+A (Alex): Is the platform for the Red Line downstairs or upstairs?
+中文：红线站台是在楼下还是楼上？
+B (Sarah): Follow the red signs down the escalator; platform 2 is for northbound trains.
+中文：顺着红色的指示牌下自动扶梯，2号站台是开往北行列车的。
+A (Alex): Thank you for your precise directions. Have a nice day!
+中文：谢谢您准确的指引。祝您过得愉快！`
+ },
+ {
+  title: "Stage 12: 邮局寄明信片、国际包裹与邮费查询 (Post Office & Parcels)",
+  content: `Scene: Mailing international postcards, parcels and asking rates
+A (Alex): Good morning. I'd like to send three postcards to China and also ship this small box of souvenirs.
+中文：早上好。我想寄三张明信片到中国，顺便寄这个装纪念品的小盒子。
+B (Sarah): Good morning. Please place the postcards and the box on the counter scale.
+中文：早上好。请把明信片和盒子放在柜台秤上。
+A (Alex): Here they are. How much is the airmail postage for each postcard?
+中文：都在这了。每张明信片的航空邮资是多少？
+B (Sarah): International postcard postage is $2.50 per stamp. Here are three stamps for you.
+中文：国际明信片邮资是每张邮票2.50美元。这是给您的三张邮票。
+A (Alex): Perfect. Now, what about the small box? It weighs about 1.2 kilograms.
+中文：完美。那么这个小盒子呢？它重大约1.2公斤。
+B (Sarah): Let's check the weight... Exactly 1.25 kg. Do you want standard surface shipping or priority airmail?
+中文：我们看一下重量……正好1.25公斤。您要 standard surface shipping 还是 priority airmail？
+A (Alex): Priority airmail please. How long will it take to arrive in Beijing?
+中文：请选优先航空快件。大概需要多长时间才能到达北京？
+B (Sarah): Usually it takes about 7 to 10 business days with tracking number included.
+中文：通常大约需要7到10个工作日，包含跟踪单号。
+A (Alex): That's fast enough. How much is the shipping fee for the box?
+中文：这够快了。请问盒子的运费是多少？
+B (Sarah): That will be $38.50 for priority airmail. Would you like to add insurance coverage?
+中文：优先航空快件是38.50美元。您需要添加保险保障吗？
+A (Alex): Yes, let's add basic insurance for peace of mind. Here is my customs declaration form.
+中文：好的，为了安心加上基础保险吧。这是我的海关申报单。
+B (Sarah): Thank you. Please fill out the recipient's phone number clearly in this blank section.
+中文：谢谢。请在这个空白处清晰填写收件人的电话号码。
+A (Alex): Done. I've written the Chinese address and phone number clearly.
+中文：写好了。我已经清晰地写好了中文地址和电话。
+B (Sarah): Excellent. Total comes to $46.00 including the stamps. Card or cash?
+中文：太棒了。包含邮票在内总计46.00美元。刷卡还是付现金？
+A (Alex): I'll pay by credit card. Here is my receipt.
+中文：我用信用卡支付。请给我收据。
+B (Sarah): Here is your receipt with the tracking barcode. Have a great day!
+中文：这是带有跟踪条形码的收据。祝您过得愉快！`
+ },
+
+let userLevel="L2 (基础级)",streak=0,vocabBook=[],apiKey="",binId="",binKey="";
+let lastSelectedWord="",lastSelectedInfo="",currentFlashcardIndex=0,isCardFlipped=false;
+let shadowRecognition=null,voiceChatRecognition=null,isRecording=false,isVoiceChatActive=false,isDialoguePlaying=false;
+let voiceChatMode="one",voiceChatStopRequested=false,voiceChatBusy=false,voiceChatSession=0;
+let currentTrainingScenario="You are a friendly English conversation partner. The user is a traveler.";
+let chatHistory=[],lastCheckinDate="",autoSpeakAI=true;
+
+function todayKey(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
+function safeLoad(key,fallback){try{const v=localStorage.getItem(key);return v===null?fallback:v;}catch(e){return fallback;}}
+function safeSave(key,value){try{localStorage.setItem(key,value);return true;}catch(e){return false;}}
+
+function loadStorageData(){
+ userLevel=safeLoad("user_level",userLevel);
+ streak=Number(safeLoad("streak","0"))||0;
+ try{const v=JSON.parse(safeLoad("vocab_book","[]"));if(Array.isArray(v))vocabBook=v;}catch(e){vocabBook=[];}
+ binId=safeLoad("bin_id","");
+ binKey=safeLoad("jsonbin_master_key","");
+ apiKey=safeLoad("deepseek_api_key","");
+ lastCheckinDate=safeLoad("last_checkin_date","");
+ try{const h=JSON.parse(safeLoad("chat_history","[]"));if(Array.isArray(h))chatHistory=h;}catch(e){chatHistory=[];}
+}
+
+function saveStorageData(){
+ safeSave("user_level",userLevel);
+ safeSave("streak",String(streak));
+ safeSave("vocab_book",JSON.stringify(vocabBook));
+ safeSave("bin_id",binId);
+ safeSave("jsonbin_master_key",binKey);
+ safeSave("deepseek_api_key",apiKey);
+ safeSave("last_checkin_date",lastCheckinDate);
+ safeSave("chat_history",JSON.stringify(chatHistory));
+}
+
+function initApp(){
+ try{localStorage.setItem("__test__","1");localStorage.removeItem("__test__");}
+ catch(e){$("private-mode-warning").style.display="block";}
+ loadStorageData();
+ autoSpeakAI=safeLoad("auto_speak","1")!=="0";
+ $("auto-speak-toggle").checked=autoSpeakAI;
+ $("auto-speak-toggle").addEventListener("change",e=>{autoSpeakAI=!!e.target.checked;safeSave("auto_speak",autoSpeakAI?"1":"0");});
+ voiceChatMode=safeLoad("voice_chat_mode","one")==="continuous"?"continuous":"one";
+ $("voice-chat-mode").value=voiceChatMode;
+ $("voice-chat-mode").addEventListener("change",e=>{
+  voiceChatMode=e.target.value==="continuous"?"continuous":"one";
+  safeSave("voice_chat_mode",voiceChatMode);
+  $("voice-status-text").textContent=voiceChatMode==="one"
+   ?"一键一轮：说完自动发送，AI 朗读后等待你点击下一轮。"
+   :"连续对话：AI 朗读后将尝试自动重新监听。";
+ });
+ $("user-level-tag").textContent="当前等级："+userLevel;
+ $("streak-text").textContent="连续打卡："+streak+" 天";
+ $("bin-id-input").value=binId;
+ $("bin-key-input").value=binKey;
+ $("api-key-input").value=apiKey;
+ $("balance-status").textContent=apiKey?"已保存并应用":"未配置 API";
+ renderVocabBook();
+ initTravelStages();
+ renderInteractiveText("listening-text",safeLoad("saved_listening",DEFAULTS.listening));
+ renderInteractiveText("reading-text",safeLoad("saved_reading",DEFAULTS.reading));
+ renderInteractiveText("dialogue-text",safeLoad("saved_dialogue",TRAVEL_SCENARIOS[0].content));
+ $("phonetics-analysis").textContent=safeLoad("saved_phonetics","发音提示：注意重音、连读和语调。");
+}
+
+function initTravelStages(){
+ const sel=$("travel-stage-select");
+ sel.replaceChildren();
+ TRAVEL_SCENARIOS.forEach((sc,idx)=>{
+  const opt=document.createElement("option");
+  opt.value=idx;
+  opt.textContent=sc.title;
+  sel.append(opt);
+ });
+ const savedIdx=Number(safeLoad("selected_travel_idx","0"))||0;
+ sel.value=savedIdx;
+ renderInteractiveText("dialogue-text",TRAVEL_SCENARIOS[savedIdx].content);
+ $("dialogue-tag").textContent="03 旅游实战："+TRAVEL_SCENARIOS[savedIdx].title.split(":")[0];
+}
+
+function switchTravelStage(idx){
+ const index=Number(idx)||0;
+ safeSave("selected_travel_idx",String(index));
+ const sc=TRAVEL_SCENARIOS[index];
+ if(sc){
+  renderInteractiveText("dialogue-text",sc.content);
+  safeSave("saved_dialogue",sc.content);
+  $("dialogue-tag").textContent="03 旅游实战："+sc.title.split(":")[0];
+ }
+}
+
+function applyApiKey(){
+ apiKey=$("api-key-input").value.trim();
+ if(!apiKey){alert("请先输入 DeepSeek API Key。");return;}
+ safeSave("deepseek_api_key",apiKey);
+ $("balance-status").textContent="已保存并应用";
+ checkApiBalance();
+ alert("DeepSeek API Key 已成功保存到本地浏览器！");
+}
+
+function clearApiKey(){
+ apiKey="";
+ safeSave("deepseek_api_key","");
+ $("api-key-input").value="";
+ $("balance-status").textContent="已清除";
+ $("balance-amount").textContent="不检测";
+ alert("已清除本机保存的 Key。");
+}
+
+async function apiRequest(messages,opts={}){
+ if(!apiKey)throw new Error("请先在页面顶部输入并应用 DeepSeek API Key。");
+ const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),opts.timeout||60000);
+ try{
+  const response=await fetch("https://api.deepseek.com/chat/completions",{
+   method:"POST",
+   headers:{"Content-Type":"application/json","Authorization":"Bearer "+apiKey},
+   body:JSON.stringify({model:"deepseek-flash",messages,temperature:opts.temperature??0.7,max_tokens:opts.max_tokens||1200}),
+   signal:controller.signal
+  });
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(data.error?.message||`API 请求失败（HTTP ${response.status}）`);
+  const content=data.choices?.[0]?.message?.content;
+  if(typeof content!=="string"||!content.trim())throw new Error("AI 没有返回有效文本。");
+  return content.trim();
+ }finally{clearTimeout(timer);}
+}
+
+async function checkApiBalance(){
+ if(!apiKey)return;
+ $("balance-status").textContent="已配置";
+ $("balance-amount").textContent="不检测";
+}
+
+function renderInteractiveText(id,text){
+ const el=$(id);el.replaceChildren();
+ String(text||"").split("\n").forEach((line,li)=>{
+  const parts=line.split(/(\s+)/);
+  parts.forEach(part=>{
+   if(/[\p{L}\p{N}]/u.test(part)){
+    const span=document.createElement("span");
+    span.textContent=part;
+    span.addEventListener("click",()=>clickToTranslate(part.replace(/[^\p{L}'-]/gu,"")));
+    el.appendChild(span);
+   }else el.appendChild(document.createTextNode(part));
+  });
+  if(li<String(text||"").split("\n").length-1)el.appendChild(document.createElement("br"));
+ });
+}
+
+async function clickToTranslate(word){
+ if(!word)return;
+ lastSelectedWord=word;
+ lastSelectedInfo="";
+ $("popup-title").textContent=word;
+ $("popup-content").textContent="正在查询…";
+ $("word-popup").style.display="block";
+ try{
+  lastSelectedInfo=await apiRequest([{role:"user",content:`Explain the English word "${word}" in concise Chinese. Include IPA if known, part of speech, and one short example with Chinese translation.`}],{max_tokens:300,timeout:25000});
+ }catch(e){lastSelectedInfo="暂时无法联网查词："+e.message;}
+ $("popup-content").textContent=lastSelectedInfo;
+}
+
 中文：太好了，我就在那边的窗户旁等候。
 B (Sarah): Enjoy your morning coffee and bakery items!
 中文：祝您享用早晨的咖啡和点心！`
@@ -669,12 +1082,12 @@ A (Alex): I'll pay by credit card. Here is my receipt.
 中文：我用信用卡支付。请给我收据。
 B (Sarah): Here is your receipt with the tracking barcode. Have a great day!
 中文：这是带有跟踪条形码的收据。祝您过得愉快！`
- }
-];
+ },
 
 let userLevel="L2 (基础级)",streak=0,vocabBook=[],apiKey="",binId="",binKey="";
 let lastSelectedWord="",lastSelectedInfo="",currentFlashcardIndex=0,isCardFlipped=false;
 let shadowRecognition=null,voiceChatRecognition=null,isRecording=false,isVoiceChatActive=false,isDialoguePlaying=false;
+let voiceChatMode="one",voiceChatStopRequested=false,voiceChatBusy=false,voiceChatSession=0;
 let currentTrainingScenario="You are a friendly English conversation partner. The user is a traveler.";
 let chatHistory=[],lastCheckinDate="",autoSpeakAI=true;
 
@@ -711,6 +1124,15 @@ function initApp(){
  autoSpeakAI=safeLoad("auto_speak","1")!=="0";
  $("auto-speak-toggle").checked=autoSpeakAI;
  $("auto-speak-toggle").addEventListener("change",e=>{autoSpeakAI=!!e.target.checked;safeSave("auto_speak",autoSpeakAI?"1":"0");});
+ voiceChatMode=safeLoad("voice_chat_mode","one")==="continuous"?"continuous":"one";
+ $("voice-chat-mode").value=voiceChatMode;
+ $("voice-chat-mode").addEventListener("change",e=>{
+  voiceChatMode=e.target.value==="continuous"?"continuous":"one";
+  safeSave("voice_chat_mode",voiceChatMode);
+  $("voice-status-text").textContent=voiceChatMode==="one"
+   ?"一键一轮：说完自动发送，AI 朗读后等待你点击下一轮。"
+   :"连续对话：AI 朗读后将尝试自动重新监听。";
+ });
  $("user-level-tag").textContent="当前等级："+userLevel;
  $("streak-text").textContent="连续打卡："+streak+" 天";
  $("bin-id-input").value=binId;
@@ -822,9 +1244,7 @@ async function clickToTranslate(word){
  $("popup-content").textContent=lastSelectedInfo;
 }
 
-function closePopup(){$("word-popup").style.display="none";}
-
-function saveCurrentWord(){
+async function saveCurrentWord(){
  if(!lastSelectedWord)return;
  const found=vocabBook.find(x=>String(x.word).toLowerCase()===lastSelectedWord.toLowerCase());
  if(found){
@@ -987,57 +1407,88 @@ function appendChat(role,text){
  div.textContent=text;box.append(div);box.scrollTop=box.scrollHeight;return div;
 }
 
+function updateVoiceChatButton(){
+ const btn=$("voice-chat-btn");if(!btn)return;
+ btn.textContent=isVoiceChatActive?"停止语音对练":"开始语音对练";
+ btn.classList.toggle("btn-red",isVoiceChatActive);btn.classList.toggle("btn-green",!isVoiceChatActive);
+}
+function finishVoiceTurn(message){
+ voiceChatBusy=false;isVoiceChatActive=false;updateVoiceChatButton();
+ if(message)$("voice-status-text").textContent=message;
+}
+function startVoiceRecognition(session){
+ if(voiceChatStopRequested||session!==voiceChatSession||voiceChatBusy)return;
+ const rec=getRecognition();
+ if(!rec){finishVoiceTurn("当前浏览器不支持语音识别，请使用下方文字输入。");return;}
+ voiceChatRecognition=rec;rec.lang="en-US";rec.continuous=false;rec.interimResults=true;
+ let finalText="",sent=false;
+ rec.onstart=()=>{
+  if(session!==voiceChatSession||voiceChatStopRequested){try{rec.stop();}catch(e){}return;}
+  isVoiceChatActive=true;updateVoiceChatButton();$("voice-status-text").textContent="正在聆听，请用英语说话…";
+ };
+ rec.onresult=e=>{
+  for(let i=e.resultIndex;i<e.results.length;i++)if(e.results[i].isFinal)finalText+=e.results[i][0].transcript+" ";
+  $("voice-status-text").textContent="识别中："+(finalText.trim()||"正在听取…");
+ };
+ rec.onerror=e=>{if(session===voiceChatSession&&!voiceChatStopRequested)$("voice-status-text").textContent=recognitionErrorMessage(e.error);};
+ rec.onend=()=>{
+  if(session!==voiceChatSession||voiceChatStopRequested)return;
+  const spoken=finalText.trim();
+  if(spoken&&!sent){sent=true;$("user-chat-input").value=spoken;sendChat(true,session);}
+  else finishVoiceTurn("没有识别到完整语音。点击“开始语音对练”重试。");
+ };
+ try{rec.start();}catch(e){finishVoiceTurn("无法启动语音识别，请检查麦克风权限后重试。");}
+}
 function toggleVoiceChat(){
  if(isVoiceChatActive){stopVoiceChat();return;}
- const rec=getRecognition();
- if(!rec){alert("浏览器不支持语音识别，请直接键入文字。");$("user-chat-input").focus();return;}
- try{
-  voiceChatRecognition=rec;rec.lang="en-US";rec.continuous=false;rec.interimResults=true;
-  let finalText="";
-  rec.onstart=()=>{isVoiceChatActive=true;$("voice-chat-btn").textContent="停止并发送";$("voice-chat-btn").classList.add("btn-red");$("voice-status-text").textContent="正在聆听…";};
-  rec.onresult=e=>{
-   for(let i=e.resultIndex;i<e.results.length;i++){
-    if(e.results[i].isFinal)finalText+=e.results[i][0].transcript+" ";
-   }
-   $("voice-status-text").textContent="识别中："+finalText;
-  };
-  rec.onend=()=>{
-   isVoiceChatActive=false;$("voice-chat-btn").textContent="开始语音对练";$("voice-chat-btn").classList.remove("btn-red");
-   if(finalText.trim()){$("user-chat-input").value=finalText.trim();sendChat();}
-  };
-  rec.start();
- }catch(e){isVoiceChatActive=false;$("voice-chat-btn").textContent="开始语音对练";$("voice-chat-btn").classList.remove("btn-red");}
+ if(voiceChatBusy){$("voice-status-text").textContent="AI 正在处理上一轮，请等待回复。";return;}
+ voiceChatStopRequested=false;voiceChatSession++;isVoiceChatActive=true;
+ updateVoiceChatButton();startVoiceRecognition(voiceChatSession);
 }
-
-function stopVoiceChat(){try{voiceChatRecognition?.stop();}catch(e){}}
+function stopVoiceChat(){
+ voiceChatStopRequested=true;voiceChatSession++;isVoiceChatActive=false;
+ try{voiceChatRecognition?.stop();}catch(e){}
+ try{window.speechSynthesis?.cancel();}catch(e){}
+ finishVoiceTurn("语音对练已停止。再次点击开始即可继续。");
+}
 
 function coachSystemPrompt(){
  return "You are an English coach. Scenario: "+currentTrainingScenario+". Use simple English (1-2 sentences), ask 1 question. If user makes mistakes, add [AI Coach Feedback / 实时纠错与指导] with brief Chinese tips.";
 }
 
-function renderCoachReply(raw){
- const wrap=document.createElement("div");
- wrap.className="chat-msg chat-ai";
- wrap.textContent=raw;
+function renderCoachReply(raw,onDone){
+ const wrap=document.createElement("div");wrap.className="chat-msg chat-ai";wrap.textContent=raw;
  $("chat-box").append(wrap);$("chat-box").scrollTop=$("chat-box").scrollHeight;
- if(autoSpeakAI){
-  const clean=raw.split("[AI Coach Feedback")[0].trim();
-  if(clean)speakText(clean,1,"en-US");
- }
+ const clean=raw.split("[AI Coach Feedback")[0].trim();
+ if(!autoSpeakAI||!clean){if(typeof onDone==="function")onDone();return;}
+ const synth=window.speechSynthesis;
+ if(!synth||typeof SpeechSynthesisUtterance==="undefined"){if(typeof onDone==="function")onDone();return;}
+ let completed=false;const done=()=>{if(completed)return;completed=true;if(typeof onDone==="function")onDone();};
+ try{
+  synth.cancel();const utter=new SpeechSynthesisUtterance(clean);
+  utter.lang="en-US";utter.rate=1;utter.onend=done;utter.onerror=done;synth.speak(utter);
+ }catch(e){done();}
 }
-
-async function sendChat(){
- const input=$("user-chat-input"),userText=input.value.trim();if(!userText)return;
+async function sendChat(fromVoice=false,voiceSession=voiceChatSession){
+ const input=$("user-chat-input"),userText=input.value.trim();
+ if(!userText||(fromVoice&&voiceChatBusy))return;
+ if(fromVoice)voiceChatBusy=true;
  input.value="";appendChat("user",userText);
  const loading=appendChat("ai","AI 思考中…");
- if(!apiKey){loading.textContent="请先配置 DeepSeek API Key。";return;}
+ const finishVoice=()=>{
+  if(!fromVoice||voiceSession!==voiceChatSession||voiceChatStopRequested)return;
+  voiceChatBusy=false;
+  if(voiceChatMode==="continuous"){
+   $("voice-status-text").textContent="AI 已回复，正在准备下一轮…";startVoiceRecognition(voiceSession);
+  }else finishVoiceTurn("本轮完成。点击“开始语音对练”进行下一轮。");
+ };
+ if(!apiKey){loading.textContent="请先配置 DeepSeek API Key。";finishVoice();return;}
  try{
   const messages=[{role:"system",content:coachSystemPrompt()},...chatHistory.slice(-10),{role:"user",content:userText}];
   const raw=await apiRequest(messages,{max_tokens:500});
-  loading.remove();renderCoachReply(raw);
-  chatHistory.push({role:"user",content:userText},{role:"assistant",content:raw});
-  saveStorageData();
- }catch(e){loading.textContent="请求失败："+e.message;}
+  loading.remove();renderCoachReply(raw,finishVoice);
+  chatHistory.push({role:"user",content:userText},{role:"assistant",content:raw});saveStorageData();
+ }catch(e){loading.textContent="请求失败："+e.message;finishVoice();}
 }
 
 async function generateDailyContent(manual=true){
@@ -1131,7 +1582,7 @@ async function pullFromCloud(){
    if(typeof record.streak==="number"){streak=record.streak;safeSave("streak",String(streak));}
    if(Array.isArray(record.vocabBook)){vocabBook=record.vocabBook;safeSave("vocab_book",JSON.stringify(vocabBook));}
    if(record.lastCheckinDate){lastCheckinDate=record.lastCheckinDate;safeSave("last_checkin_date",lastCheckinDate);}
-   
+
    $("user-level-tag").textContent="当前等级："+userLevel;
    $("streak-text").textContent="连续打卡："+streak+" 天";
    renderVocabBook();
