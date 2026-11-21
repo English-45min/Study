@@ -1084,26 +1084,76 @@ B (Sarah): Here is your receipt with the tracking barcode. Have a great day!
 中文：这是带有跟踪条形码的收据。祝您过得愉快！`
  },
 
-let userLevel="L2 (基础级)",streak=0,vocabBook=[],apiKey="",binId="",binKey="";
-let lastSelectedWord="",lastSelectedInfo="",currentFlashcardIndex=0,isCardFlipped=false;
-let shadowRecognition=null,voiceChatRecognition=null,isRecording=false,isVoiceChatActive=false,isDialoguePlaying=false;
-let voiceChatMode="one",voiceChatStopRequested=false,voiceChatBusy=false,voiceChatSession=0;
-let currentTrainingScenario="You are a friendly English conversation partner. The user is a traveler.";
-let chatHistory=[],lastCheckinDate="",autoSpeakAI=true;
+// 修复重复声明：这里使用赋值，不再重复使用 let
+userLevel="L2 (基础级)";
+streak=0;
+vocabBook=[];
+apiKey="";
+binId="";
+binKey="";
+lastSelectedWord="";
+lastSelectedInfo="";
+currentFlashcardIndex=0;
+isCardFlipped=false;
+shadowRecognition=null;
+voiceChatRecognition=null;
+isRecording=false;
+isVoiceChatActive=false;
+isDialoguePlaying=false;
+voiceChatMode="one";
+voiceChatStopRequested=false;
+voiceChatBusy=false;
+voiceChatSession=0;
+currentTrainingScenario="You are a friendly English conversation partner. The user is a traveler.";
+chatHistory=[];
+lastCheckinDate="";
+autoSpeakAI=true;
 
-function todayKey(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
-function safeLoad(key,fallback){try{const v=localStorage.getItem(key);return v===null?fallback:v;}catch(e){return fallback;}}
-function safeSave(key,value){try{localStorage.setItem(key,value);return true;}catch(e){return false;}}
+function todayKey(){
+ const d=new Date();
+ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+
+function safeLoad(key,fallback){
+ try{
+  const v=localStorage.getItem(key);
+  return v===null?fallback:v;
+ }catch(e){
+  return fallback;
+ }
+}
+
+function safeSave(key,value){
+ try{
+  localStorage.setItem(key,value);
+  return true;
+ }catch(e){
+  return false;
+ }
+}
 
 function loadStorageData(){
  userLevel=safeLoad("user_level",userLevel);
  streak=Number(safeLoad("streak","0"))||0;
- try{const v=JSON.parse(safeLoad("vocab_book","[]"));if(Array.isArray(v))vocabBook=v;}catch(e){vocabBook=[];}
+
+ try{
+  const v=JSON.parse(safeLoad("vocab_book","[]"));
+  if(Array.isArray(v))vocabBook=v;
+ }catch(e){
+  vocabBook=[];
+ }
+
  binId=safeLoad("bin_id","");
  binKey=safeLoad("jsonbin_master_key","");
  apiKey=safeLoad("deepseek_api_key","");
  lastCheckinDate=safeLoad("last_checkin_date","");
- try{const h=JSON.parse(safeLoad("chat_history","[]"));if(Array.isArray(h))chatHistory=h;}catch(e){chatHistory=[];}
+
+ try{
+  const h=JSON.parse(safeLoad("chat_history","[]"));
+  if(Array.isArray(h))chatHistory=h;
+ }catch(e){
+  chatHistory=[];
+ }
 }
 
 function saveStorageData(){
@@ -1118,12 +1168,22 @@ function saveStorageData(){
 }
 
 function initApp(){
- try{localStorage.setItem("__test__","1");localStorage.removeItem("__test__");}
- catch(e){$("private-mode-warning").style.display="block";}
+ try{
+  localStorage.setItem("__test__","1");
+  localStorage.removeItem("__test__");
+ }catch(e){
+  $("private-mode-warning").style.display="block";
+ }
+
  loadStorageData();
+
  autoSpeakAI=safeLoad("auto_speak","1")!=="0";
  $("auto-speak-toggle").checked=autoSpeakAI;
- $("auto-speak-toggle").addEventListener("change",e=>{autoSpeakAI=!!e.target.checked;safeSave("auto_speak",autoSpeakAI?"1":"0");});
+ $("auto-speak-toggle").addEventListener("change",e=>{
+  autoSpeakAI=!!e.target.checked;
+  safeSave("auto_speak",autoSpeakAI?"1":"0");
+ });
+
  voiceChatMode=safeLoad("voice_chat_mode","one")==="continuous"?"continuous":"one";
  $("voice-chat-mode").value=voiceChatMode;
  $("voice-chat-mode").addEventListener("change",e=>{
@@ -1133,18 +1193,52 @@ function initApp(){
    ?"一键一轮：说完自动发送，AI 朗读后等待你点击下一轮。"
    :"连续对话：AI 朗读后将尝试自动重新监听。";
  });
+
  $("user-level-tag").textContent="当前等级："+userLevel;
  $("streak-text").textContent="连续打卡："+streak+" 天";
+
  $("bin-id-input").value=binId;
  $("bin-key-input").value=binKey;
  $("api-key-input").value=apiKey;
+
+ // 输入时立即保存，避免刷新后丢失配置
+ $("bin-id-input").addEventListener("input",e=>{
+  binId=e.target.value.trim();
+  safeSave("bin_id",binId);
+ });
+
+ $("bin-key-input").addEventListener("input",e=>{
+  binKey=e.target.value.trim();
+  safeSave("jsonbin_master_key",binKey);
+ });
+
+ $("api-key-input").addEventListener("input",e=>{
+  apiKey=e.target.value.trim();
+  safeSave("deepseek_api_key",apiKey);
+ });
+
  $("balance-status").textContent=apiKey?"已保存并应用":"未配置 API";
+
  renderVocabBook();
  initTravelStages();
- renderInteractiveText("listening-text",safeLoad("saved_listening",DEFAULTS.listening));
- renderInteractiveText("reading-text",safeLoad("saved_reading",DEFAULTS.reading));
- renderInteractiveText("dialogue-text",safeLoad("saved_dialogue",TRAVEL_SCENARIOS[0].content));
- $("phonetics-analysis").textContent=safeLoad("saved_phonetics","发音提示：注意重音、连读和语调。");
+
+ renderInteractiveText(
+  "listening-text",
+  safeLoad("saved_listening",DEFAULTS.listening)
+ );
+
+ renderInteractiveText(
+  "reading-text",
+  safeLoad("saved_reading",DEFAULTS.reading)
+ );
+
+ renderInteractiveText(
+  "dialogue-text",
+  safeLoad("saved_dialogue",TRAVEL_SCENARIOS[0].content)
+ );
+
+ $("phonetics-analysis").textContent=
+  safeLoad("saved_phonetics","发音提示：注意重音、连读和语调。");
 }
 
 function initTravelStages(){
