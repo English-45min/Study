@@ -6,15 +6,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#4F46E5">
 
-<!-- PWA ???????????iOS & Android ????? -->
+<!-- PWA 图标及沉浸式全屏适配（iOS & Android 统一增强） -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="AI ??15??">
+<meta name="apple-mobile-web-app-title" content="AI 英语15分钟">
 <link rel="icon" type="image/png" sizes="192x192" href="./icon.png">
 <link rel="apple-touch-icon" href="./icon.png">
 <link rel="manifest" href="./manifest.json">
 
-<title>AI ??15??</title>
+<title>AI 英语15分钟</title>
 <style>
 :root{--primary:#4F46E5;--bg:#F3F4F6;--card:#fff;--text:#1F2937;--green:#16A34A;--muted:#6B7280}
 *{box-sizing:border-box}
@@ -70,7 +70,7 @@ summary{cursor:pointer;font-weight:600;font-size:13px}
 .controls .btn{flex:1}
 .notice{padding:10px;border-radius:8px;background:#FFF7ED;color:#9A3412;font-size:12px;line-height:1.6;margin:8px 0}
 
-/* ??????? */
+/* 迷你播放器样式 */
 .mini-player{position:fixed;left:0;right:0;bottom:36px;z-index:25;background:#111827;color:#F9FAFB;padding:8px 12px;box-shadow:0 -5px 18px #0003;transition:all 0.3s ease;}
 .mini-player-main{display:flex;align-items:center;gap:6px;min-width:0;min-height:32px}
 .mini-player-title{flex:1;min-width:0;font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -94,586 +94,586 @@ summary{cursor:pointer;font-weight:600;font-size:13px}
 </head>
 <body>
 <div id="word-popup">
- <div id="popup-title" style="font-weight:bold;color:#A5B4FC;font-size:17px"></div>
- <div id="popup-content" style="margin:8px 0">???...</div>
- <div class="controls" style="justify-content:center">
-  <button onclick="speakWord(lastSelectedWord)">??</button>
-  <button onclick="saveCurrentWord()">?????</button>
-  <button onclick="closePopup()" style="background:#4B5563">??</button>
- </div>
+<div id="popup-title" style="font-weight:bold;color:#A5B4FC;font-size:17px"></div>
+<div id="popup-content" style="margin:8px 0">查询中...</div>
+<div class="controls" style="justify-content:center">
+<button onclick="speakWord(lastSelectedWord)">发音</button>
+<button onclick="saveCurrentWord()">加入生词本</button>
+<button onclick="closePopup()" style="background:#4B5563">关闭</button>
+</div>
 </div>
 <div id="flashcard-modal" class="modal-overlay"><div class="modal-card">
- <h3 style="color:#4F46E5;margin-top:0">SRS ????</h3>
- <div id="flashcard-container" class="flashcard-box" onclick="flipFlashcard()"><div id="fc-word" style="font-size:23px;font-weight:bold"></div><div id="fc-info" style="display:none;margin-top:10px"></div></div>
- <div id="fc-controls" class="controls" style="display:none"><button class="btn btn-red" onclick="rateFlashcard('hard')">??</button><button class="btn btn-green" onclick="rateFlashcard('easy')">??</button></div>
- <button class="btn btn-outline" style="width:100%;margin-top:12px" onclick="closeFlashcardModal()">??</button>
+<h3 style="color:#4F46E5;margin-top:0">SRS 记忆闪卡</h3>
+<div id="flashcard-container" class="flashcard-box" onclick="flipFlashcard()"><div id="fc-word" style="font-size:23px;font-weight:bold"></div><div id="fc-info" style="display:none;margin-top:10px"></div></div>
+<div id="fc-controls" class="controls" style="display:none"><button class="btn btn-red" onclick="rateFlashcard('hard')">困难</button><button class="btn btn-green" onclick="rateFlashcard('easy')">掌握</button></div>
+<button class="btn btn-outline" style="width:100%;margin-top:12px" onclick="closeFlashcardModal()">关闭</button>
 </div></div>
-<header class="header"><h2>AI ??15??</h2><p style="font-size:13px;margin:7px 0 0">????????12??????????? AI ????</p></header>
+<header class="header"><h2>AI 英语15分钟</h2><p style="font-size:13px;margin:7px 0 0">每日听力、阅读、12个全流程旅游英语实战与 AI 口语训练</p></header>
 <main class="container">
-<div id="private-mode-warning" class="card notice" style="display:none">???????????????????????????????????? HTTPS ???</div>
+<div id="private-mode-warning" class="card notice" style="display:none">浏览器无法保存本地数据。请关闭无痕模式，或使用云端同步。建议将网页部署在 HTTPS 网站。</div>
 <div class="card">
- <div class="row" style="justify-content:space-between;flex-wrap:wrap">
-  <div><span class="tag" id="user-level-tag">?????L2 (???)</span><h3 id="streak-text" style="margin:9px 0 0">?????0 ?</h3></div>
-  <div class="controls"><button class="btn btn-outline" onclick="startAssessment()">????</button><button class="btn btn-green" onclick="openFlashcardModal()">??</button></div>
- </div>
- <details open><summary>API ???DeepSeek?</summary>
-  <div class="notice">API Key ????????? localStorage ??????????????/?????????</div>
-  <input type="password" id="api-key-input" class="api-input" autocomplete="off" placeholder="?? DeepSeek API Key??????">
-  <div class="row" style="margin-top:7px"><button class="btn" onclick="applyApiKey()">?????</button><button class="btn btn-outline" onclick="clearApiKey()">??????</button></div>
- </details>
- <details><summary>??????<span id="vocab-count">0</span>?</summary><div id="vocab-list" style="max-height:220px;overflow:auto"></div></details>
+<div class="row" style="justify-content:space-between;flex-wrap:wrap">
+<div><span class="tag" id="user-level-tag">当前等级：L2 (基础级)</span><h3 id="streak-text" style="margin:9px 0 0">连续打卡：0 天</h3></div>
+<div class="controls"><button class="btn btn-outline" onclick="startAssessment()">设置等级</button><button class="btn btn-green" onclick="openFlashcardModal()">闪卡</button></div>
+</div>
+<details open><summary>API 配置（DeepSeek）</summary>
+<div class="notice">API Key 保存在当前浏览器的 localStorage 中。若使用无痕模式或更换设备/域名，需重新输入。</div>
+<input type="password" id="api-key-input" class="api-input" autocomplete="off" placeholder="输入 DeepSeek API Key（本机保存）">
+<div class="row" style="margin-top:7px"><button class="btn" onclick="applyApiKey()">保存并应用</button><button class="btn btn-outline" onclick="clearApiKey()">清除本机密钥</button></div>
+</details>
+<details><summary>本地生词本（<span id="vocab-count">0</span>）</summary><div id="vocab-list" style="max-height:220px;overflow:auto"></div></details>
 </div>
 <div class="card" style="padding:12px">
- <details>
-  <summary style="font-weight:700">??????????????</summary>
-  <div class="resource-grid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px">
-   <a class="resource-link" href="https://learningenglish.voanews.com/podcasts" target="_blank" rel="noopener noreferrer"><b>VOA Learning English</b><small>?????????????</small></a>
-   <a class="resource-link" href="https://www.bbclearningenglish.org/" target="_blank" rel="noopener noreferrer"><b>BBC Learning English</b><small>6 Minute English?????</small></a>
-   <a class="resource-link" href="https://www.elllo.org/" target="_blank" rel="noopener noreferrer"><b>ELLLO</b><small>?????A1?C1?????</small></a>
-   <a class="resource-link" href="https://learnenglish.britishcouncil.org/free-resources/listening" target="_blank" rel="noopener noreferrer"><b>British Council</b><small>A1?C1 ???????</small></a>
-   <a class="resource-link" href="https://www.esl-lab.com/" target="_blank" rel="noopener noreferrer"><b>Randall?s ESL Lab</b><small>???????????</small></a>
-   <a class="resource-link" href="https://www.npr.org/podcasts/" target="_blank" rel="noopener noreferrer"><b>NPR Podcasts</b><small>????????????</small></a>
-   <a class="resource-link" href="https://www.ted.com/talks" target="_blank" rel="noopener noreferrer"><b>TED Talks</b><small>??????????</small></a>
-   <a class="resource-link" href="https://www.breakingnewsenglish.com/" target="_blank" rel="noopener noreferrer"><b>Breaking News English</b><small>???????????</small></a>
-  </div>
- </details>
+<details>
+<summary style="font-weight:700">全球免费听力平台（展开选择）</summary>
+<div class="resource-grid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px">
+<a class="resource-link" href="https://www.google.com/url?q=https://learningenglish.voanews.com/podcasts&source=gmail&ust=1795412829479000&sa=E" target="_blank" rel="noopener noreferrer"><b>VOA Learning English</b><small>慢速美音、新闻播客、逐字稿</small></a>
+<a class="resource-link" href="https://www.google.com/url?q=https://www.bbclearningenglish.org/&source=gmail&ust=1795412829479000&sa=E" target="_blank" rel="noopener noreferrer"><b>BBC Learning English</b><small>6 Minute English、真实表达</small></a>
+<a class="resource-link" href="https://www.google.com/url?q=https://www.elllo.org/&source=gmail&ust=1795412829479000&sa=E" target="_blank" rel="noopener noreferrer"><b>ELLLO</b><small>多国口音、A1–C1、对话音频</small></a>
+<a class="resource-link" href="https://www.google.com/url?q=https://learnenglish.britishcouncil.org/free-resources/listening&source=gmail&ust=1795412829479000&sa=E" target="_blank" rel="noopener noreferrer"><b>British Council</b><small>A1–C1 分级听力与练习</small></a>
+<a class="resource-link" href="https://www.google.com/url?q=https://www.esl-lab.com/&source=gmail&ust=1795412829479000&sa=E" target="_blank" rel="noopener noreferrer"><b>Randall’s ESL Lab</b><small>日常情景、听力理解测试</small></a>
+<a class="resource-link" href="https://www.google.com/url?q=https://www.npr.org/podcasts/&source=gmail&ust=1795412829479000&sa=E" target="_blank" rel="noopener noreferrer"><b>NPR Podcasts</b><small>美国新闻、社会、文化访谈</small></a>
+<a class="resource-link" href="https://www.google.com/url?q=https://www.ted.com/talks&source=gmail&ust=1795412829479000&sa=E" target="_blank" rel="noopener noreferrer"><b>TED Talks</b><small>演讲、科技与社会议题</small></a>
+<a class="resource-link" href="https://www.google.com/url?q=https://www.breakingnewsenglish.com/&source=gmail&ust=1795412829479000&sa=E" target="_blank" rel="noopener noreferrer"><b>Breaking News English</b><small>分级新闻、不同语速听力</small></a>
+</div>
+</details>
 </div>
 <div class="card" id="learning-card">
- <div class="row" style="justify-content:space-between;flex-wrap:wrap"><h3 style="margin:0">??15??????</h3><button class="btn" onclick="generateDailyContent(true)">??????</button></div>
- <p class="muted">????????????????????AI ????????????</p><hr style="border:0;border-top:1px solid #E5E7EB">
- <section class="section">
-  <span class="tag">01 VOA ?? + ????</span><div id="listening-text" class="sentence clickable-text"></div>
-  <div id="phonetics-analysis" class="phonetics-box">??????????????????????????????????</div>
-  <div class="podcast-player-box">
-   <div class="controls"><select id="listening-speed" class="speed-select"><option value=".5">0.5x</option><option value=".7">0.7x</option><option value=".85">0.85x</option><option value="1" selected>1.0x</option></select><button class="btn btn-green" onclick="playListeningVoice()">????</button><button id="record-btn" class="btn" onclick="toggleShadowingRecord()">??????</button></div>
-   <div id="record-status" class="muted" style="color:#E5E7EB">???????????????????????</div>
-  </div>
- </section>
- <section class="section"><span class="tag">02 ????</span><div id="reading-text" class="sentence clickable-text"></div>
-  <div class="controls"><select id="reading-speed" class="speed-select"><option value=".5">0.5x</option><option value=".75">0.75x</option><option value="1" selected>1.0x</option></select><button class="btn btn-outline" onclick="speakSingleText('reading-text','reading-speed')">????</button></div>
- </section>
- <section class="section">
-  <span class="tag" id="dialogue-tag">03 ??????????12????? � 18??????</span>
-  <p class="muted">??????????????????????????????????????????????????????? 04 ?????? AI ?????</p>
-  <div style="margin:10px 0">
-   <select id="travel-stage-select" class="api-input" onchange="switchTravelStage(this.value)">
-    <!-- 12??????? -->
-   </select>
-  </div>
-  <div id="dialogue-text" class="dialogue-box clickable-text"></div>
-  <div class="dialogue-tools">
-   <button class="btn btn-outline" onclick="playDialogueDualVoice()">??????? / ??</button>
-   <button class="btn btn-green" onclick="startScenarioPractice()">??????04?????</button>
-  </div>
- </section>
- <section class="section">
-  <span class="tag">04 AI ??????????</span>
-  <p class="muted">????????????????????????AI ?????????????????AI ???????????????????????</p>
-  <input id="scenario-input" class="chat-input" placeholder="??/???????????????????">
-  <button class="btn btn-outline" style="width:100%;margin-top:7px" onclick="setTrainingScenario()">??????</button>
-  <label class="auto-speak-setting"><input type="checkbox" id="auto-speak-toggle" checked> AI ??????????????????????</label><div class="chat-container" id="chat-box"><div class="chat-msg chat-ai">Hi! I'm your English speaking coach. Choose a travel scene in section 03, then tap ???????04??????.</div></div>
-  <div class="row" style="margin-top:9px;align-items:center"><label for="voice-chat-mode" class="muted" style="white-space:nowrap">????</label><select id="voice-chat-mode" class="api-input" style="flex:1"><option value="one">???????????</option><option value="continuous">????</option></select></div>
-  <div class="controls" style="margin-top:9px"><button id="voice-chat-btn" class="btn btn-green" onclick="toggleVoiceChat()">??????</button><button class="btn btn-outline" onclick="stopVoiceChat()">????</button></div>
-  <div id="voice-status-text" class="muted" style="text-align:center">?????? HTTPS ???????????????????????????????</div>
-  <div class="chat-input-row"><input id="user-chat-input" class="chat-input" placeholder="??????..." autocomplete="off"><button class="btn" onclick="sendChat()">??</button></div>
- </section>
- <section class="section"><span class="tag">05 ???????</span><div style="background:#F0FDF4;border:1px solid #BBF7D0;padding:12px;border-radius:8px;margin-top:9px"><div id="quiz-question" style="font-weight:bold">???????????</div><div id="quiz-options"></div><div id="quiz-feedback" class="muted"></div></div><button class="btn btn-outline" style="width:100%;margin-top:8px" onclick="generateQuiz()">????</button></section>
- <section class="section"><span class="tag">07 ???????????</span>
-  <button class="btn btn-green" style="width:100%;margin-top:10px" onclick="doCheckIn()">????????</button>
-  <button class="btn btn-outline" style="width:100%;margin-top:8px" onclick="generateWeeklyDigest()">????????</button>
-  <div id="digest-box" style="display:none;background:#F8FAFC;padding:12px;border-radius:8px;margin-top:9px;white-space:pre-wrap;font-size:13px"></div>
-  <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:9px;padding:12px;margin-top:14px">
-   <b style="font-size:13px;color:#4338CA">??????JSONBin?</b>
-   <div class="notice">Bin ID ? Master Key ????????????????????????</div>
-   <input id="bin-id-input" class="api-input" placeholder="JSONBin Bin ID??????">
-   <input id="bin-key-input" class="api-input" type="password" autocomplete="off" placeholder="JSONBin Master Key??????" style="margin-top:7px">
-   <div class="controls" style="margin-top:8px"><button class="btn btn-green" onclick="pushToCloud()">?????</button><button class="btn" onclick="pullFromCloud()">?????</button></div>
-   <div id="cloud-status" class="muted" style="margin-top:7px"></div>
-  </div>
- </section>
+<div class="row" style="justify-content:space-between;flex-wrap:wrap"><h3 style="margin:0">今日15分钟轻量学习</h3><button class="btn" onclick="generateDailyContent(true)">刷新今日内容</button></div>
+<p class="muted">建议顺序：听力、科普阅读、旅游英语实战、AI 口语练习、微测验、打卡。</p><hr style="border:0;border-top:1px solid #E5E7EB">
+<section class="section">
+<span class="tag">01 VOA 精听 + 影子跟读</span><div id="listening-text" class="sentence clickable-text"></div>
+<div id="phonetics-analysis" class="phonetics-box">发音提示：先听完整句，再模仿节奏、重音和连读。语音识别评分仅供参考。</div>
+<div class="podcast-player-box">
+<div class="controls"><select id="listening-speed" class="speed-select"><option value=".5">0.5x</option><option value=".7">0.7x</option><option value=".85">0.85x</option><option value="1" selected>1.0x</option></select><button class="btn btn-green" onclick="playListeningVoice()">示范朗读</button><button id="record-btn" class="btn" onclick="toggleShadowingRecord()">开始跟读评分</button></div>
+<div id="record-status" class="muted" style="color:#E5E7EB">点击开始，允许麦克风权限并朗读；再次点击结束。</div>
+</div>
+</section>
+<section class="section"><span class="tag">02 科普阅读</span><div id="reading-text" class="sentence clickable-text"></div>
+<div class="controls"><select id="reading-speed" class="speed-select"><option value=".5">0.5x</option><option value=".75">0.75x</option><option value="1" selected>1.0x</option></select><button class="btn btn-outline" onclick="speakSingleText('reading-text','reading-speed')">朗读文章</button></div>
+</section>
+<section class="section">
+<span class="tag" id="dialogue-tag">03 旅游全过程实战对话（12个完整场景 · 18轮深度对话）</span>
+<p class="muted">选择下方旅游场景，即可查看完整的双语对白。点击单词可查词，点击男女声交替朗读可听情境对话，点击下方按钮一键带入 04 模块进行真人 AI 口语实战。</p>
+<div style="margin:10px 0">
+<select id="travel-stage-select" class="api-input" onchange="switchTravelStage(this.value)">
+<!-- 12个场景动态填充 -->
+</select>
+</div>
+<div id="dialogue-text" class="dialogue-box clickable-text"></div>
+<div class="dialogue-tools">
+<button class="btn btn-outline" onclick="playDialogueDualVoice()">男女声交替朗读 / 停止</button>
+<button class="btn btn-green" onclick="startScenarioPractice()">将本场景带入04并开始练习</button>
+</div>
+</section>
+<section class="section">
+<span class="tag">04 AI 一对一口语对练与纠错</span>
+<p class="muted">选择语音模式后开始练习。一键一轮：说完自动发送，AI 朗读后等待你点击下一轮；连续对话：AI 朗读后尝试自动重新监听。也可随时使用文字输入。</p>
+<input id="scenario-input" class="chat-input" placeholder="角色/场景，例如：我做旅客，你做机场工作人员">
+<button class="btn btn-outline" style="width:100%;margin-top:7px" onclick="setTrainingScenario()">应用对话场景</button>
+<label class="auto-speak-setting"><input type="checkbox" id="auto-speak-toggle" checked> AI 英文回复后自动朗读（只读英文，不读中文纠错）</label><div class="chat-container" id="chat-box"><div class="chat-msg chat-ai">Hi! I'm your English speaking coach. Choose a travel scene in section 03, then tap “将本场景带入04并开始练习”.</div></div>
+<div class="row" style="margin-top:9px;align-items:center"><label for="voice-chat-mode" class="muted" style="white-space:nowrap">语音模式</label><select id="voice-chat-mode" class="api-input" style="flex:1"><option value="one">一键一轮（推荐初学者）</option><option value="continuous">连续对话</option></select></div>
+<div class="controls" style="margin-top:9px"><button id="voice-chat-btn" class="btn btn-green" onclick="toggleVoiceChat()">开始语音对练</button><button class="btn btn-outline" onclick="stopVoiceChat()">停止录音</button></div>
+<div id="voice-status-text" class="muted" style="text-align:center">语音功能需要 HTTPS 页面和浏览器麦克风权限。若语音识别不可用，可使用下方文字输入。</div>
+<div class="chat-input-row"><input id="user-chat-input" class="chat-input" placeholder="输入英文句子..." autocomplete="off"><button class="btn" onclick="sendChat()">发送</button></div>
+</section>
+<section class="section"><span class="tag">05 语境实战微测验</span><div style="background:#F0FDF4;border:1px solid #BBF7D0;padding:12px;border-radius:8px;margin-top:9px"><div id="quiz-question" style="font-weight:bold">点击生成今日英语测验。</div><div id="quiz-options"></div><div id="quiz-feedback" class="muted"></div></div><button class="btn btn-outline" style="width:100%;margin-top:8px" onclick="generateQuiz()">生成测验</button></section>
+<section class="section"><span class="tag">07 打卡、周报与跨设备同步</span>
+<button class="btn btn-green" style="width:100%;margin-top:10px" onclick="doCheckIn()">完成今日学习打卡</button>
+<button class="btn btn-outline" style="width:100%;margin-top:8px" onclick="generateWeeklyDigest()">生成英语成长周报</button>
+<div id="digest-box" style="display:none;background:#F8FAFC;padding:12px;border-radius:8px;margin-top:9px;white-space:pre-wrap;font-size:13px"></div>
+<div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:9px;padding:12px;margin-top:14px">
+<b style="font-size:13px;color:#4338CA">跨设备同步（JSONBin）</b>
+<div class="notice">Bin ID 和 Master Key 保存在浏览器中。若更换设备或清除缓存需重新填写。</div>
+<input id="bin-id-input" class="api-input" placeholder="JSONBin Bin ID（本机保存）">
+<input id="bin-key-input" class="api-input" type="password" autocomplete="off" placeholder="JSONBin Master Key（本机保存）" style="margin-top:7px">
+<div class="controls" style="margin-top:8px"><button class="btn btn-green" onclick="pushToCloud()">推送到云端</button><button class="btn" onclick="pullFromCloud()">从云端拉取</button></div>
+<div id="cloud-status" class="muted" style="margin-top:7px"></div>
+</div>
+</section>
 </div>
 </main>
 
-<section class="mini-player" id="mini-player" aria-label="???????">
- <div class="mini-player-main">
-  <button id="player-play" type="button" onclick="toggleMiniPlayer()">??</button>
-  <div class="mini-player-title" id="player-title">??????? � ????????? MP3 ??</div>
-  <button class="secondary" type="button" onclick="stopMiniPlayer()">??</button>
-  <button class="secondary" type="button" onclick="document.getElementById('player-file').click()">????</button>
-  <button class="secondary" type="button" id="player-expand" aria-expanded="false" onclick="togglePlayerExpanded()">??</button>
-  <input class="mini-player-file" id="player-file" type="file" accept="audio/*">
- </div>
- <div class="mini-player-tools">
-  <span class="mini-player-time" id="player-current">00:00</span>
-  <input id="player-progress" type="range" min="0" max="1000" value="0" aria-label="????">
-  <span class="mini-player-time" id="player-duration">00:00</span>
-  <select id="player-speed" aria-label="????"><option value="0.75">0.75x</option><option value="0.9">0.9x</option><option value="1" selected>1.0x</option><option value="1.1">1.1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option></select>
- </div>
- <div class="mini-player-tools">
-  <input id="player-url" type="url" placeholder="???????? MP3 / M4A ????">
-  <button type="button" onclick="loadAudioUrl()">??</button>
- </div>
- <audio id="mini-audio" preload="metadata" playsinline></audio>
- <div id="player-status" style="font-size:10px;color:#D1D5DB;margin-top:4px">??????????????????????</div>
+<section class="mini-player" id="mini-player" aria-label="迷你音频播放器">
+<div class="mini-player-main">
+<button id="player-play" type="button" onclick="toggleMiniPlayer()">播放</button>
+<div class="mini-player-title" id="player-title">听力中心播放器 · 选择本地音频或粘贴 MP3 直链</div>
+<button class="secondary" type="button" onclick="stopMiniPlayer()">停止</button>
+<button class="secondary" type="button" onclick="document.getElementById('player-file').click()">本地文件</button>
+<button class="secondary" type="button" id="player-expand" aria-expanded="false" onclick="togglePlayerExpanded()">展开</button>
+<input class="mini-player-file" id="player-file" type="file" accept="audio/*">
+</div>
+<div class="mini-player-tools">
+<span class="mini-player-time" id="player-current">00:00</span>
+<input id="player-progress" type="range" min="0" max="1000" value="0" aria-label="播放进度">
+<span class="mini-player-time" id="player-duration">00:00</span>
+<select id="player-speed" aria-label="播放速度"><option value="0.75">0.75x</option><option value="0.9">0.9x</option><option value="1" selected>1.0x</option><option value="1.1">1.1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option></select>
+</div>
+<div class="mini-player-tools">
+<input id="player-url" type="url" placeholder="粘贴可直接播放的 MP3 / M4A 音频直链">
+<button type="button" onclick="loadAudioUrl()">加载</button>
+</div>
+<audio id="mini-audio" preload="metadata" playsinline></audio>
+<div id="player-status" style="font-size:10px;color:#D1D5DB;margin-top:4px">支持本地音频文件和可直接访问的音频文件链接。</div>
 </section>
 
-<div class="api-statusbar"><div>?????<b id="balance-status">??? API</b></div><div>???<b id="balance-amount">???</b></div></div>
+<div class="api-statusbar"><div>服务状态：<b id="balance-status">未配置 API</b></div><div>余额：<b id="balance-amount">不检测</b></div></div>
 
 <script>
- "use strict";
+"use strict";
 const $=id=>id.startsWith(".")?document.querySelector(id):document.getElementById(id);
 const DEFAULTS={
- listening:"Many companies now use artificial intelligence, or AI, at work. AI can help people write emails, plan meetings, and answer questions. Some workers say AI saves time. They can finish tasks faster. But other people are worried. They think AI may make mistakes or take jobs. This week, a new report said workers need to learn new skills. Schools and companies can teach these skills. Experts say people should use AI carefully. They say humans must always check the work. AI is a tool, not a replacement for people.",
- reading:"Language acquisition works best with consistent comprehensible input that matches your level. Short daily practice can help learners build confidence. Try to understand the main idea first. Then read again and notice useful words and expressions."
+listening:"Many companies now use artificial intelligence, or AI, at work. AI can help people write emails, plan meetings, and answer questions. Some workers say AI saves time. They can finish tasks faster. But other people are worried. They think AI may make mistakes or take jobs. This week, a new report said workers need to learn new skills. Schools and companies can teach these skills. Experts say people should use AI carefully. They say humans must always check the work. AI is a tool, not a replacement for people.",
+reading:"Language acquisition works best with consistent comprehensible input that matches your level. Short daily practice can help learners build confidence. Try to understand the main idea first. Then read again and notice useful words and expressions."
 };
 
 const TRAVEL_SCENARIOS = [
- {
-  title: "Stage 01: ?????????????? (Airport Check-in & Baggage)",
-  content: `Scene: Airport check-in, seat selection and overweight luggage
+{
+title: "Stage 01: 机场值机、选座与超重行李交涉 (Airport Check-in & Baggage)",
+content: `Scene: Airport check-in, seat selection and overweight luggage
 A (Alex): Good morning. I'd like to check in for my flight to Los Angeles, flight UA858.
-????????????????????????? UA858?
+中文：早上好。我想办理去洛杉矶的航班值机，航班号是 UA858。
 B (Sarah): Good morning. May I see your passport and electronic ticket, please?
-??????????????????????
+中文：早上好。请出示您的护照和电子机票好吗？
 A (Alex): Here is my passport and my phone showing the confirmation code.
-??????????????????
+中文：这是我的护照，手机上有确认码。
 B (Sarah): Thank you. Are you checking any bags today?
-???????????????????
+中文：谢谢。您今天有需要托运的行李吗？
 A (Alex): Yes, I have two suitcases and one backpack as carry-on.
-???????????????????????????
+中文：有的，我有两个行李箱，和一个双肩包作为随身行李。
 B (Sarah): Please place the first suitcase on the scale. Hmm, it weighs 24 kilograms. Our allowance is 23 kg. It's slightly overweight.
-???????????????????24?????????23??????????
+中文：请把第一个行李箱放到秤上。嗯，重24公斤。我们的标准是23公斤，稍微有点超重。
 A (Alex): Oh, is it? Can I move a few heavy items into my backpack to reduce the weight?
-????????????????????????????
+中文：哦，是吗？我能把几件重物移到双肩包里来减轻重量吗？
 B (Sarah): Yes, of course. Take your time at that empty counter over there.
-????????????????????????
+中文：当然可以。您可以在那边空着的柜台慢慢调整。
 A (Alex): Thank you. I've taken out two thick books and a heavy jacket. Let's weigh it again.
-??????????????????????????????
+中文：谢谢。我拿出了两本厚书和一件厚外套。我们重新称一下吧。
 B (Sarah): Perfect! It's now 21.5 kilograms. That passes. Now, what about the second suitcase?
-?????????21.5?????????????????
+中文：完美！现在是21.5公斤，达标了。那么第二个行李箱呢？
 A (Alex): The second one is smaller, it should be around 15 kilos.
-?????????????15?????
+中文：第二个小一些，应该在15公斤左右。
 B (Sarah): Let's check... 14.2 kg, looks great. Would you prefer a window or an aisle seat for the long-haul flight?
-??????????14.2????????????????????????
+中文：我们看一下……14.2公斤，很好。长途飞行您想要靠窗还是靠过道的座位？
 A (Alex): I prefer an aisle seat, preferably near the exit row for more legroom if available.
-?????????????????????????????????????
+中文：我想要靠过道座位，如果可能的话，最好靠近安全出口以便有更多腿部空间。
 B (Sarah): Let me check the system. I can give you seat 32C, which is an aisle seat in the middle section. Is that okay?
-???????????????32C????????????
+中文：我查一下系统。我可以给您32C，是中间过道座。可以吗？
 A (Alex): That sounds wonderful, thank you so much. Do I need to pick up my luggage during the transit in Tokyo?
-??????????????????????????????
+中文：听起来太棒了，非常感谢。我在东京转机时需要提取行李吗？
 B (Sarah): No, your luggage will be checked all the way through to Los Angeles. Here are your boarding passes for both legs.
-???????????????????????????????
+中文：不需要，您的行李将直挂到洛杉矶。这是您两段航程的登机牌。
 A (Alex): Got it. Where is the security check and boarding gate?
-???????????????????
+中文：明白了。请问安检和登机口在哪里？
 B (Sarah): Follow the signs overhead for Gate 10 through 25. Boarding will begin at 2:15 PM at Gate 18. Have a pleasant flight!
-???????????10?25?????????18????????2?15?????????????
+中文：跟随头顶上方关于10到25登机口的指示牌走。18号登机口将于下午2点15分开始登机。祝您飞行愉快！
 A (Alex): Thank you very much for your great help. Have a nice day!
-?????????????????????`
- },
- {
-  title: "Stage 02: ????????????? (Customs & Immigration Interview)",
-  content: `Scene: Airport security, immigration and passport control
+中文：非常感谢您的热情帮助。祝您过得愉快！`
+},
+{
+title: "Stage 02: 机场海关入境面谈与目的核实 (Customs & Immigration Interview)",
+content: `Scene: Airport security, immigration and passport control
 A (Alex): Hello, officer. Good afternoon.
-?????????????
+中文：您好，警官。下午好。
 B (Sarah): Good afternoon. Passport and landing card, please. Welcome to Australia.
-????????????????????????????
+中文：下午好。请出示您的入境卡和护照。欢迎来到澳大利亚。
 A (Alex): Here is my passport and the filled-out incoming passenger card.
-?????????????????????
+中文：这是我的护照和填好的入境旅客登记卡。
 B (Sarah): Thank you, Mr. Zhang. What is the primary purpose of your visit this time?
-?????????????????????????
+中文：谢谢您，张先生。您这次访问的主要目的是什么？
 A (Alex): We are here for a family holiday, mainly sightseeing in Sydney and Melbourne.
-???????????????????????????
+中文：我们是来家庭度假的，主要在悉尼和墨尔本观光旅游。
 B (Sarah): How long are you planning to stay in the country?
-??????????????????
+中文：您计划在这个国家停留多长时间？
 A (Alex): We will be staying for exactly twelve days. Our return flight is on the twentieth.
-???????????????????????20??
+中文：我们计划刚好停留十二天。我们的回程航班在20号。
 B (Sarah): Where will you be staying during your vacation? Do you have hotel reservations?
-?????????????????????
+中文：您假期期间住在哪里？有酒店预订单吗？
 A (Alex): Yes, the first four days in Sydney at Harbour View Hotel, and the rest in Melbourne. Here are the booking printouts.
-???????????????????????????????????
+中文：有的，前四天在悉尼的海景酒店，其余时间在墨尔本。这是预订打印件。
 B (Sarah): Excellent. Are you traveling with anyone else, or alone?
-????????????????????????
+中文：很好。您是和其他人一起旅行，还是独自一人？
 A (Alex): I am traveling with my wife and our teenage son. They are right behind me at the other counter.
-???????????????????????????????
+中文：我和我妻子以及十几岁的儿子一起旅行。他们在后面那个柜台。
 B (Sarah): I see them. Do you carry any commercial goods, fresh food, plant seeds, or cash over ten thousand dollars?
-????????????????????????????????????????
+中文：我看到了。您携带了任何商业货物、新鲜食品、植物种子或超过一万美元的现金吗？
 A (Alex): No commercial goods or seeds. We do have some packaged Chinese herbal tea and tea eggs, which I checked 'Yes' on the card.
-???????????????????????????????????????????
+中文：没有商业货物或种子。我们带了一些包装好的中草药茶和茶叶蛋，我在卡上勾选了“有”。
 B (Sarah): Ah, declared items. Please take those food items to the red lane for quarantine inspection after collecting your luggage.
-???????????????????????????????????
+中文：啊，申报了物品。领取行李后请把这些食品带到红色通道进行检疫检查。
 A (Alex): Understood. We will definitely go through the quarantine check.
-????????????????????
+中文：明白了。我们一定会走检疫检查通道。
 B (Sarah): Good. Have you ever been refused entry or deported from any country before?
-??????????????????????????
+中文：很好。您以前曾被任何国家拒绝入境或驱逐出境吗？
 A (Alex): No, never. This is my first time visiting Australia.
-????????????????????????
+中文：没有，从来没有。这是我第一次访问澳大利亚。
 B (Sarah): Alright, everything looks in order in the system. I am stamping your passport now. Enjoy your family holiday!
-???????????????????????????????????
+中文：好的，系统显示一切正常。我现在给您的护照盖章。祝您全家假期愉快！
 A (Alex): Thank you so much, officer. Have a wonderful day!
-?????????????????????`
- },
- {
-  title: "Stage 03: ?????????????? (Hotel Check-in & Room Request)",
-  content: `Scene: Hotel check-in, quiet room and Wi-Fi password
+中文：非常感谢您，警官。祝您今天过得愉快！`
+},
+{
+title: "Stage 03: 酒店入住、房型调换与设施咨询 (Hotel Check-in & Room Request)",
+content: `Scene: Hotel check-in, quiet room and Wi-Fi password
 A (Alex): Good afternoon. I have a reservation under the name Alex Zhang for a deluxe double room.
-????????? Alex Zhang ??????????????
+中文：下午好。我以 Alex Zhang 的名义预订了一间豪华大床房。
 B (Sarah): Good afternoon, Mr. Zhang. Let me check our system. Yes, four nights, checking out on Friday. May I have your credit card and passports?
-????????????????????????????????????????????
+中文：下午好，张先生。我查一下系统。是的，住四个晚上，周五退房。请出示您的信用卡和护照。
 A (Alex): Here is my credit card and all three passports.
-??????????????????
+中文：这是我的信用卡和三个人的护照。
 B (Sarah): Thank you. I see you requested a quiet room during booking. We have a high-floor room facing the quiet courtyard available.
-???????????????????????????????????????
+中文：谢谢。我看到您在预订时要求安静的房间。我们有一间朝向宁静庭院的高层房间。
 A (Alex): That would be fantastic, as we are light sleepers after the long flight. Is breakfast included in the package?
-?????????????????????????????
+中文：那太棒了，因为长途飞行后我们觉轻。套餐里包含早餐吗？
 B (Sarah): Yes, daily buffet breakfast is included for all three guests, served from 6:30 to 10:30 AM at the main restaurant on level one.
-??????????????????????6???10????????????
+中文：是的，包含三位客人的每日自助早餐，早上6点半到10点半在一楼的主餐厅供应。
 A (Alex): Wonderful. Also, what is the password for the high-speed guest Wi-Fi?
-??????????????Wi-Fi???????
+中文：太好了。另外，高速客房Wi-Fi的密码是多少？
 B (Sarah): The network name is 'GrandHotel_Guest', and the password is your room number followed by your last name lowercase, like '508zhang'.
-???????? 'GrandHotel_Guest'?????????????????? '508zhang'?
+中文：网络名称是 'GrandHotel_Guest'，密码是您的房间号加上姓氏小写，比如 '508zhang'。
 A (Alex): Got it, thank you. Can we store our luggage if we arrive early next time, or is there a gym we can use?
-???????????????????????????????????????
+中文：明白了，谢谢。如果下次我们早到可以寄存行李吗，或者有没有健身房可以使用？
 B (Sarah): Luggage storage is completely free at the bell desk. The 24-hour fitness center and outdoor pool are on the third floor.
-?????????????24???????????????
+中文：行李寄存处完全免费。24小时健身中心和室外泳池在三楼。
 A (Alex): Great to know. Do you have universal power adapters available at the front desk?
-??????????????????????????
+中文：很高兴知道这些。前台有提供万能电源转换插头吗？
 B (Sarah): Yes, we provide them with a refundable deposit of twenty dollars per adapter.
-???????????????????20?????????
+中文：有的，我们提供，每个转换器需收取20美元的可退还押金。
 A (Alex): I'll take two, please. Put it on my room bill.
-????????????????????
+中文：请给我两个。记在我的房费账单上吧。
 B (Sarah): No problem. Here are your electronic room keys, card number 508 and 510. Elevator is on your left.
-????????????????508?510???????????
+中文：没问题。这是您的电子房卡，508和510号。电梯在您的左手边。
 A (Alex): Thank you for your warm welcome and detailed explanation.
-?????????????????
+中文：谢谢您的热情接待和详细讲解。
 B (Sarah): It's our pleasure. If you need restaurant recommendations or city maps, feel free to ask us anytime.
-??????????????????????????????????`
- },
- {
-  title: "Stage 04: ?????????????? (Car Rental Counter & Insurance)",
-  content: `Scene: Renting a car, GPS navigation and full insurance
+中文：这是我们的荣幸。如果您需要餐厅推荐或城市地图，随时可以问我们。`
+},
+{
+title: "Stage 04: 租车柜台、车型确认与全险交涉 (Car Rental Counter & Insurance)",
+content: `Scene: Renting a car, GPS navigation and full insurance
 A (Alex): Hi there, I have a reservation to pick up an SUV for our self-driving tour.
-????????????SUV?????????
+中文：您好，我预订了一辆SUV用于我们的自驾游。
 B (Sarah): Good morning, sir. Welcome to Hertz Rental. Driver's license, international permit, and credit card, please.
-???????????????????????????????????????
+中文：早上好，先生。欢迎来到赫兹租车。请出示您的驾照、国际驾照认证件和信用卡。
 A (Alex): Here are my Chinese driver's license, the translation certificate, and my Visa card.
-????????????????Visa??
+中文：这是我的中国驾照、翻译件和Visa卡。
 B (Sarah): Thank you. The reservation is under Alex Zhang for a mid-size SUV for 7 days. Would you like to confirm the insurance coverage?
-?????????? Alex Zhang ??????SUV???7??????????????
+中文：谢谢。预订是以 Alex Zhang 的名义，中型SUV，租期7天。您想确认一下保险范围吗？
 A (Alex): Yes, what does the basic insurance included in my prepaid voucher cover?
-???????????????????????????
+中文：是的，我预付代金券里包含的基础保险涵盖哪些内容？
 B (Sarah): The basic insurance covers third-party liability, but has a high deductible of $3,000 for collision damage.
-??????????????????????3000?????????
+中文：基础保险涵盖第三方责任险，但碰撞损失有3000美元的高额免赔额。
 A (Alex): That sounds a bit risky. What does the full coverage zero-deductible package cost per day?
-??????????????????????????
+中文：听起来有点风险。零免赔额的全险套餐每天多少钱？
 B (Sarah): The full protection package is $28 per day, and it covers windshield, tires, towing, and zero deductible.
-?????????????28???????????????????????
+中文：全方位保护套餐是每天28美元，涵盖挡风玻璃、轮胎、拖车救援且零免赔额。
 A (Alex): That gives me peace of mind. I'll definitely upgrade to the full coverage package.
-?????????????????????
+中文：这让我很安心。我决定升级到全险套餐。
 B (Sarah): Excellent choice. Would you also need a GPS navigation device or an electronic toll pass?
-?????????????GPS?????????????
+中文：极好的选择。您还需要GPS导航仪或电子高速通行证吗？
 A (Alex): We plan to use our phone with Apple CarPlay, but we definitely need the toll pass for expressways.
-??????????????CarPlay????????????????
+中文：我们打算用手机连接苹果CarPlay，但高速公路通行证是必须要有的。
 B (Sarah): No problem, the toll transponder is activated. Let's inspect the vehicle condition together before you drive away.
-?????????????????????????????????
+中文：没问题，通行证已激活。在您开走之前，我们一起检查一下车况吧。
 A (Alex): Sure. Is there any existing scratch or dent we should note down on the form?
-?????????????????????????????????
+中文：好的。有没有什么现有的划痕或凹陷我们需要在表格上记录下来的？
 B (Sarah): Let's walk around. There's a tiny scratch near the rear bumper on the right side. I've already marked it here.
-????????????????????????????????????
+中文：我们绕车走一圈。右侧后保险杠附近有一个小划痕，我已经在这里标注了。
 A (Alex): I see it. The fuel tank is full, right? Should I return it full?
-??????????????????????????????
+中文：我看到了。油箱现在是满的吧？我是不是需要加满油后归还？
 B (Sarah): Yes, full-to-full policy. Return it with a full tank, or we will charge local fuel rates plus a service fee.
-???????????????????????????????????
+中文：是的，满油交还政策。加满油归还，否则我们将收取当地油费加服务费。
 A (Alex): Understood. Where is the car parked right now?
-?????????????????
+中文：明白了。车现在停在哪个车位？
 B (Sarah): It's parked in Bay 12 just outside this glass door. Here are your keys and emergency contact card. Have a great road trip!
-????????????12??????????????????????????
+中文：就停在玻璃门外面的12号车位。这是您的钥匙和紧急联系卡。祝您公路旅行愉快！
 A (Alex): Thank you for your clear instructions. Goodbye!
-???????????????`
- },
- {
-  title: "Stage 05: ??????????????? (Ordering at a Cafe)",
-  content: `Scene: Ordering specialty coffee, alternative milk and bakery items
+中文：谢谢您清晰的说明。再见！`
+},
+{
+title: "Stage 05: 咖啡厅点单、定制饮品与烘焙挑选 (Ordering at a Cafe)",
+content: `Scene: Ordering specialty coffee, alternative milk and bakery items
 A (Alex): Good morning! Can I get a large iced flat white with oat milk, please?
-??????????????????????????
+中文：早上好！请问能给我来一杯大杯燕麦奶冰馥芮白吗？
 B (Sarah): Good morning! Sure thing. Would you prefer regular roast beans or our single-origin light roast?
-??????????????????????????????
+中文：早上好！没问题。您想要常规烘焙豆还是我们的单品浅烘豆？
 A (Alex): Let's go with the single-origin beans. Is it too acidic?
-???????????????
+中文：就选单品豆吧。会太酸吗？
 B (Sarah): It has bright citrus notes, very smooth and fruity, not overly sour.
-????????????????????????????
+中文：它带有明亮的柑橘风味，非常顺滑且有果香，不会过酸。
 A (Alex): Sounds delicious. Also, can I have it half-sweet with less ice?
-??????????????????????
+中文：听起来很美味。另外，可以做半糖少冰吗？
 B (Sarah): Absolutely, half-sweet and less ice noted. Anything else to eat? We have fresh croissants and avocado toast.
-????????????????????????????????????????
+中文：没问题，已备注半糖少冰。还要吃点别的吗？我们有新鲜的牛角面包和牛油果吐司。
 A (Alex): I'd like one warm ham and cheese croissant, and a blueberry muffin to go, please.
-?????????????????????????????
+中文：我想要一个加热的火腿奶酪牛角包，和一个蓝莓麦芬打包。
 B (Sarah): Would you like the croissant toasted in our oven? It melts the cheese nicely.
-??????????????????????????????????
+中文：需要把牛角面包在烤箱里烤一下吗？这样里面的芝士融化起来更好吃。
 A (Alex): Yes, please. Toasted would be amazing.
-?????????????????
+中文：好的，请烤一下。烤热会很棒。
 B (Sarah): Your total comes to $18.50. You can tap your card or phone right on the reader.
-????????18.50??????????????????????
+中文：您总共消费18.50美元。您可以直接在读卡器上刷卡或用手机支付。
 A (Alex): Payment done. By the way, do you have tap water available for customers?
-???????????????????????????????
+中文：支付完成了。顺便问一下，你们有提供给客人的免费直饮水吗？
 B (Sarah): Yes, of course. There is a self-service water station with paper cups right next to the condiment bar.
-????????????????????????????
+中文：有的，当然。调料台旁边就有一个带纸杯的自助饮水站。
 A (Alex): Thank you so much. Where should I wait for my order?
-????????????????????
+中文：非常感谢。请问我在哪里等我的订单？
 B (Sarah): We will call your name or order number at the pickup counter once it's ready, about five minutes.
-??????????????????????????????
+中文：准备好后我们会在取餐台叫您的名字或订单号，大约五分钟。
 A (Alex): Perfect, I'll wait over there by the window.
-???????????????????
+中文：太好了，我就在那边的窗户旁等候。
 B (Sarah): Enjoy your morning coffee and bakery items!
-????????????????`
- },
- {
-  title: "Stage 06: ??????????????? (Attraction Tickets)",
-  content: `Scene: Buying tickets, audio guides and asking museum directions
-A (Alex): Hello, I?d like to purchase three adult tickets for the main museum exhibition today.
-????????????????????????
+中文：祝您享用早晨的咖啡和点心！`
+},
+{
+title: "Stage 06: 购买博物馆门票、语音导览与问路 (Attraction Tickets)",
+content: `Scene: Buying tickets, audio guides and asking museum directions
+A (Alex): Hello, I’d like to purchase three adult tickets for the main museum exhibition today.
+中文：你好，我想买三张今天主博物馆展览的成人票。
 B (Sarah): Good afternoon. General admission is $25 per adult, so that's $75 in total.
-???????????????25??????75???
+中文：下午好。普通门票每位成人25美元，总共是75美元。
 A (Alex): Does this ticket include access to the special dinosaur exhibition on the second floor?
-?????????????????????
+中文：这张票包含参观二楼恐龙特展的权限吗？
 B (Sarah): Not general admission. The special exhibition requires a combo ticket, which is an extra $10 per person.
-????????????????????????10???
+中文：普通门票不包含。特展需要买联票，每人额外加10美元。
 A (Alex): Let's upgrade all three tickets to the combo pass, please.
-????????????????
+中文：请把三张票都升级为联票吧。
 B (Sarah): Sure. Would you also like to rent audio guide devices? They are available in Chinese, English, and Japanese.
-?????????????????????????????????
+中文：好的。您还需要租借语音导览设备吗？提供中文、英文和日语版本。
 A (Alex): Yes, we'll take two audio guides. Do we need to leave an ID as deposit?
-?????????????????????????????
+中文：好的，我们要两个语音导览。需要留身份证件作为押金吗？
 B (Sarah): Just a driver's license or credit card will do. Each guide is $8.
-?????????????????????8???
+中文：只需留个驾照或信用卡就行。每个导览器8美元。
 A (Alex): Here is my credit card for the deposit. By the way, where is the elevator or restroom from here?
-?????????????????????????????????
+中文：这是作为押金的信用卡。顺便问一下，电梯和洗手间从这里怎么走？
 B (Sarah): Restrooms are located right behind the ticket counter to your left. Elevators are past the gift shop.
-???????????????????????????????
+中文：洗手间在您左手边的售票柜台后面。电梯穿过礼品店就能看到。
 A (Alex): Thank you. Also, is photography allowed inside the exhibition halls?
-???????????????????
+中文：谢谢。另外，展厅里面允许拍照吗？
 B (Sarah): Photography is permitted, but flash photography and selfie sticks are strictly prohibited to protect the artifacts.
-????????????????????????????
+中文：允许拍照，但为了保护文物，严禁使用闪光灯和自拍杆。
 A (Alex): Understood, no flash. What time does the museum close this evening?
-???????????????????????
+中文：明白了，不用闪光灯。博物馆今晚几点闭馆？
 B (Sarah): We close at 5:00 PM sharp, but last entry is at 4:15 PM, so you have plenty of time.
-???????5?????????????4?15?????????????
+中文：我们下午5点整闭馆，但最晚入场时间是4点15分，所以你们有充足的时间。
 A (Alex): Fantastic. Where should we return the audio guides when we leave?
-???????????????????????
+中文：太棒了。我们离开时应该把导览器还到哪里？
 B (Sarah): You can return them either here at the front desk or at the exit booth on the ground floor.
-?????????????????????????
+中文：您可以在前台归还，也可以在一楼的出口处归还。
 A (Alex): Thank you for all the clear information. Have a nice afternoon!
-???????????????????????`
- },
- {
-  title: "Stage 07: ?????????????? (Shopping & Tax Refund)",
-  content: `Scene: Shopping, trying clothes and asking about tourist tax refund
+中文：谢谢您提供这么清晰的信息。祝您过得愉快！`
+},
+{
+title: "Stage 07: 商场购物、尺码挑选与退税咨询 (Shopping & Tax Refund)",
+content: `Scene: Shopping, trying clothes and asking about tourist tax refund
 A (Alex): Excuse me, could you help me find this jacket in a size medium? I only see large on the shelf.
-???????????????????M???????????L??
+中文：打扰一下，能帮我找一下这件夹克的M码吗？架子上我只看到了L码。
 B (Sarah): Let me check our back storage room for you. What color were you looking for, navy blue or charcoal?
-???????????????????????????????
+中文：我帮您去后仓查一下。您想找什么颜色的，藏青色还是碳灰色？
 A (Alex): Navy blue, medium size please.
-???????M????
+中文：藏青色，M码谢谢。
 B (Sarah): Just a moment... Here you are. We have one medium left in navy blue. Would you like to try it on?
-??????????????????????M??????????
+中文：请稍等……给您。藏青色我们还剩最后一件M码。您想试穿一下吗？
 A (Alex): Yes, where are the fitting rooms located?
-???????????????
+中文：好的，请问试衣间在哪里？
 B (Sarah): Fitting rooms are right over there next to the shoe department. Need any other sizes?
-??????????????????????????
+中文：试衣间就在那边鞋类专柜旁边。还需要其他尺码吗？
 A (Alex): No, this fits just right. I'll take it. By the way, do you participate in the tourist tax refund scheme?
-???????????????????????????????????
+中文：不用了，这件正合身。我要了。顺便问一下，你们参与游客退税计划吗？
 B (Sarah): Yes, we do. If your total purchase exceeds $100 in a single receipt, you are eligible for a tax refund.
-??????????????????????100????????????
+中文：是的，我们参与。如果您单张小票消费超过100美元，就有资格申请退税。
 A (Alex): That's great! What documents do I need to present at your customer service counter?
-????????????????????????
+中文：太棒了！我需要在你们的服务台出示什么文件？
 B (Sarah): Just your original passport and the payment receipt. We will issue a tax invoice form for customs at the airport.
-????????????????????????????????????????
+中文：只需出示您的原件护照和付款收据。我们将为您开具供机场海关核验的退税发票单。
 A (Alex): Can I get cash back immediately, or is it processed at the airport terminal?
-???????????????????????????
+中文：我可以立刻拿到现金返还吗，还是在机场航站楼办理？
 B (Sarah): We provide the invoice here, and you present it along with the goods at the airport customs desk before departure.
-??????????????????????????????????????
+中文：我们在这里开具发票，您需要在出发前在机场海关柜台连同商品一同出示办理。
 A (Alex): Clear enough. I'll pay by credit card now.
-??????????????????
+中文：很清楚了。我现在用信用卡付款。
 B (Sarah): Thank you. Please insert or tap your card on the terminal. Would you like a paper receipt or digital receipt?
-???????????????????????????????
+中文：谢谢。请在终端上插卡或刷卡。您需要纸质小票还是电子小票？
 A (Alex): Paper receipt, please, for the tax refund paperwork.
-????????????????????
+中文：请给我纸质小票，为了办理退税文件。
 B (Sarah): Here is your receipt and shopping bag. Customer service is on level two if you need the tax form right now.
-??????????????????????????????????
+中文：这是您的收据和购物袋。如果您现在就需要退税单，客服中心在二楼。
 A (Alex): Thank you so much for your professional assistance.
-??????????????`
- },
- {
-  title: "Stage 08: ?????????????? (Pharmacy & Lost Property)",
-  content: `Scene: Pharmacy consultation, medicine recommendation and lost item
+中文：非常感谢您的专业协助。`
+},
+{
+title: "Stage 08: 药店买药、症状描述与寻找失物 (Pharmacy & Lost Property)",
+content: `Scene: Pharmacy consultation, medicine recommendation and lost item
 A (Alex): Good afternoon. I'm looking for something effective for a severe sore throat and runny nose.
-??????????????????????????
+中文：下午好。我在找对严重喉咙痛和流鼻涕有效的东西。
 B (Sarah): Good afternoon. How long have you had these cold symptoms? Any fever or body aches?
-???????????????????????????????
+中文：下午好。您出现这些感冒症状有多久了？有发烧或全身酸痛吗？
 A (Alex): Started since last night, no fever yet, just feeling quite tired and dizzy.
-???????????????????????????
+中文：从昨晚开始的，目前还没发烧，就是觉得挺累和头晕。
 B (Sarah): I see. Are you allergic to any medications, like penicillin or aspirin?
-??????????????????????????????
+中文：我明白了。您对任何药物过敏吗，比如盘尼西林或阿司匹林？
 A (Alex): No known allergies. What would you recommend for travel use?
-????????????????????????
+中文：没有已知过敏史。您推荐什么适合旅行时吃的？
 B (Sarah): I recommend this daytime capsule for congestion and nighttime syrup for better sleep.
-??????????????????????????????
+中文：我推荐这款用于鼻塞的日间胶囊和用于改善睡眠的夜间糖浆。
 A (Alex): Perfect, I'll take both. Also, by any chance, has anyone turned in a lost black leather wallet today?
-????????????????????????????????????
+中文：太好了，这两样我都买。另外，今天有没有人上交了一个丢失的黑色皮夹？
 B (Sarah): Let me check our store lost and found box... What brand or what cards were inside?
-?????????????????????????????????
+中文：我查看一下我们店的失物招领箱……是什么品牌或者里面有什么卡？
 A (Alex): It's a Coach wallet containing a driver's license under the name Alex Zhang and some hotel receipts.
-??????Coach????????? Alex Zhang ???????????
+中文：是一个Coach钱包，里面有一张叫 Alex Zhang 的驾照和一些酒店收据。
 B (Sarah): Oh! A customer actually dropped a black leather wallet off about an hour ago. Let me verify the ID inside.
-????????????????????????????????????????
+中文：哦！确实有一个顾客大约一小时前送来了一个黑色皮夹。让我核对一下里面的证件。
 A (Alex): Really? That's incredible! Here is my passport to prove my identity.
-?????????????????????????????
+中文：真的吗？太不可思议了！这是我的护照用来证明我的身份。
 B (Sarah): Let's check the driver's license photo... Yes, it's an exact match! Here is your wallet.
-????????????????????????????
+中文：核对一下驾照照片……是的，完全吻合！这是您的钱包。
 A (Alex): I cannot thank you enough! You saved our entire trip!
-???????????????????????
+中文：真是感激不尽！你们拯救了我们的整个旅行！
 B (Sarah): You're very welcome. Please be more careful with your valuables while traveling.
-???????????????????????
+中文：不用客气。旅行时请多保管好您的贵重物品。
 A (Alex): I certainly will. How much do I owe you for the medicine?
-????????????????????
+中文：我一定会注意的。请问这些药多少钱？
 B (Sarah): That comes to $24.80 in total. Card or cash?
-??????24.80???????????
+中文：总共是24.80美元。刷卡还是付现金？
 A (Alex): Card, please. Thanks again for your honesty and help!
-?????????????????????`
- },
- {
-  title: "Stage 09: ?????????????? (Restaurant Reservation)",
-  content: `Scene: Restaurant table reservation, dietary restrictions and allergies
+中文：刷卡，谢谢。再次感谢您的诚实和帮助！`
+},
+{
+title: "Stage 09: 餐厅订位、过敏申报与特殊要求 (Restaurant Reservation)",
+content: `Scene: Restaurant table reservation, dietary restrictions and allergies
 A (Alex): Hello, I'd like to book a table for four adults and one child this coming Saturday at 7:00 PM.
-???????????????7??????????????
+中文：你好，我想预订本周六晚上7点四个大人和一个小孩的桌位。
 B (Sarah): Good afternoon. Let me check our seating chart... Yes, we can accommodate your party at 7:00 PM. May I have your name and phone number?
-??????????????????????????7?????????????????????
+中文：下午好。我查一下座位图……可以的，我们能在晚上7点接待您的聚会。请问您的姓名和电话号码是？
 A (Alex): My name is Alex Zhang, phone number is 555-0198.
-????? Alex Zhang?????? 555-0198?
+中文：我叫 Alex Zhang，电话号码是 555-0198。
 B (Sarah): Thank you, Mr. Zhang. Do you prefer indoor seating or our garden terrace?
-????????????????????????????
+中文：谢谢您，张先生。您偏好室内座位还是我们的花园露台？
 A (Alex): Garden terrace would be lovely, weather permitting. Also, is it possible to have a high chair for our toddler?
-?????????????????????????????????????????
+中文：如果天气允许的话，花园露台会很棒。另外，能为我们的幼儿准备一张儿童高脚椅吗？
 B (Sarah): Absolutely, a high chair will be reserved at your table. Are there any dietary restrictions or food allergies?
-????????????????????????????????????
+中文：没问题，您的桌位会预留一把儿童高脚椅。有什么饮食限制或食物过敏吗？
 A (Alex): Yes, one of us has a severe peanut allergy. We need to make sure no dishes contain peanuts or cross-contamination.
-?????????????????????????????????????????????
+中文：有的，我们其中一人对花生有严重过敏。我们需要确保没有任何菜肴包含花生或发生交叉污染。
 B (Sarah): Understood completely. I will make a prominent note on your reservation and inform our executive chef directly.
-???????????????????????????????????
+中文：完全明白。我会在您的预订上做显眼备注，并直接通知我们的行政主厨。
 A (Alex): Thank you for taking safety so seriously. Do you have vegetarian options on the menu as well?
-?????????????????????????
+中文：谢谢你们如此重视安全。菜单上也有素食选择吗？
 B (Sarah): Yes, we offer a dedicated plant-based seasonal menu alongside our regular steaks and seafood.
-????????????????????????????????
+中文：有的，除了常规牛排和海鲜外，我们提供专门的植物性季节菜单。
 A (Alex): Perfect. What is your dress code policy for dinner time?
-?????????????????????
+中文：太完美了。晚餐时间的着装要求是什么？
 B (Sarah): Smart casual is fine, just no athletic sportswear or beach flip-flops, please.
-???????????????????????????
+中文：智能休闲装即可，请不要穿运动休闲服或海滩人字拖。
 A (Alex): Got it. We will dress accordingly. Should we reconfirm on Saturday afternoon?
-???????????????????????????????
+中文：明白了。我们会按要求着装。我们需要在周六下午再次确认吗？
 B (Sarah): No need, your booking is securely locked in. We will send an SMS reminder on Saturday morning.
-????????????????????????????????
+中文：不需要，您的预订已稳妥锁定。我们会在周六上午发送短信提醒。
 A (Alex): Excellent service. See you on Saturday evening!
-???????????????`
- },
- {
-  title: "Stage 10: ?????????????? (Hotel Check-out & Taxi)",
-  content: `Scene: Hotel check-out, luggage storage and booking airport taxi
+中文：出色的服务。周六晚上见！`
+},
+{
+title: "Stage 10: 酒店退房、行李寄存与机场交通 (Hotel Check-out & Taxi)",
+content: `Scene: Hotel check-out, luggage storage and booking airport taxi
 A (Alex): Good morning, I'd like to check out of room 508.
-???????????508????????
+中文：早上好，我想办理508房间的退房手续。
 B (Sarah): Good morning, Mr. Zhang. How was your stay with us? Did you consume anything from the minibar?
-?????????????????????????????????
+中文：早上好，张先生。您在我们这里的入住体验如何？迷你吧有消费吗？
 A (Alex): Everything was wonderful. We didn't touch anything in the minibar, just drank the complimentary bottled water.
-??????????????????????????????
+中文：一切都很好。迷你吧的东西我们没碰，只喝了赠送的瓶装水。
 B (Sarah): Perfect. Let me generate your final itemized bill... Here it is, total comes to zero since room charges were prepaid.
-????????????????????????????????????
+中文：完美。我来生成您的最终明细账单……给您，因为房费已预付，总额为零。
 A (Alex): Excellent. Can we store our three suitcases in the luggage room until 4:00 PM? Our flight is at night.
-??????????????????????????4????????????
+中文：太好了。我们可以把三个行李箱寄存在行李房到下午4点吗？我们的航班在晚上。
 B (Sarah): Of course, luggage storage is complimentary. I will give you three claim tags. Please keep them safe.
-?????????????????????????????????
+中文：当然可以，行李寄存是免费的。我会给您三个寄存牌，请妥善保管。
 A (Alex): Thank you. Also, could your concierge book a reliable taxi or airport shuttle for us at 4:30 PM?
-??????????????????????4?30??????????????
+中文：谢谢。另外，礼宾部能帮我们预约一辆下午4点30分可靠的出租车或机场班车吗？
 B (Sarah): I can book an executive van taxi for you right now. It comfortably fits three people and all your bags.
-?????????????????????????????????????????
+中文：我现在就可以为您预订一辆行政面包车出租车，它能舒适容纳三个人和您所有的行李。
 A (Alex): That would be ideal. How much is the estimated fare to the international airport?
-???????????????????????
+中文：那太理想了。去国际机场的预估车费是多少？
 B (Sarah): Around $45 to $55 depending on traffic, payable directly to the driver by card or cash.
-??????????45?55???????????????
+中文：视交通情况大约45到55美元，可直接刷卡或付现给司机。
 A (Alex): Sounds reasonable. Please go ahead and book it.
-??????????????????
+中文：听起来很合理。请帮我们预订吧。
 B (Sarah): Booked. Confirmation number is 7892. The driver will wait outside the main lobby at 4:30 sharp.
-??????????? 7892?????4?30?????????
+中文：已预订。确认号是 7892。司机将于4点30分整在大堂外等候。
 A (Alex): Thank you for the seamless check-out service. We had a great time staying here.
-????????????????????????????
+中文：感谢您顺畅的退房服务。我们在这里度过了美好的时光。
 B (Sarah): Thank you for choosing our hotel, Mr. Zhang. Have a safe journey back home!
-???????????????????????????`
- },
- {
-  title: "Stage 11: ?????????????? (Subway Tickets & Navigation)",
-  content: `Scene: Buying subway tickets, day pass and asking directions
+中文：感谢您选择我们的酒店，张先生。祝您回程一路平安！`
+},
+{
+title: "Stage 11: 乘坐地铁、购买车票与路线咨询 (Subway Tickets & Navigation)",
+content: `Scene: Buying subway tickets, day pass and asking directions
 A (Alex): Excuse me, how can we get to the central museum using the subway system from this station?
-????????????????????????????
+中文：打扰一下，我们怎么从这个地铁站坐地铁去中央博物馆？
 B (Sarah): You need to take the Red Line northbound, transfer at City Interchange, and get off at Art Gallery station.
-?????????????????????????????????
+中文：您需要乘坐红线北行，在城市换乘枢纽转车，然后在美术馆站下车。
 A (Alex): Is it complicated? Where can I buy the tickets or transit cards?
-???????????????????????
+中文：复杂吗？请问在哪里可以买到车票或交通卡？
 B (Sarah): You can buy single-trip tickets or a 24-hour tourist day pass right over at those automated ticket machines.
-???????????????????????24???????
+中文：您可以在那边的自动售票机上直接买单程票或24小时旅游日票。
 A (Alex): Let's see... Are these machines touch screen and do they accept credit cards?
-??????????????????????????
+中文：我看看……这些机器是触摸屏的吗，支持信用卡吗？
 B (Sarah): Yes, they support English interface, contactless credit cards, and cash. Just touch the screen to start.
-?????????????????????????????????
+中文：是的，支持英文界面、非接触式信用卡和现金。触摸屏幕即可开始。
 A (Alex): Got it. For three adults for one day, is the day pass more economical?
-??????????????????????????
+中文：明白了。对于三个大人用一天来说，日票更划算吗？
 B (Sarah): Yes, if you plan to take more than four trips today, the day pass saves you both time and money.
-??????????????????????????????
+中文：是的，如果您今天计划坐四次以上的车，日票既省时又省钱。
 A (Alex): Wonderful. How do we get through the turnstile once we get the tickets?
-???????????????????
+中文：太好了。拿到票后我们怎么过闸机？
 B (Sarah): Tap your ticket on the glowing yellow sensor pad on the gate, and the glass doors will slide open.
-??????????????????????????????
+中文：将车票在闸机上发光的黄色感应区刷一下，玻璃门就会滑开。
 A (Alex): Is the platform for the Red Line downstairs or upstairs?
-????????????????
+中文：红线站台是在楼下还是楼上？
 B (Sarah): Follow the red signs down the escalator; platform 2 is for northbound trains.
-?????????????????2????????????
+中文：顺着红色的指示牌下自动扶梯，2号站台是开往北行列车的。
 A (Alex): Thank you for your precise directions. Have a nice day!
-???????????????????`
- },
- {
-  title: "Stage 12: ???????????????? (Post Office & Parcels)",
-  content: `Scene: Mailing international postcards, parcels and asking rates
+中文：谢谢您准确的指引。祝您过得愉快！`
+},
+{
+title: "Stage 12: 邮局寄明信片、国际包裹与邮费查询 (Post Office & Parcels)",
+content: `Scene: Mailing international postcards, parcels and asking rates
 A (Alex): Good morning. I'd like to send three postcards to China and also ship this small box of souvenirs.
-?????????????????????????????????
+中文：早上好。我想寄三张明信片到中国，顺便寄这个装纪念品的小盒子。
 B (Sarah): Good morning. Please place the postcards and the box on the counter scale.
-??????????????????????
+中文：早上好。请把明信片和盒子放在柜台秤上。
 A (Alex): Here they are. How much is the airmail postage for each postcard?
-??????????????????????
+中文：都在这了。每张明信片的航空邮资是多少？
 B (Sarah): International postcard postage is $2.50 per stamp. Here are three stamps for you.
-???????????????2.50?????????????
+中文：国际明信片邮资是每张邮票2.50美元。这是给您的三张邮票。
 A (Alex): Perfect. Now, what about the small box? It weighs about 1.2 kilograms.
-???????????????????1.2???
+中文：完美。那么这个小盒子呢？它重大约1.2公斤。
 B (Sarah): Let's check the weight... Exactly 1.25 kg. Do you want standard surface shipping or priority airmail?
-??????????????1.25????? standard surface shipping ?? priority airmail?
+中文：我们看一下重量……正好1.25公斤。您要 standard surface shipping 还是 priority airmail？
 A (Alex): Priority airmail please. How long will it take to arrive in Beijing?
-???????????????????????????
+中文：请选优先航空快件。大概需要多长时间才能到达北京？
 B (Sarah): Usually it takes about 7 to 10 business days with tracking number included.
-?????????7?10????????????
+中文：通常大约需要7到10个工作日，包含跟踪单号。
 A (Alex): That's fast enough. How much is the shipping fee for the box?
-???????????????????
+中文：这够快了。请问盒子的运费是多少？
 B (Sarah): That will be $38.50 for priority airmail. Would you like to add insurance coverage?
-??????????38.50??????????????
+中文：优先航空快件是38.50美元。您需要添加保险保障吗？
 A (Alex): Yes, let's add basic insurance for peace of mind. Here is my customs declaration form.
-????????????????????????????
+中文：好的，为了安心加上基础保险吧。这是我的海关申报单。
 B (Sarah): Thank you. Please fill out the recipient's phone number clearly in this blank section.
-??????????????????????????
+中文：谢谢。请在这个空白处清晰填写收件人的电话号码。
 A (Alex): Done. I've written the Chinese address and phone number clearly.
-????????????????????????
+中文：写好了。我已经清晰地写好了中文地址和电话。
 B (Sarah): Excellent. Total comes to $46.00 including the stamps. Card or cash?
-???????????????46.00???????????
+中文：太棒了。包含邮票在内总计46.00美元。刷卡还是付现金？
 A (Alex): I'll pay by credit card. Here is my receipt.
-?????????????????
+中文：我用信用卡支付。请给我收据。
 B (Sarah): Here is your receipt with the tracking barcode. Have a great day!
-???????????????????????`
- },
+中文：这是带有跟踪条形码的收据。祝您过得愉快！`
+},
 
-let userLevel="L2 (???)",streak=0,vocabBook=[],apiKey="",binId="",binKey="";
+let userLevel="L2 (基础级)",streak=0,vocabBook=[],apiKey="",binId="",binKey="";
 let lastSelectedWord="",lastSelectedInfo="",currentFlashcardIndex=0,isCardFlipped=false;
 let shadowRecognition=null,voiceChatRecognition=null,isRecording=false,isVoiceChatActive=false,isDialoguePlaying=false;
 let voiceChatMode="one",voiceChatStopRequested=false,voiceChatBusy=false,voiceChatSession=0;
@@ -685,407 +685,411 @@ function safeLoad(key,fallback){try{const v=localStorage.getItem(key);return v==
 function safeSave(key,value){try{localStorage.setItem(key,value);return true;}catch(e){return false;}}
 
 function loadStorageData(){
- userLevel=safeLoad("user_level",userLevel);
- streak=Number(safeLoad("streak","0"))||0;
- try{const v=JSON.parse(safeLoad("vocab_book","[]"));if(Array.isArray(v))vocabBook=v;}catch(e){vocabBook=[];}
- binId=safeLoad("bin_id","");
- binKey=safeLoad("jsonbin_master_key","");
- apiKey=safeLoad("deepseek_api_key","");
- lastCheckinDate=safeLoad("last_checkin_date","");
- try{const h=JSON.parse(safeLoad("chat_history","[]"));if(Array.isArray(h))chatHistory=h;}catch(e){chatHistory=[];}
+userLevel=safeLoad("user_level",userLevel);
+streak=Number(safeLoad("streak","0"))||0;
+try{const v=JSON.parse(safeLoad("vocab_book","[]"));if(Array.isArray(v))vocabBook=v;}catch(e){vocabBook=[];}
+binId=safeLoad("bin_id","");
+binKey=safeLoad("jsonbin_master_key","");
+apiKey=safeLoad("deepseek_api_key","");
+lastCheckinDate=safeLoad("last_checkin_date","");
+try{const h=JSON.parse(safeLoad("chat_history","[]"));if(Array.isArray(h))chatHistory=h;}catch(e){chatHistory=[];}
 }
 
 function saveStorageData(){
- safeSave("user_level",userLevel);
- safeSave("streak",String(streak));
- safeSave("vocab_book",JSON.stringify(vocabBook));
- safeSave("bin_id",binId);
- safeSave("jsonbin_master_key",binKey);
- safeSave("deepseek_api_key",apiKey);
- safeSave("last_checkin_date",lastCheckinDate);
- safeSave("chat_history",JSON.stringify(chatHistory));
+safeSave("user_level",userLevel);
+safeSave("streak",String(streak));
+safeSave("vocab_book",JSON.stringify(vocabBook));
+safeSave("bin_id",binId);
+safeSave("jsonbin_master_key",binKey);
+safeSave("deepseek_api_key",apiKey);
+safeSave("last_checkin_date",lastCheckinDate);
+safeSave("chat_history",JSON.stringify(chatHistory));
 }
 
 function initApp(){
- try{localStorage.setItem("__test__","1");localStorage.removeItem("__test__");}
- catch(e){$("private-mode-warning").style.display="block";}
- loadStorageData();
- autoSpeakAI=safeLoad("auto_speak","1")!=="0";
- $("auto-speak-toggle").checked=autoSpeakAI;
- $("auto-speak-toggle").addEventListener("change",e=>{autoSpeakAI=!!e.target.checked;safeSave("auto_speak",autoSpeakAI?"1":"0");});
- voiceChatMode=safeLoad("voice_chat_mode","one")==="continuous"?"continuous":"one";
- $("voice-chat-mode").value=voiceChatMode;
- $("voice-chat-mode").addEventListener("change",e=>{
-  voiceChatMode=e.target.value==="continuous"?"continuous":"one";
-  safeSave("voice_chat_mode",voiceChatMode);
-  $("voice-status-text").textContent=voiceChatMode==="one"
-   ?"????????????AI ????????????"
-   :"?????AI ?????????????";
- });
- $("user-level-tag").textContent="?????"+userLevel;
- $("streak-text").textContent="?????"+streak+" ?";
- $("bin-id-input").value=binId;
- $("bin-key-input").value=binKey;
- $("api-key-input").value=apiKey;
- $("balance-status").textContent=apiKey?"??????":"??? API";
- renderVocabBook();
- initTravelStages();
- renderInteractiveText("listening-text",safeLoad("saved_listening",DEFAULTS.listening));
- renderInteractiveText("reading-text",safeLoad("saved_reading",DEFAULTS.reading));
- renderInteractiveText("dialogue-text",safeLoad("saved_dialogue",TRAVEL_SCENARIOS[0].content));
- $("phonetics-analysis").textContent=safeLoad("saved_phonetics","????????????????");
+try{localStorage.setItem("__test__","1");localStorage.removeItem("__test__");}
+catch(e){$("private-mode-warning").style.display="block";}
+loadStorageData();
+autoSpeakAI=safeLoad("auto_speak","1")!=="0";
+$("auto-speak-toggle").checked=autoSpeakAI;
+$("auto-speak-toggle").addEventListener("change",e=>{autoSpeakAI=!!e.target.checked;safeSave("auto_speak",autoSpeakAI?"1":"0");});
+voiceChatMode=safeLoad("voice_chat_mode","one")==="continuous"?"continuous":"one";
+$("voice-chat-mode").value=voiceChatMode;
+$("voice-chat-mode").addEventListener("change",e=>{
+voiceChatMode=e.target.value==="continuous"?"continuous":"one";
+safeSave("voice_chat_mode",voiceChatMode);
+$("voice-status-text").textContent=voiceChatMode==="one"
+?"一键一轮：说完自动发送，AI 朗读后等待你点击下一轮。"
+:"连续对话：AI 朗读后将尝试自动重新监听。";
+});
+$("user-level-tag").textContent="当前等级："+userLevel;
+$("streak-text").textContent="连续打卡："+streak+" 天";
+$("bin-id-input").value=binId;
+$("bin-key-input").value=binKey;
+$("api-key-input").value=apiKey;
+$("balance-status").textContent=apiKey?"已保存并应用":"未配置 API";
+renderVocabBook();
+initTravelStages();
+renderInteractiveText("listening-text",safeLoad("saved_listening",DEFAULTS.listening));
+renderInteractiveText("reading-text",safeLoad("saved_reading",DEFAULTS.reading));
+renderInteractiveText("dialogue-text",safeLoad("saved_dialogue",TRAVEL_SCENARIOS[0].content));
+$("phonetics-analysis").textContent=safeLoad("saved_phonetics","发音提示：注意重音、连读和语调。");
 }
 
 function initTravelStages(){
- const sel=$("travel-stage-select");
- sel.replaceChildren();
- TRAVEL_SCENARIOS.forEach((sc,idx)=>{
-  const opt=document.createElement("option");
-  opt.value=idx;
-  opt.textContent=sc.title;
-  sel.append(opt);
- });
- const savedIdx=Number(safeLoad("selected_travel_idx","0"))||0;
- sel.value=savedIdx;
- renderInteractiveText("dialogue-text",TRAVEL_SCENARIOS[savedIdx].content);
- $("dialogue-tag").textContent="03 ?????"+TRAVEL_SCENARIOS[savedIdx].title.split(":")[0];
+const sel=$("travel-stage-select");
+sel.replaceChildren();
+TRAVEL_SCENARIOS.forEach((sc,idx)=>{
+const opt=document.createElement("option");
+opt.value=idx;
+opt.textContent=sc.title;
+sel.append(opt);
+});
+const savedIdx=Number(safeLoad("selected_travel_idx","0"))||0;
+sel.value=savedIdx;
+renderInteractiveText("dialogue-text",TRAVEL_SCENARIOS[savedIdx].content);
+$("dialogue-tag").textContent="03 旅游实战："+TRAVEL_SCENARIOS[savedIdx].title.split(":")[0];
 }
 
 function switchTravelStage(idx){
- const index=Number(idx)||0;
- safeSave("selected_travel_idx",String(index));
- const sc=TRAVEL_SCENARIOS[index];
- if(sc){
-  renderInteractiveText("dialogue-text",sc.content);
-  safeSave("saved_dialogue",sc.content);
-  $("dialogue-tag").textContent="03 ?????"+sc.title.split(":")[0];
- }
+const index=Number(idx)||0;
+safeSave("selected_travel_idx",String(index));
+const sc=TRAVEL_SCENARIOS[index];
+if(sc){
+renderInteractiveText("dialogue-text",sc.content);
+safeSave("saved_dialogue",sc.content);
+$("dialogue-tag").textContent="03 旅游实战："+sc.title.split(":")[0];
+}
 }
 
 function applyApiKey(){
- apiKey=$("api-key-input").value.trim();
- if(!apiKey){alert("???? DeepSeek API Key?");return;}
- safeSave("deepseek_api_key",apiKey);
- $("balance-status").textContent="??????";
- checkApiBalance();
- alert("DeepSeek API Key ????????????");
+apiKey=$("api-key-input").value.trim();
+if(!apiKey){alert("请先输入 DeepSeek API Key。");return;}
+if(!saveConfigData()){
+$("balance-status").textContent="本机存储不可用，刷新后可能丢失";
+alert("浏览器未能保存配置。请关闭无痕模式，并检查网站存储权限。");
+return;
+}
+$("balance-status").textContent="已保存并应用";
+checkApiBalance();
+alert("DeepSeek API Key 已保存到本机浏览器。");
 }
 
 function clearApiKey(){
- apiKey="";
- safeSave("deepseek_api_key","");
- $("api-key-input").value="";
- $("balance-status").textContent="???";
- $("balance-amount").textContent="???";
- alert("???????? Key?");
+apiKey="";
+saveConfigData();
+$("api-key-input").value="";
+$("balance-status").textContent="已清除";
+$("balance-amount").textContent="不检测";
+alert("已清除本机保存的 Key。");
 }
 
 async function apiRequest(messages,opts={}){
- if(!apiKey)throw new Error("???????????? DeepSeek API Key?");
- const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),opts.timeout||60000);
- try{
-  const response=await fetch("https://api.deepseek.com/chat/completions",{
-   method:"POST",
-   headers:{"Content-Type":"application/json","Authorization":"Bearer "+apiKey},
-   body:JSON.stringify({model:"deepseek-flash",messages,temperature:opts.temperature??0.7,max_tokens:opts.max_tokens||1200}),
-   signal:controller.signal
-  });
-  const data=await response.json().catch(()=>({}));
-  if(!response.ok)throw new Error(data.error?.message||`API ?????HTTP ${response.status}?`);
-  const content=data.choices?.[0]?.message?.content;
-  if(typeof content!=="string"||!content.trim())throw new Error("AI ?????????");
-  return content.trim();
- }finally{clearTimeout(timer);}
+if(!apiKey)throw new Error("请先在页面顶部输入并应用 DeepSeek API Key。");
+const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),opts.timeout||60000);
+try{
+const response=await fetch("https://www.google.com/url?q=https://api.deepseek.com/chat/completions&source=gmail&ust=1795412829480000&sa=E",{
+method:"POST",
+headers:{"Content-Type":"application/json","Authorization":"Bearer "+apiKey},
+body:JSON.stringify({model:"deepseek-flash",messages,temperature:opts.temperature??0.7,max_tokens:opts.max_tokens||1200}),
+signal:controller.signal
+});
+const data=await response.json().catch(()=>({}));
+if(!response.ok)throw new Error(data.error?.message||`API 请求失败（HTTP ${response.status}）`);
+const content=data.choices?.[0]?.message?.content;
+if(typeof content!=="string"||!content.trim())throw new Error("AI 没有返回有效文本。");
+return content.trim();
+}finally{clearTimeout(timer);}
 }
 
 async function checkApiBalance(){
- if(!apiKey)return;
- $("balance-status").textContent="???";
- $("balance-amount").textContent="???";
+if(!apiKey)return;
+$("balance-status").textContent="已配置";
+$("balance-amount").textContent="不检测";
 }
 
 function renderInteractiveText(id,text){
- const el=$(id);el.replaceChildren();
- String(text||"").split("\n").forEach((line,li)=>{
-  const parts=line.split(/(\s+)/);
-  parts.forEach(part=>{
-   if(/[\p{L}\p{N}]/u.test(part)){
-    const span=document.createElement("span");
-    span.textContent=part;
-    span.addEventListener("click",()=>clickToTranslate(part.replace(/[^\p{L}'-]/gu,"")));
-    el.appendChild(span);
-   }else el.appendChild(document.createTextNode(part));
-  });
-  if(li<String(text||"").split("\n").length-1)el.appendChild(document.createElement("br"));
- });
+const el=$(id);el.replaceChildren();
+String(text||"").split("\n").forEach((line,li)=>{
+const parts=line.split(/(\s+)/);
+parts.forEach(part=>{
+if(/[\p{L}\p{N}]/u.test(part)){
+const span=document.createElement("span");
+span.textContent=part;
+span.addEventListener("click",()=>clickToTranslate(part.replace(/[^\p{L}'-]/gu,"")));
+el.appendChild(span);
+}else el.appendChild(document.createTextNode(part));
+});
+if(li<String(text||"").split("\n").length-1)el.appendChild(document.createElement("br"));
+});
 }
 
 async function clickToTranslate(word){
- if(!word)return;
- lastSelectedWord=word;
- lastSelectedInfo="";
- $("popup-title").textContent=word;
- $("popup-content").textContent="?????";
- $("word-popup").style.display="block";
- try{
-  lastSelectedInfo=await apiRequest([{role:"user",content:`Explain the English word "${word}" in concise Chinese. Include IPA if known, part of speech, and one short example with Chinese translation.`}],{max_tokens:300,timeout:25000});
- }catch(e){lastSelectedInfo="?????????"+e.message;}
- $("popup-content").textContent=lastSelectedInfo;
+if(!word)return;
+lastSelectedWord=word;
+lastSelectedInfo="";
+$("popup-title").textContent=word;
+$("popup-content").textContent="正在查询…";
+$("word-popup").style.display="block";
+try{
+lastSelectedInfo=await apiRequest([{role:"user",content:`Explain the English word "${word}" in concise Chinese. Include IPA if known, part of speech, and one short example with Chinese translation.`}],{max_tokens:300,timeout:25000});
+}catch(e){lastSelectedInfo="暂时无法联网查词："+e.message;}
+$("popup-content").textContent=lastSelectedInfo;
 }
 
-???????????????????
+中文：太好了，我就在那边的窗户旁等候。
 B (Sarah): Enjoy your morning coffee and bakery items!
-????????????????`
- },
- {
-  title: "Stage 06: ??????????????? (Attraction Tickets)",
-  content: `Scene: Buying tickets, audio guides and asking museum directions
-A (Alex): Hello, I?d like to purchase three adult tickets for the main museum exhibition today.
-????????????????????????
+中文：祝您享用早晨的咖啡和点心！`
+},
+{
+title: "Stage 06: 购买博物馆门票、语音导览与问路 (Attraction Tickets)",
+content: `Scene: Buying tickets, audio guides and asking museum directions
+A (Alex): Hello, I’d like to purchase three adult tickets for the main museum exhibition today.
+中文：你好，我想买三张今天主博物馆展览的成人票。
 B (Sarah): Good afternoon. General admission is $25 per adult, so that's $75 in total.
-???????????????25??????75???
+中文：下午好。普通门票每位成人25美元，总共是75美元。
 A (Alex): Does this ticket include access to the special dinosaur exhibition on the second floor?
-?????????????????????
+中文：这张票包含参观二楼恐龙特展的权限吗？
 B (Sarah): Not general admission. The special exhibition requires a combo ticket, which is an extra $10 per person.
-????????????????????????10???
+中文：普通门票不包含。特展需要买联票，每人额外加10美元。
 A (Alex): Let's upgrade all three tickets to the combo pass, please.
-????????????????
+中文：请把三张票都升级为联票吧。
 B (Sarah): Sure. Would you also like to rent audio guide devices? They are available in Chinese, English, and Japanese.
-?????????????????????????????????
+中文：好的。您还需要租借语音导览设备吗？提供中文、英文和日语版本。
 A (Alex): Yes, we'll take two audio guides. Do we need to leave an ID as deposit?
-?????????????????????????????
+中文：好的，我们要两个语音导览。需要留身份证件作为押金吗？
 B (Sarah): Just a driver's license or credit card will do. Each guide is $8.
-?????????????????????8???
+中文：只需留个驾照或信用卡就行。每个导览器8美元。
 A (Alex): Here is my credit card for the deposit. By the way, where is the elevator or restroom from here?
-?????????????????????????????????
+中文：这是作为押金的信用卡。顺便问一下，电梯和洗手间从这里怎么走？
 B (Sarah): Restrooms are located right behind the ticket counter to your left. Elevators are past the gift shop.
-???????????????????????????????
+中文：洗手间在您左手边的售票柜台后面。电梯穿过礼品店就能看到。
 A (Alex): Thank you. Also, is photography allowed inside the exhibition halls?
-???????????????????
+中文：谢谢。另外，展厅里面允许拍照吗？
 B (Sarah): Photography is permitted, but flash photography and selfie sticks are strictly prohibited to protect the artifacts.
-????????????????????????????
+中文：允许拍照，但为了保护文物，严禁使用闪光灯和自拍杆。
 A (Alex): Understood, no flash. What time does the museum close this evening?
-???????????????????????
+中文：明白了，不用闪光灯。博物馆今晚几点闭馆？
 B (Sarah): We close at 5:00 PM sharp, but last entry is at 4:15 PM, so you have plenty of time.
-???????5?????????????4?15?????????????
+中文：我们下午5点整闭馆，但最晚入场时间是4点15分，所以你们有充足的时间。
 A (Alex): Fantastic. Where should we return the audio guides when we leave?
-???????????????????????
+中文：太棒了。我们离开时应该把导览器还到哪里？
 B (Sarah): You can return them either here at the front desk or at the exit booth on the ground floor.
-?????????????????????????
+中文：您可以在前台归还，也可以在一楼的出口处归还。
 A (Alex): Thank you for all the clear information. Have a nice afternoon!
-???????????????????????`
- },
- {
-  title: "Stage 07: ?????????????? (Shopping & Tax Refund)",
-  content: `Scene: Shopping, trying clothes and asking about tourist tax refund
+中文：谢谢您提供这么清晰的信息。祝您过得愉快！`
+},
+{
+title: "Stage 07: 商场购物、尺码挑选与退税咨询 (Shopping & Tax Refund)",
+content: `Scene: Shopping, trying clothes and asking about tourist tax refund
 A (Alex): Excuse me, could you help me find this jacket in a size medium? I only see large on the shelf.
-???????????????????M???????????L??
+中文：打扰一下，能帮我找一下这件夹克的M码吗？架子上我只看到了L码。
 B (Sarah): Let me check our back storage room for you. What color were you looking for, navy blue or charcoal?
-???????????????????????????????
+中文：我帮您去后仓查一下。您想找什么颜色的，藏青色还是碳灰色？
 A (Alex): Navy blue, medium size please.
-???????M????
+中文：藏青色，M码谢谢。
 B (Sarah): Just a moment... Here you are. We have one medium left in navy blue. Would you like to try it on?
-??????????????????????M??????????
+中文：请稍等……给您。藏青色我们还剩最后一件M码。您想试穿一下吗？
 A (Alex): Yes, where are the fitting rooms located?
-???????????????
+中文：好的，请问试衣间在哪里？
 B (Sarah): Fitting rooms are right over there next to the shoe department. Need any other sizes?
-??????????????????????????
+中文：试衣间就在那边鞋类专柜旁边。还需要其他尺码吗？
 A (Alex): No, this fits just right. I'll take it. By the way, do you participate in the tourist tax refund scheme?
-???????????????????????????????????
+中文：不用了，这件正合身。我要了。顺便问一下，你们参与游客退税计划吗？
 B (Sarah): Yes, we do. If your total purchase exceeds $100 in a single receipt, you are eligible for a tax refund.
-??????????????????????100????????????
+中文：是的，我们参与。如果您单张小票消费超过100美元，就有资格申请退税。
 A (Alex): That's great! What documents do I need to present at your customer service counter?
-????????????????????????
+中文：太棒了！我需要在你们的服务台出示什么文件？
 B (Sarah): Just your original passport and the payment receipt. We will issue a tax invoice form for customs at the airport.
-????????????????????????????????????????
+中文：只需出示您的原件护照和付款收据。我们将为您开具供机场海关核验的退税发票单。
 A (Alex): Can I get cash back immediately, or is it processed at the airport terminal?
-???????????????????????????
+中文：我可以立刻拿到现金返还吗，还是在机场航站楼办理？
 B (Sarah): We provide the invoice here, and you present it along with the goods at the airport customs desk before departure.
-??????????????????????????????????????
+中文：我们在这里开具发票，您需要在出发前在机场海关柜台连同商品一同出示办理。
 A (Alex): Clear enough. I'll pay by credit card now.
-??????????????????
+中文：很清楚了。我现在用信用卡付款。
 B (Sarah): Thank you. Please insert or tap your card on the terminal. Would you like a paper receipt or digital receipt?
-???????????????????????????????
+中文：谢谢。请在终端上插卡或刷卡。您需要纸质小票还是电子小票？
 A (Alex): Paper receipt, please, for the tax refund paperwork.
-????????????????????
+中文：请给我纸质小票，为了办理退税文件。
 B (Sarah): Here is your receipt and shopping bag. Customer service is on level two if you need the tax form right now.
-??????????????????????????????????
+中文：这是您的收据和购物袋。如果您现在就需要退税单，客服中心在二楼。
 A (Alex): Thank you so much for your professional assistance.
-??????????????`
- },
- {
-  title: "Stage 08: ?????????????? (Pharmacy & Lost Property)",
-  content: `Scene: Pharmacy consultation, medicine recommendation and lost item
+中文：非常感谢您的专业协助。`
+},
+{
+title: "Stage 08: 药店买药、症状描述与寻找失物 (Pharmacy & Lost Property)",
+content: `Scene: Pharmacy consultation, medicine recommendation and lost item
 A (Alex): Good afternoon. I'm looking for something effective for a severe sore throat and runny nose.
-??????????????????????????
+中文：下午好。我在找对严重喉咙痛和流鼻涕有效的东西。
 B (Sarah): Good afternoon. How long have you had these cold symptoms? Any fever or body aches?
-???????????????????????????????
+中文：下午好。您出现这些感冒症状有多久了？有发烧或全身酸痛吗？
 A (Alex): Started since last night, no fever yet, just feeling quite tired and dizzy.
-???????????????????????????
+中文：从昨晚开始的，目前还没发烧，就是觉得挺累和头晕。
 B (Sarah): I see. Are you allergic to any medications, like penicillin or aspirin?
-??????????????????????????????
+中文：我明白了。您对任何药物过敏吗，比如盘尼西林或阿司匹林？
 A (Alex): No known allergies. What would you recommend for travel use?
-????????????????????????
+中文：没有已知过敏史。您推荐什么适合旅行时吃的？
 B (Sarah): I recommend this daytime capsule for congestion and nighttime syrup for better sleep.
-??????????????????????????????
+中文：我推荐这款用于鼻塞的日间胶囊和用于改善睡眠的夜间糖浆。
 A (Alex): Perfect, I'll take both. Also, by any chance, has anyone turned in a lost black leather wallet today?
-????????????????????????????????????
+中文：太好了，这两样我都买。另外，今天有没有人上交了一个丢失的黑色皮夹？
 B (Sarah): Let me check our store lost and found box... What brand or what cards were inside?
-?????????????????????????????????
+中文：我查看一下我们店的失物招领箱……是什么品牌或者里面有什么卡？
 A (Alex): It's a Coach wallet containing a driver's license under the name Alex Zhang and some hotel receipts.
-??????Coach????????? Alex Zhang ???????????
+中文：是一个Coach钱包，里面有一张叫 Alex Zhang 的驾照和一些酒店收据。
 B (Sarah): Oh! A customer actually dropped a black leather wallet off about an hour ago. Let me verify the ID inside.
-????????????????????????????????????????
+中文：哦！确实有一个顾客大约一小时前送来了一个黑色皮夹。让我核对一下里面的证件。
 A (Alex): Really? That's incredible! Here is my passport to prove my identity.
-?????????????????????????????
+中文：真的吗？太不可思议了！这是我的护照用来证明我的身份。
 B (Sarah): Let's check the driver's license photo... Yes, it's an exact match! Here is your wallet.
-????????????????????????????
+中文：核对一下驾照照片……是的，完全吻合！这是您的钱包。
 A (Alex): I cannot thank you enough! You saved our entire trip!
-???????????????????????
+中文：真是感激不尽！你们拯救了我们的整个旅行！
 B (Sarah): You're very welcome. Please be more careful with your valuables while traveling.
-???????????????????????
+中文：不用客气。旅行时请多保管好您的贵重物品。
 A (Alex): I certainly will. How much do I owe you for the medicine?
-????????????????????
+中文：我一定会注意的。请问这些药多少钱？
 B (Sarah): That comes to $24.80 in total. Card or cash?
-??????24.80???????????
+中文：总共是24.80美元。刷卡还是付现金？
 A (Alex): Card, please. Thanks again for your honesty and help!
-?????????????????????`
- },
- {
-  title: "Stage 09: ?????????????? (Restaurant Reservation)",
-  content: `Scene: Restaurant table reservation, dietary restrictions and allergies
+中文：刷卡，谢谢。再次感谢您的诚实和帮助！`
+},
+{
+title: "Stage 09: 餐厅订位、过敏申报与特殊要求 (Restaurant Reservation)",
+content: `Scene: Restaurant table reservation, dietary restrictions and allergies
 A (Alex): Hello, I'd like to book a table for four adults and one child this coming Saturday at 7:00 PM.
-???????????????7??????????????
+中文：你好，我想预订本周六晚上7点四个大人和一个小孩的桌位。
 B (Sarah): Good afternoon. Let me check our seating chart... Yes, we can accommodate your party at 7:00 PM. May I have your name and phone number?
-??????????????????????????7?????????????????????
+中文：下午好。我查一下座位图……可以的，我们能在晚上7点接待您的聚会。请问您的姓名和电话号码是？
 A (Alex): My name is Alex Zhang, phone number is 555-0198.
-????? Alex Zhang?????? 555-0198?
+中文：我叫 Alex Zhang，电话号码是 555-0198。
 B (Sarah): Thank you, Mr. Zhang. Do you prefer indoor seating or our garden terrace?
-????????????????????????????
+中文：谢谢您，张先生。您偏好室内座位还是我们的花园露台？
 A (Alex): Garden terrace would be lovely, weather permitting. Also, is it possible to have a high chair for our toddler?
-?????????????????????????????????????????
+中文：如果天气允许的话，花园露台会很棒。另外，能为我们的幼儿准备一张儿童高脚椅吗？
 B (Sarah): Absolutely, a high chair will be reserved at your table. Are there any dietary restrictions or food allergies?
-??????????????????????????????????
+中文：没问题，您的桌位会预留一把高脚椅。有什么饮食限制或食物过敏吗？
 A (Alex): Yes, one of us has a severe peanut allergy. We need to make sure no dishes contain peanuts or cross-contamination.
-?????????????????????????????????????????????
+中文：有的，我们其中一人对花生有严重过敏。我们需要确保没有任何菜肴包含花生或发生交叉污染。
 B (Sarah): Understood completely. I will make a prominent note on your reservation and inform our executive chef directly.
-???????????????????????????????????
+中文：完全明白。我会在您的预订上做显眼备注，并直接通知我们的行政主厨。
 A (Alex): Thank you for taking safety so seriously. Do you have vegetarian options on the menu as well?
-?????????????????????????
+中文：谢谢你们如此重视安全。菜单上也有素食选择吗？
 B (Sarah): Yes, we offer a dedicated plant-based seasonal menu alongside our regular steaks and seafood.
-????????????????????????????????
+中文：有的，除了常规牛排和海鲜外，我们提供专门的植物性季节菜单。
 A (Alex): Perfect. What is your dress code policy for dinner time?
-?????????????????????
+中文：太完美了。晚餐时间的着装要求是什么？
 B (Sarah): Smart casual is fine, just no athletic sportswear or beach flip-flops, please.
-???????????????????????????
+中文：智能休闲装即可，请不要穿运动休闲服或海滩人字拖。
 A (Alex): Got it. We will dress accordingly. Should we reconfirm on Saturday afternoon?
-???????????????????????????????
+中文：明白了。我们会按要求着装。我们需要在周六下午再次确认吗？
 B (Sarah): No need, your booking is securely locked in. We will send an SMS reminder on Saturday morning.
-????????????????????????????????
+中文：不需要，您的预订已稳妥锁定。我们会在周六上午发送短信提醒。
 A (Alex): Excellent service. See you on Saturday evening!
-???????????????`
- },
- {
-  title: "Stage 10: ?????????????? (Hotel Check-out & Taxi)",
-  content: `Scene: Hotel check-out, luggage storage and booking airport taxi
+中文：出色的服务。周六晚上见！`
+},
+{
+title: "Stage 10: 酒店退房、行李寄存与机场交通 (Hotel Check-out & Taxi)",
+content: `Scene: Hotel check-out, luggage storage and booking airport taxi
 A (Alex): Good morning, I'd like to check out of room 508.
-???????????508????????
+中文：早上好，我想办理508房间的退房手续。
 B (Sarah): Good morning, Mr. Zhang. How was your stay with us? Did you consume anything from the minibar?
-?????????????????????????????????
+中文：早上好，张先生。您在我们这里的入住体验如何？迷你吧有消费吗？
 A (Alex): Everything was wonderful. We didn't touch anything in the minibar, just drank the complimentary bottled water.
-??????????????????????????????
+中文：一切都很好。迷你吧的东西我们没碰，只喝了赠送的瓶装水。
 B (Sarah): Perfect. Let me generate your final itemized bill... Here it is, total comes to zero since room charges were prepaid.
-????????????????????????????????????
+中文：完美。我来生成您的最终明细账单……给您，因为房费已预付，总额为零。
 A (Alex): Excellent. Can we store our three suitcases in the luggage room until 4:00 PM? Our flight is at night.
-??????????????????????????4????????????
+中文：太好了。我们可以把三个行李箱寄存在行李房到下午4点吗？我们的航班在晚上。
 B (Sarah): Of course, luggage storage is complimentary. I will give you three claim tags. Please keep them safe.
-?????????????????????????????????
+中文：当然可以，行李寄存是免费的。我会给您三个寄存牌，请妥善保管。
 A (Alex): Thank you. Also, could your concierge book a reliable taxi or airport shuttle for us at 4:30 PM?
-??????????????????????4?30??????????????
+中文：谢谢。另外，礼宾部能帮我们预约一辆下午4点30分可靠的出租车或机场班车吗？
 B (Sarah): I can book an executive van taxi for you right now. It comfortably fits three people and all your bags.
-?????????????????????????????????????????
+中文：我现在就可以为您预订一辆行政面包车出租车，它能舒适容纳三个人和您所有的行李。
 A (Alex): That would be ideal. How much is the estimated fare to the international airport?
-???????????????????????
+中文：那太理想了。去国际机场的预估车费是多少？
 B (Sarah): Around $45 to $55 depending on traffic, payable directly to the driver by card or cash.
-??????????45?55???????????????
+中文：视交通情况大约45到55美元，可直接刷卡或付现给司机。
 A (Alex): Sounds reasonable. Please go ahead and book it.
-??????????????????
+中文：听起来很合理。请帮我们预订吧。
 B (Sarah): Booked. Confirmation number is 7892. The driver will wait outside the main lobby at 4:30 sharp.
-??????????? 7892?????4?30?????????
+中文：已预订。确认号是 7892。司机将于4点30分整在大堂外等候。
 A (Alex): Thank you for the seamless check-out service. We had a great time staying here.
-????????????????????????????
+中文：感谢您顺畅的退房服务。我们在这里度过了美好的时光。
 B (Sarah): Thank you for choosing our hotel, Mr. Zhang. Have a safe journey back home!
-???????????????????????????`
- },
- {
-  title: "Stage 11: ?????????????? (Subway Tickets & Navigation)",
-  content: `Scene: Buying subway tickets, day pass and asking directions
+中文：感谢您选择我们的酒店，张先生。祝您回程一路平安！`
+},
+{
+title: "Stage 11: 乘坐地铁、购买车票与路线咨询 (Subway Tickets & Navigation)",
+content: `Scene: Buying subway tickets, day pass and asking directions
 A (Alex): Excuse me, how can we get to the central museum using the subway system from this station?
-????????????????????????????
+中文：打扰一下，我们怎么从这个地铁站坐地铁去中央博物馆？
 B (Sarah): You need to take the Red Line northbound, transfer at City Interchange, and get off at Art Gallery station.
-?????????????????????????????????
+中文：您需要乘坐红线北行，在城市换乘枢纽转车，然后在美术馆站下车。
 A (Alex): Is it complicated? Where can I buy the tickets or transit cards?
-???????????????????????
+中文：复杂吗？请问在哪里可以买到车票或交通卡？
 B (Sarah): You can buy single-trip tickets or a 24-hour tourist day pass right over at those automated ticket machines.
-???????????????????????24???????
+中文：您可以在那边的自动售票机上直接买单程票或24小时旅游日票。
 A (Alex): Let's see... Are these machines touch screen and do they accept credit cards?
-??????????????????????????
+中文：我看看……这些机器是触摸屏的吗，支持信用卡吗？
 B (Sarah): Yes, they support English interface, contactless credit cards, and cash. Just touch the screen to start.
-?????????????????????????????????
+中文：是的，支持英文界面、非接触式信用卡和现金。触摸屏幕即可开始。
 A (Alex): Got it. For three adults for one day, is the day pass more economical?
-??????????????????????????
+中文：明白了。对于三个大人用一天来说，日票更划算吗？
 B (Sarah): Yes, if you plan to take more than four trips today, the day pass saves you both time and money.
-??????????????????????????????
+中文：是的，如果您今天计划坐四次以上的车，日票既省时又省钱。
 A (Alex): Wonderful. How do we get through the turnstile once we get the tickets?
-???????????????????
+中文：太好了。拿到票后我们怎么过闸机？
 B (Sarah): Tap your ticket on the glowing yellow sensor pad on the gate, and the glass doors will slide open.
-??????????????????????????????
+中文：将车票在闸机上发光的黄色感应区刷一下，玻璃门就会滑开。
 A (Alex): Is the platform for the Red Line downstairs or upstairs?
-????????????????
+中文：红线站台是在楼下还是楼上？
 B (Sarah): Follow the red signs down the escalator; platform 2 is for northbound trains.
-?????????????????2????????????
+中文：顺着红色的指示牌下自动扶梯，2号站台是开往北行列车的。
 A (Alex): Thank you for your precise directions. Have a nice day!
-???????????????????`
- },
- {
-  title: "Stage 12: ???????????????? (Post Office & Parcels)",
-  content: `Scene: Mailing international postcards, parcels and asking rates
+中文：谢谢您准确的指引。祝您过得愉快！`
+},
+{
+title: "Stage 12: 邮局寄明信片、国际包裹与邮费查询 (Post Office & Parcels)",
+content: `Scene: Mailing international postcards, parcels and asking rates
 A (Alex): Good morning. I'd like to send three postcards to China and also ship this small box of souvenirs.
-?????????????????????????????????
+中文：早上好。我想寄三张明信片到中国，顺便寄这个装纪念品的小盒子。
 B (Sarah): Good morning. Please place the postcards and the box on the counter scale.
-??????????????????????
+中文：早上好。请把明信片和盒子放在柜台秤上。
 A (Alex): Here they are. How much is the airmail postage for each postcard?
-??????????????????????
+中文：都在这了。每张明信片的航空邮资是多少？
 B (Sarah): International postcard postage is $2.50 per stamp. Here are three stamps for you.
-???????????????2.50?????????????
+中文：国际明信片邮资是每张邮票2.50美元。这是给您的三张邮票。
 A (Alex): Perfect. Now, what about the small box? It weighs about 1.2 kilograms.
-???????????????????1.2???
+中文：完美。那么这个小盒子呢？它重大约1.2公斤。
 B (Sarah): Let's check the weight... Exactly 1.25 kg. Do you want standard surface shipping or priority airmail?
-??????????????1.25????? standard surface shipping ?? priority airmail?
+中文：我们看一下重量……正好1.25公斤。您要 standard surface shipping 还是 priority airmail？
 A (Alex): Priority airmail please. How long will it take to arrive in Beijing?
-???????????????????????????
+中文：请选优先航空快件。大概需要多长时间才能到达北京？
 B (Sarah): Usually it takes about 7 to 10 business days with tracking number included.
-?????????7?10????????????
+中文：通常大约需要7到10个工作日，包含跟踪单号。
 A (Alex): That's fast enough. How much is the shipping fee for the box?
-???????????????????
+中文：这够快了。请问盒子的运费是多少？
 B (Sarah): That will be $38.50 for priority airmail. Would you like to add insurance coverage?
-??????????38.50??????????????
+中文：优先航空快件是38.50美元。您需要添加保险保障吗？
 A (Alex): Yes, let's add basic insurance for peace of mind. Here is my customs declaration form.
-????????????????????????????
+中文：好的，为了安心加上基础保险吧。这是我的海关申报单。
 B (Sarah): Thank you. Please fill out the recipient's phone number clearly in this blank section.
-??????????????????????????
+中文：谢谢。请在这个空白处清晰填写收件人的电话号码。
 A (Alex): Done. I've written the Chinese address and phone number clearly.
-????????????????????????
+中文：写好了。我已经清晰地写好了中文地址和电话。
 B (Sarah): Excellent. Total comes to $46.00 including the stamps. Card or cash?
-???????????????46.00???????????
+中文：太棒了。包含邮票在内总计46.00美元。刷卡还是付现金？
 A (Alex): I'll pay by credit card. Here is my receipt.
-?????????????????
+中文：我用信用卡支付。请给我收据。
 B (Sarah): Here is your receipt with the tracking barcode. Have a great day!
-???????????????????????`
- },
+中文：这是带有跟踪条形码的收据。祝您过得愉快！`
+},
 
-// ???????????????????? let
-userLevel="L2 (???)";
+// 修复重复声明：这里使用赋值，不再重复使用 let
+userLevel="L2 (基础级)";
 streak=0;
 vocabBook=[];
 apiKey="";
@@ -1110,290 +1114,336 @@ lastCheckinDate="";
 autoSpeakAI=true;
 
 function todayKey(){
- const d=new Date();
- return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+const d=new Date();
+return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
 }
 
 function safeLoad(key,fallback){
- try{
-  const v=localStorage.getItem(key);
-  return v===null?fallback:v;
- }catch(e){
-  return fallback;
- }
+try{
+const v=localStorage.getItem(key);
+return v===null?fallback:v;
+}catch(e){
+return fallback;
+}
 }
 
 function safeSave(key,value){
- try{
-  localStorage.setItem(key,value);
-  return true;
- }catch(e){
-  return false;
- }
+try{
+localStorage.setItem(key,value);
+return true;
+}catch(e){
+return false;
+}
+}
+
+function readConfigData(){
+const defaults={binId:"",binKey:"",apiKey:""};
+try{
+const raw=localStorage.getItem("study_app_config_v1");
+if(raw){
+const saved=JSON.parse(raw);
+if(saved&&typeof saved==="object"){
+return {
+binId:typeof saved.binId==="string"?saved.binId:"",
+binKey:typeof saved.binKey==="string"?saved.binKey:"",
+apiKey:typeof saved.apiKey==="string"?saved.apiKey:""
+};
+}
+}
+}catch(e){}
+try{
+return {
+binId:localStorage.getItem("bin_id")||sessionStorage.getItem("bin_id")||"",
+binKey:localStorage.getItem("jsonbin_master_key")||sessionStorage.getItem("jsonbin_master_key")||"",
+apiKey:localStorage.getItem("deepseek_api_key")||sessionStorage.getItem("deepseek_api_key")||""
+};
+}catch(e){
+try{
+return {
+binId:sessionStorage.getItem("bin_id")||"",
+binKey:sessionStorage.getItem("jsonbin_master_key")||"",
+apiKey:sessionStorage.getItem("deepseek_api_key")||""
+};
+}catch(err){return defaults;}
+}
+}
+
+function saveConfigData(){
+const data={binId:binId||"",binKey:binKey||"",apiKey:apiKey||""};
+let localOK=false,sessionOK=false;
+try{
+const value=JSON.stringify(data);
+localStorage.setItem("study_app_config_v1",value);
+localStorage.setItem("bin_id",data.binId);
+localStorage.setItem("jsonbin_master_key",data.binKey);
+localStorage.setItem("deepseek_api_key",data.apiKey);
+const check=JSON.parse(localStorage.getItem("study_app_config_v1")||"null");
+localOK=!!check&&check.binId===data.binId&&check.binKey===data.binKey&&check.apiKey===data.apiKey;
+}catch(e){}
+try{
+sessionStorage.setItem("bin_id",data.binId);
+sessionStorage.setItem("jsonbin_master_key",data.binKey);
+sessionStorage.setItem("deepseek_api_key",data.apiKey);
+sessionOK=true;
+}catch(e){}
+return localOK||sessionOK;
 }
 
 function loadStorageData(){
- userLevel=safeLoad("user_level",userLevel);
- streak=Number(safeLoad("streak","0"))||0;
-
- try{
-  const v=JSON.parse(safeLoad("vocab_book","[]"));
-  if(Array.isArray(v))vocabBook=v;
- }catch(e){
-  vocabBook=[];
- }
-
- binId=safeLoad("bin_id","");
- binKey=safeLoad("jsonbin_master_key","");
- apiKey=safeLoad("deepseek_api_key","");
- lastCheckinDate=safeLoad("last_checkin_date","");
-
- try{
-  const h=JSON.parse(safeLoad("chat_history","[]"));
-  if(Array.isArray(h))chatHistory=h;
- }catch(e){
-  chatHistory=[];
- }
+userLevel=safeLoad("user_level",userLevel);
+streak=Number(safeLoad("streak","0"))||0;
+try{
+const v=JSON.parse(safeLoad("vocab_book","[]"));
+if(Array.isArray(v))vocabBook=v;
+}catch(e){vocabBook=[];}
+const config=readConfigData();
+binId=config.binId;
+binKey=config.binKey;
+apiKey=config.apiKey;
+lastCheckinDate=safeLoad("last_checkin_date","");
+try{
+const h=JSON.parse(safeLoad("chat_history","[]"));
+if(Array.isArray(h))chatHistory=h;
+}catch(e){chatHistory=[];}
 }
 
 function saveStorageData(){
- safeSave("user_level",userLevel);
- safeSave("streak",String(streak));
- safeSave("vocab_book",JSON.stringify(vocabBook));
- safeSave("bin_id",binId);
- safeSave("jsonbin_master_key",binKey);
- safeSave("deepseek_api_key",apiKey);
- safeSave("last_checkin_date",lastCheckinDate);
- safeSave("chat_history",JSON.stringify(chatHistory));
+safeSave("user_level",userLevel);
+safeSave("streak",String(streak));
+safeSave("vocab_book",JSON.stringify(vocabBook));
+saveConfigData();
+safeSave("last_checkin_date",lastCheckinDate);
+safeSave("chat_history",JSON.stringify(chatHistory));
 }
 
 function initApp(){
- try{
-  localStorage.setItem("__test__","1");
-  localStorage.removeItem("__test__");
- }catch(e){
-  $("private-mode-warning").style.display="block";
- }
+try{
+localStorage.setItem("__test__","1");
+localStorage.removeItem("__test__");
+}catch(e){
+$("private-mode-warning").style.display="block";
+}
 
- loadStorageData();
+loadStorageData();
 
- autoSpeakAI=safeLoad("auto_speak","1")!=="0";
- $("auto-speak-toggle").checked=autoSpeakAI;
- $("auto-speak-toggle").addEventListener("change",e=>{
-  autoSpeakAI=!!e.target.checked;
-  safeSave("auto_speak",autoSpeakAI?"1":"0");
- });
+autoSpeakAI=safeLoad("auto_speak","1")!=="0";
+$("auto-speak-toggle").checked=autoSpeakAI;
+$("auto-speak-toggle").addEventListener("change",e=>{
+autoSpeakAI=!!e.target.checked;
+safeSave("auto_speak",autoSpeakAI?"1":"0");
+});
 
- voiceChatMode=safeLoad("voice_chat_mode","one")==="continuous"?"continuous":"one";
- $("voice-chat-mode").value=voiceChatMode;
- $("voice-chat-mode").addEventListener("change",e=>{
-  voiceChatMode=e.target.value==="continuous"?"continuous":"one";
-  safeSave("voice_chat_mode",voiceChatMode);
-  $("voice-status-text").textContent=voiceChatMode==="one"
-   ?"????????????AI ????????????"
-   :"?????AI ?????????????";
- });
+voiceChatMode=safeLoad("voice_chat_mode","one")==="continuous"?"continuous":"one";
+$("voice-chat-mode").value=voiceChatMode;
+$("voice-chat-mode").addEventListener("change",e=>{
+voiceChatMode=e.target.value==="continuous"?"continuous":"one";
+safeSave("voice_chat_mode",voiceChatMode);
+$("voice-status-text").textContent=voiceChatMode==="one"
+?"一键一轮：说完自动发送，AI 朗读后等待你点击下一轮。"
+:"连续对话：AI 朗读后将尝试自动重新监听。";
+});
 
- $("user-level-tag").textContent="?????"+userLevel;
- $("streak-text").textContent="?????"+streak+" ?";
+$("user-level-tag").textContent="当前等级："+userLevel;
+$("streak-text").textContent="连续打卡："+streak+" 天";
 
- $("bin-id-input").value=binId;
- $("bin-key-input").value=binKey;
- $("api-key-input").value=apiKey;
+$("bin-id-input").value=binId;
+$("bin-key-input").value=binKey;
+$("api-key-input").value=apiKey;
 
- // ?????????????????
- $("bin-id-input").addEventListener("input",e=>{
-  binId=e.target.value.trim();
-  safeSave("bin_id",binId);
- });
+// 每次输入、失焦及页面离开前保存；localStorage 为主，sessionStorage 作同标签页兜底
+const persistConfig=()=>{
+const ok=saveConfigData();
+if(!ok)$("balance-status").textContent="本机存储不可用：请检查浏览器网站存储权限";
+return ok;
+};
+$("bin-id-input").addEventListener("input",e=>{binId=e.target.value.trim();persistConfig();});
+$("bin-id-input").addEventListener("change",persistConfig);
+$("bin-id-input").addEventListener("blur",persistConfig);
+$("bin-key-input").addEventListener("input",e=>{binKey=e.target.value.trim();persistConfig();});
+$("bin-key-input").addEventListener("change",persistConfig);
+$("bin-key-input").addEventListener("blur",persistConfig);
+$("api-key-input").addEventListener("input",e=>{apiKey=e.target.value.trim();persistConfig();});
+$("api-key-input").addEventListener("change",persistConfig);
+$("api-key-input").addEventListener("blur",persistConfig);
+window.addEventListener("pagehide",persistConfig);
 
- $("bin-key-input").addEventListener("input",e=>{
-  binKey=e.target.value.trim();
-  safeSave("jsonbin_master_key",binKey);
- });
+$("balance-status").textContent=apiKey?"已保存并应用":"未配置 API";
 
- $("api-key-input").addEventListener("input",e=>{
-  apiKey=e.target.value.trim();
-  safeSave("deepseek_api_key",apiKey);
- });
+renderVocabBook();
+initTravelStages();
 
- $("balance-status").textContent=apiKey?"??????":"??? API";
+renderInteractiveText(
+"listening-text",
+safeLoad("saved_listening",DEFAULTS.listening)
+);
 
- renderVocabBook();
- initTravelStages();
+renderInteractiveText(
+"reading-text",
+safeLoad("saved_reading",DEFAULTS.reading)
+);
 
- renderInteractiveText(
-  "listening-text",
-  safeLoad("saved_listening",DEFAULTS.listening)
- );
+renderInteractiveText(
+"dialogue-text",
+safeLoad("saved_dialogue",TRAVEL_SCENARIOS[0].content)
+);
 
- renderInteractiveText(
-  "reading-text",
-  safeLoad("saved_reading",DEFAULTS.reading)
- );
-
- renderInteractiveText(
-  "dialogue-text",
-  safeLoad("saved_dialogue",TRAVEL_SCENARIOS[0].content)
- );
-
- $("phonetics-analysis").textContent=
-  safeLoad("saved_phonetics","????????????????");
+$("phonetics-analysis").textContent=
+safeLoad("saved_phonetics","发音提示：注意重音、连读和语调。");
 }
 
 function initTravelStages(){
- const sel=$("travel-stage-select");
- sel.replaceChildren();
- TRAVEL_SCENARIOS.forEach((sc,idx)=>{
-  const opt=document.createElement("option");
-  opt.value=idx;
-  opt.textContent=sc.title;
-  sel.append(opt);
- });
- const savedIdx=Number(safeLoad("selected_travel_idx","0"))||0;
- sel.value=savedIdx;
- renderInteractiveText("dialogue-text",TRAVEL_SCENARIOS[savedIdx].content);
- $("dialogue-tag").textContent="03 ?????"+TRAVEL_SCENARIOS[savedIdx].title.split(":")[0];
+const sel=$("travel-stage-select");
+sel.replaceChildren();
+TRAVEL_SCENARIOS.forEach((sc,idx)=>{
+const opt=document.createElement("option");
+opt.value=idx;
+opt.textContent=sc.title;
+sel.append(opt);
+});
+const savedIdx=Number(safeLoad("selected_travel_idx","0"))||0;
+sel.value=savedIdx;
+renderInteractiveText("dialogue-text",TRAVEL_SCENARIOS[savedIdx].content);
+$("dialogue-tag").textContent="03 旅游实战："+TRAVEL_SCENARIOS[savedIdx].title.split(":")[0];
 }
 
 function switchTravelStage(idx){
- const index=Number(idx)||0;
- safeSave("selected_travel_idx",String(index));
- const sc=TRAVEL_SCENARIOS[index];
- if(sc){
-  renderInteractiveText("dialogue-text",sc.content);
-  safeSave("saved_dialogue",sc.content);
-  $("dialogue-tag").textContent="03 ?????"+sc.title.split(":")[0];
- }
+const index=Number(idx)||0;
+safeSave("selected_travel_idx",String(index));
+const sc=TRAVEL_SCENARIOS[index];
+if(sc){
+renderInteractiveText("dialogue-text",sc.content);
+safeSave("saved_dialogue",sc.content);
+$("dialogue-tag").textContent="03 旅游实战："+sc.title.split(":")[0];
+}
 }
 
 function applyApiKey(){
- apiKey=$("api-key-input").value.trim();
- if(!apiKey){alert("???? DeepSeek API Key?");return;}
- safeSave("deepseek_api_key",apiKey);
- $("balance-status").textContent="??????";
- checkApiBalance();
- alert("DeepSeek API Key ????????????");
+apiKey=$("api-key-input").value.trim();
+if(!apiKey){alert("请先输入 DeepSeek API Key。");return;}
+safeSave("deepseek_api_key",apiKey);
+$("balance-status").textContent="已保存并应用";
+checkApiBalance();
+alert("DeepSeek API Key 已成功保存到本地浏览器！");
 }
 
 function clearApiKey(){
- apiKey="";
- safeSave("deepseek_api_key","");
- $("api-key-input").value="";
- $("balance-status").textContent="???";
- $("balance-amount").textContent="???";
- alert("???????? Key?");
+apiKey="";
+safeSave("deepseek_api_key","");
+$("api-key-input").value="";
+$("balance-status").textContent="已清除";
+$("balance-amount").textContent="不检测";
+alert("已清除本机保存的 Key。");
 }
 
 async function apiRequest(messages,opts={}){
- if(!apiKey)throw new Error("???????????? DeepSeek API Key?");
- const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),opts.timeout||60000);
- try{
-  const response=await fetch("https://api.deepseek.com/chat/completions",{
-   method:"POST",
-   headers:{"Content-Type":"application/json","Authorization":"Bearer "+apiKey},
-   body:JSON.stringify({model:"deepseek-flash",messages,temperature:opts.temperature??0.7,max_tokens:opts.max_tokens||1200}),
-   signal:controller.signal
-  });
-  const data=await response.json().catch(()=>({}));
-  if(!response.ok)throw new Error(data.error?.message||`API ?????HTTP ${response.status}?`);
-  const content=data.choices?.[0]?.message?.content;
-  if(typeof content!=="string"||!content.trim())throw new Error("AI ?????????");
-  return content.trim();
- }finally{clearTimeout(timer);}
+if(!apiKey)throw new Error("请先在页面顶部输入并应用 DeepSeek API Key。");
+const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),opts.timeout||60000);
+try{
+const response=await fetch("https://www.google.com/url?q=https://api.deepseek.com/chat/completions&source=gmail&ust=1795412829481000&sa=E",{
+method:"POST",
+headers:{"Content-Type":"application/json","Authorization":"Bearer "+apiKey},
+body:JSON.stringify({model:"deepseek-flash",messages,temperature:opts.temperature??0.7,max_tokens:opts.max_tokens||1200}),
+signal:controller.signal
+});
+const data=await response.json().catch(()=>({}));
+if(!response.ok)throw new Error(data.error?.message||`API 请求失败（HTTP ${response.status}）`);
+const content=data.choices?.[0]?.message?.content;
+if(typeof content!=="string"||!content.trim())throw new Error("AI 没有返回有效文本。");
+return content.trim();
+}finally{clearTimeout(timer);}
 }
 
 async function checkApiBalance(){
- if(!apiKey)return;
- $("balance-status").textContent="???";
- $("balance-amount").textContent="???";
+if(!apiKey)return;
+$("balance-status").textContent="已配置";
+$("balance-amount").textContent="不检测";
 }
 
 function renderInteractiveText(id,text){
- const el=$(id);el.replaceChildren();
- String(text||"").split("\n").forEach((line,li)=>{
-  const parts=line.split(/(\s+)/);
-  parts.forEach(part=>{
-   if(/[\p{L}\p{N}]/u.test(part)){
-    const span=document.createElement("span");
-    span.textContent=part;
-    span.addEventListener("click",()=>clickToTranslate(part.replace(/[^\p{L}'-]/gu,"")));
-    el.appendChild(span);
-   }else el.appendChild(document.createTextNode(part));
-  });
-  if(li<String(text||"").split("\n").length-1)el.appendChild(document.createElement("br"));
- });
+const el=$(id);el.replaceChildren();
+String(text||"").split("\n").forEach((line,li)=>{
+const parts=line.split(/(\s+)/);
+parts.forEach(part=>{
+if(/[\p{L}\p{N}]/u.test(part)){
+const span=document.createElement("span");
+span.textContent=part;
+span.addEventListener("click",()=>clickToTranslate(part.replace(/[^\p{L}'-]/gu,"")));
+el.appendChild(span);
+}else el.appendChild(document.createTextNode(part));
+});
+if(li<String(text||"").split("\n").length-1)el.appendChild(document.createElement("br"));
+});
 }
 
 async function clickToTranslate(word){
- if(!word)return;
- lastSelectedWord=word;
- lastSelectedInfo="";
- $("popup-title").textContent=word;
- $("popup-content").textContent="?????";
- $("word-popup").style.display="block";
- try{
-  lastSelectedInfo=await apiRequest([{role:"user",content:`Explain the English word "${word}" in concise Chinese. Include IPA if known, part of speech, and one short example with Chinese translation.`}],{max_tokens:300,timeout:25000});
- }catch(e){lastSelectedInfo="?????????"+e.message;}
- $("popup-content").textContent=lastSelectedInfo;
+if(!word)return;
+lastSelectedWord=word;
+lastSelectedInfo="";
+$("popup-title").textContent=word;
+$("popup-content").textContent="正在查询…";
+$("word-popup").style.display="block";
+try{
+lastSelectedInfo=await apiRequest([{role:"user",content:`Explain the English word "${word}" in concise Chinese. Include IPA if known, part of speech, and one short example with Chinese translation.`}],{max_tokens:300,timeout:25000});
+}catch(e){lastSelectedInfo="暂时无法联网查词："+e.message;}
+$("popup-content").textContent=lastSelectedInfo;
 }
 
 async function saveCurrentWord(){
- if(!lastSelectedWord)return;
- const found=vocabBook.find(x=>String(x.word).toLowerCase()===lastSelectedWord.toLowerCase());
- if(found){
-  if(lastSelectedInfo&&lastSelectedInfo!=="?????")found.info=lastSelectedInfo;
-  alert("?????????????????");
- }else{
-  vocabBook.push({word:lastSelectedWord,info:lastSelectedInfo||"?????",added:todayKey(),due:todayKey(),interval:0});
- }
- saveStorageData();renderVocabBook();closePopup();
+if(!lastSelectedWord)return;
+const found=vocabBook.find(x=>String(x.word).toLowerCase()===lastSelectedWord.toLowerCase());
+if(found){
+if(lastSelectedInfo&&lastSelectedInfo!=="待补充释义")https://www.google.com/url?q=http://found.info&source=gmail&ust=1795412829482000&sa=E=lastSelectedInfo;
+alert("这个单词已存在生词本，释义已更新。");
+}else{
+vocabBook.push({word:lastSelectedWord,info:lastSelectedInfo||"待补充释义",added:todayKey(),due:todayKey(),interval:0});
+}
+saveStorageData();renderVocabBook();closePopup();
 }
 
 async function lookupSavedWord(word){
- const item=vocabBook.find(x=>String(x.word).toLowerCase()===String(word).toLowerCase());
- if(!item)return;
- lastSelectedWord=item.word;
- await clickToTranslate(item.word);
- if(lastSelectedInfo){item.info=lastSelectedInfo;saveStorageData();renderVocabBook();}
+const item=vocabBook.find(x=>String(x.word).toLowerCase()===String(word).toLowerCase());
+if(!item)return;
+lastSelectedWord=item.word;
+await clickToTranslate(item.word);
+if(lastSelectedInfo){https://www.google.com/url?q=http://item.info&source=gmail&ust=1795412829482000&sa=E=lastSelectedInfo;saveStorageData();renderVocabBook();}
 }
 
 function renderVocabBook(){
- $("vocab-count").textContent=vocabBook.length;
- const list=$("vocab-list");list.replaceChildren();
- if(!vocabBook.length){list.textContent="??????????????????????";return;}
- vocabBook.slice().reverse().forEach((item,revIndex)=>{
-  const index=vocabBook.length-1-revIndex,row=document.createElement("div");
-  row.className="vocab-item";
-  const info=document.createElement("div");info.className="word-info";
-  const strong=document.createElement("b");strong.textContent=item.word+" ";
-  strong.style.cursor="pointer";strong.style.color="#4338CA";
-  strong.onclick=()=>lookupSavedWord(item.word);
-  const meaning=document.createElement("span");meaning.textContent=item.info||"";
-  info.append(strong,meaning);
-  const lookup=document.createElement("button");lookup.className="btn btn-outline";lookup.textContent="??";
-  lookup.onclick=()=>lookupSavedWord(item.word);
-  const speak=document.createElement("button");speak.className="btn btn-outline";speak.textContent="??";
-  speak.onclick=()=>speakWord(item.word);
-  const del=document.createElement("button");del.className="btn btn-red";del.textContent="??";
-  del.onclick=()=>{vocabBook.splice(index,1);saveStorageData();renderVocabBook();};
-  row.append(info,lookup,speak,del);list.append(row);
- });
+$("vocab-count").textContent=vocabBook.length;
+const list=$("vocab-list");list.replaceChildren();
+if(!vocabBook.length){list.textContent="暂无生词。点击文章中的英文单词可查词并加入。";return;}
+vocabBook.slice().reverse().forEach((item,revIndex)=>{
+const index=vocabBook.length-1-revIndex,row=document.createElement("div");
+row.className="vocab-item";
+const info=document.createElement("div");info.className="word-info";
+const strong=document.createElement("b");strong.textContent=item.word+" ";
+strong.style.cursor="pointer";strong.style.color="#4338CA";
+strong.onclick=()=>lookupSavedWord(item.word);
+const meaning=document.createElement("span");meaning.textContent=https://www.google.com/url?q=http://item.info&source=gmail&ust=1795412829482000&sa=E||"";
+info.append(strong,meaning);
+const lookup=document.createElement("button");lookup.className="btn btn-outline";lookup.textContent="查词";
+lookup.onclick=()=>lookupSavedWord(item.word);
+const speak=document.createElement("button");speak.className="btn btn-outline";speak.textContent="发音";
+speak.onclick=()=>speakWord(item.word);
+const del=document.createElement("button");del.className="btn btn-red";del.textContent="删除";
+del.onclick=()=>{vocabBook.splice(index,1);saveStorageData();renderVocabBook();};
+row.append(info,lookup,speak,del);list.append(row);
+});
 }
 
 function speakWord(word){speakText(word,0.82,"en-US");}
 
 async function speakText(text,rate=1,lang="en-US"){
- const synth=window.speechSynthesis;
- if(!synth||typeof SpeechSynthesisUtterance==="undefined"){alert("????????????????");return;}
- const content=String(text||"").trim().slice(0,5000);
- if(!content){alert("?????????");return;}
- try{
-  synth.cancel();
-  const utter=new SpeechSynthesisUtterance(content);
-  utter.lang=lang;utter.rate=Math.max(.5,Math.min(1.2,rate));
-  setTimeout(()=>{try{synth.speak(utter);}catch(e){}},100);
- }catch(e){}
+const synth=window.speechSynthesis;
+if(!synth||typeof SpeechSynthesisUtterance==="undefined"){alert("当前浏览器没有提供语音朗读功能。");return;}
+const content=String(text||"").trim().slice(0,5000);
+if(!content){alert("没有可朗读的文字。");return;}
+try{
+synth.cancel();
+const utter=new SpeechSynthesisUtterance(content);
+utter.lang=lang;utter.rate=Math.max(.5,Math.min(1.2,rate));
+setTimeout(()=>{try{synth.speak(utter);}catch(e){}},100);
+}catch(e){}
 }
 
 function playListeningVoice(){speakText($("listening-text").innerText,Number($("listening-speed").value)||1);}
@@ -1401,374 +1451,374 @@ function speakSingleText(id,speedId){speakText($(id).innerText,speedId?Number($(
 function speakFeedbackVoice(text){speakText(text,.9,"zh-CN");}
 
 function getRecognition(){
- const C=window.SpeechRecognition||window.webkitSpeechRecognition;
- return C?new C():null;
+const C=window.SpeechRecognition||window.webkitSpeechRecognition;
+return C?new C():null;
 }
 
 function recognitionErrorMessage(error){
- const map={"not-allowed":"?????????","service-not-allowed":"???????","no-speech":"??????","audio-capture":"??????",network:"??????"};
- return map[error]||("???????"+error);
+const map={"not-allowed":"麦克风权限被拒绝。","service-not-allowed":"语音识别不可用","no-speech":"未检测到语音","audio-capture":"未找到麦克风",network:"网络连接失败"};
+return map[error]||("语音识别失败："+error);
 }
 
 function toggleShadowingRecord(){
- if(isRecording){try{shadowRecognition?.stop();}catch(e){}return;}
- const rec=getRecognition();
- if(!rec){alert("?????????????????????");return;}
- try{
-  shadowRecognition=rec;rec.lang="en-US";rec.continuous=true;rec.interimResults=true;
-  let finalText="";
-  rec.onstart=()=>{isRecording=true;$("record-btn").textContent="?????";$("record-btn").classList.add("btn-red");$("record-status").textContent="???????";};
-  rec.onresult=e=>{
-   for(let i=e.resultIndex;i<e.results.length;i++){
-    if(e.results[i].isFinal)finalText+=e.results[i][0].transcript+" ";
-   }
-   $("record-status").textContent="????"+finalText.slice(-160);
-  };
-  rec.onerror=e=>{$("record-status").textContent=recognitionErrorMessage(e.error);};
-  rec.onend=async()=>{
-   isRecording=false;$("record-btn").textContent="??????";$("record-btn").classList.remove("btn-red");
-   if(finalText.trim())await scoreShadowing($("listening-text").innerText,finalText.trim());
-   else $("record-status").textContent="????????";
-  };
-  rec.start();
- }catch(e){isRecording=false;$("record-status").textContent="???????";}
+if(isRecording){try{shadowRecognition?.stop();}catch(e){}return;}
+const rec=getRecognition();
+if(!rec){alert("当前浏览器不支持语音识别。请使用键盘输入。");return;}
+try{
+shadowRecognition=rec;rec.lang="en-US";rec.continuous=true;rec.interimResults=true;
+let finalText="";
+rec.onstart=()=>{isRecording=true;$("record-btn").textContent="停止并评分";$("record-btn").classList.add("btn-red");$("record-status").textContent="正在听您朗读…";};
+rec.onresult=e=>{
+for(let i=e.resultIndex;i<e.results.length;i++){
+if(e.results[i].isFinal)finalText+=e.results[i][0].transcript+" ";
+}
+$("record-status").textContent="识别中："+finalText.slice(-160);
+};
+rec.onerror=e=>{$("record-status").textContent=recognitionErrorMessage(e.error);};
+rec.onend=async()=>{
+isRecording=false;$("record-btn").textContent="开始跟读评分";$("record-btn").classList.remove("btn-red");
+if(finalText.trim())await scoreShadowing($("listening-text").innerText,finalText.trim());
+else $("record-status").textContent="没有识别到语音。";
+};
+rec.start();
+}catch(e){isRecording=false;$("record-status").textContent="无法启动录音。";}
 }
 
 async function scoreShadowing(target,spoken){
- $("record-status").textContent="???????";
- if(!apiKey){$("record-status").textContent="?????"+spoken;return;}
- try{
-  const result=await apiRequest([
-   {role:"system",content:"You are an English pronunciation coach. Reply in Chinese with a brief evaluation and 2 tips."},
-   {role:"user",content:`Target: ${target}\nSpoken: ${spoken}`}
-  ],{max_tokens:400});
-  $("record-status").textContent="????????";
-  alert("?????\n\n"+result);
-  speakFeedbackVoice(result);
- }catch(e){$("record-status").textContent=e.message;}
+$("record-status").textContent="正在分析跟读…";
+if(!apiKey){$("record-status").textContent="识别结果："+spoken;return;}
+try{
+const result=await apiRequest([
+{role:"system",content:"You are an English pronunciation coach. Reply in Chinese with a brief evaluation and 2 tips."},
+{role:"user",content:`Target: ${target}\nSpoken: ${spoken}`}
+],{max_tokens:400});
+$("record-status").textContent="纠音报告已生成。";
+alert("跟读反馈：\n\n"+result);
+speakFeedbackVoice(result);
+}catch(e){$("record-status").textContent=e.message;}
 }
 
 function playDialogueDualVoice(){
- if(!("speechSynthesis"in window))return;
- if(isDialoguePlaying){isDialoguePlaying=false;window.speechSynthesis.cancel();return;}
- const lines=$("dialogue-text").innerText.split("\n"),items=[];
- for(const line of lines){
-  const m=line.trim().match(/^([AB])(?:\s*\([^)]*\))?:\s*(.*)$/);
-  if(m&&m[2])items.push({speaker:m[1],text:m[2]});
- }
- if(!items.length){speakText($("dialogue-text").innerText);return;}
- isDialoguePlaying=true;let i=0;
- const next=()=>{
-  if(!isDialoguePlaying||i>=items.length){isDialoguePlaying=false;return;}
-  const item=items[i++],u=new SpeechSynthesisUtterance(item.text);
-  u.lang="en-US";u.pitch=item.speaker==="A"?.92:1.15;u.rate=1;
-  u.onend=()=>setTimeout(next,180);u.onerror=()=>setTimeout(next,180);
-  window.speechSynthesis.speak(u);
- };
- window.speechSynthesis.cancel();next();
+if(!("speechSynthesis"in window))return;
+if(isDialoguePlaying){isDialoguePlaying=false;window.speechSynthesis.cancel();return;}
+const lines=$("dialogue-text").innerText.split("\n"),items=[];
+for(const line of lines){
+const m=line.trim().match(/^([AB])(?:\s*\([^)]*\))?:\s*(.*)$/);
+if(m&&m[2])items.push({speaker:m[1],text:m[2]});
+}
+if(!items.length){speakText($("dialogue-text").innerText);return;}
+isDialoguePlaying=true;let i=0;
+const next=()=>{
+if(!isDialoguePlaying||i>=items.length){isDialoguePlaying=false;return;}
+const item=items[i++],u=new SpeechSynthesisUtterance(item.text);
+u.lang="en-US";u.pitch=item.speaker==="A"?.92:1.15;u.rate=1;
+u.onend=()=>setTimeout(next,180);u.onerror=()=>setTimeout(next,180);
+window.speechSynthesis.speak(u);
+};
+window.speechSynthesis.cancel();next();
 }
 
 function setTrainingScenario(){
- const v=$("scenario-input").value.trim();
- if(!v){alert("??????????");return;}
- currentTrainingScenario="The user is a traveler. Role-play instructions: "+v;
- appendChat("ai","??????"+v);$("scenario-input").value="";
+const v=$("scenario-input").value.trim();
+if(!v){alert("请先输入角色或场景。");return;}
+currentTrainingScenario="The user is a traveler. Role-play instructions: "+v;
+appendChat("ai","场景已切换："+v);$("scenario-input").value="";
 }
 
 function getDialogueScene(){
- const sel=$("travel-stage-select");
- const opt=sel.options[sel.selectedIndex];
- return opt?opt.textContent:"Travel situation";
+const sel=$("travel-stage-select");
+const opt=sel.options[sel.selectedIndex];
+return opt?opt.textContent:"Travel situation";
 }
 
 async function startScenarioPractice(){
- const scene=getDialogueScene();
- currentTrainingScenario="Travel role-play: "+scene+". User is traveler, you are service staff. Use natural short English, ask 1 question per turn.";
- $("scenario-input").value="Scene: "+scene;
- $("chat-box").replaceChildren();chatHistory=[];
- appendChat("ai","??????"+scene+"\n???????????");
- if(!apiKey){appendChat("ai","???? API Key?");return;}
- const loading=appendChat("ai","AI ???????");
- try{
-  const raw=await apiRequest([{role:"system",content:coachSystemPrompt()},{role:"user",content:"Start role-play. Greet me and ask 1 simple question."}],{max_tokens:300});
-  loading.remove();renderCoachReply(raw);chatHistory.push({role:"assistant",content:raw});saveStorageData();
- }catch(e){loading.textContent="?????"+e.message;}
+const scene=getDialogueScene();
+currentTrainingScenario="Travel role-play: "+scene+". User is traveler, you are service staff. Use natural short English, ask 1 question per turn.";
+$("scenario-input").value="Scene: "+scene;
+$("chat-box").replaceChildren();chatHistory=[];
+appendChat("ai","已载入场景："+scene+"\n现在开始英文实战对话。");
+if(!apiKey){appendChat("ai","请先配置 API Key。");return;}
+const loading=appendChat("ai","AI 正在开始对话…");
+try{
+const raw=await apiRequest([{role:"system",content:coachSystemPrompt()},{role:"user",content:"Start role-play. Greet me and ask 1 simple question."}],{max_tokens:300});
+loading.remove();renderCoachReply(raw);chatHistory.push({role:"assistant",content:raw});saveStorageData();
+}catch(e){loading.textContent="启动失败："+e.message;}
 }
 
 function appendChat(role,text){
- const box=$("chat-box"),div=document.createElement("div");
- div.className="chat-msg "+(role==="user"?"chat-user":"chat-ai");
- div.textContent=text;box.append(div);box.scrollTop=box.scrollHeight;return div;
+const box=$("chat-box"),div=document.createElement("div");
+div.className="chat-msg "+(role==="user"?"chat-user":"chat-ai");
+div.textContent=text;box.append(div);box.scrollTop=box.scrollHeight;return div;
 }
 
 function updateVoiceChatButton(){
- const btn=$("voice-chat-btn");if(!btn)return;
- btn.textContent=isVoiceChatActive?"??????":"??????";
- btn.classList.toggle("btn-red",isVoiceChatActive);btn.classList.toggle("btn-green",!isVoiceChatActive);
+const btn=$("voice-chat-btn");if(!btn)return;
+btn.textContent=isVoiceChatActive?"停止语音对练":"开始语音对练";
+btn.classList.toggle("btn-red",isVoiceChatActive);btn.classList.toggle("btn-green",!isVoiceChatActive);
 }
 function finishVoiceTurn(message){
- voiceChatBusy=false;isVoiceChatActive=false;updateVoiceChatButton();
- if(message)$("voice-status-text").textContent=message;
+voiceChatBusy=false;isVoiceChatActive=false;updateVoiceChatButton();
+if(message)$("voice-status-text").textContent=message;
 }
 function startVoiceRecognition(session){
- if(voiceChatStopRequested||session!==voiceChatSession||voiceChatBusy)return;
- const rec=getRecognition();
- if(!rec){finishVoiceTurn("???????????????????????");return;}
- voiceChatRecognition=rec;rec.lang="en-US";rec.continuous=false;rec.interimResults=true;
- let finalText="",sent=false;
- rec.onstart=()=>{
-  if(session!==voiceChatSession||voiceChatStopRequested){try{rec.stop();}catch(e){}return;}
-  isVoiceChatActive=true;updateVoiceChatButton();$("voice-status-text").textContent="????????????";
- };
- rec.onresult=e=>{
-  for(let i=e.resultIndex;i<e.results.length;i++)if(e.results[i].isFinal)finalText+=e.results[i][0].transcript+" ";
-  $("voice-status-text").textContent="????"+(finalText.trim()||"?????");
- };
- rec.onerror=e=>{if(session===voiceChatSession&&!voiceChatStopRequested)$("voice-status-text").textContent=recognitionErrorMessage(e.error);};
- rec.onend=()=>{
-  if(session!==voiceChatSession||voiceChatStopRequested)return;
-  const spoken=finalText.trim();
-  if(spoken&&!sent){sent=true;$("user-chat-input").value=spoken;sendChat(true,session);}
-  else finishVoiceTurn("???????????????????????");
- };
- try{rec.start();}catch(e){finishVoiceTurn("?????????????????????");}
+if(voiceChatStopRequested||session!==voiceChatSession||voiceChatBusy)return;
+const rec=getRecognition();
+if(!rec){finishVoiceTurn("当前浏览器不支持语音识别，请使用下方文字输入。");return;}
+voiceChatRecognition=rec;rec.lang="en-US";rec.continuous=false;rec.interimResults=true;
+let finalText="",sent=false;
+rec.onstart=()=>{
+if(session!==voiceChatSession||voiceChatStopRequested){try{rec.stop();}catch(e){}return;}
+isVoiceChatActive=true;updateVoiceChatButton();$("voice-status-text").textContent="正在聆听，请用英语说话…";
+};
+rec.onresult=e=>{
+for(let i=e.resultIndex;i<e.results.length;i++)if(e.results[i].isFinal)finalText+=e.results[i][0].transcript+" ";
+$("voice-status-text").textContent="识别中："+(finalText.trim()||"正在听取…");
+};
+rec.onerror=e=>{if(session===voiceChatSession&&!voiceChatStopRequested)$("voice-status-text").textContent=recognitionErrorMessage(e.error);};
+rec.onend=()=>{
+if(session!==voiceChatSession||voiceChatStopRequested)return;
+const spoken=finalText.trim();
+if(spoken&&!sent){sent=true;$("user-chat-input").value=spoken;sendChat(true,session);}
+else finishVoiceTurn("没有识别到完整语音。点击“开始语音对练”重试。");
+};
+try{rec.start();}catch(e){finishVoiceTurn("无法启动语音识别，请检查麦克风权限后重试。");}
 }
 function toggleVoiceChat(){
- if(isVoiceChatActive){stopVoiceChat();return;}
- if(voiceChatBusy){$("voice-status-text").textContent="AI ??????????????";return;}
- voiceChatStopRequested=false;voiceChatSession++;isVoiceChatActive=true;
- updateVoiceChatButton();startVoiceRecognition(voiceChatSession);
+if(isVoiceChatActive){stopVoiceChat();return;}
+if(voiceChatBusy){$("voice-status-text").textContent="AI 正在处理上一轮，请等待回复。";return;}
+voiceChatStopRequested=false;voiceChatSession++;isVoiceChatActive=true;
+updateVoiceChatButton();startVoiceRecognition(voiceChatSession);
 }
 function stopVoiceChat(){
- voiceChatStopRequested=true;voiceChatSession++;isVoiceChatActive=false;
- try{voiceChatRecognition?.stop();}catch(e){}
- try{window.speechSynthesis?.cancel();}catch(e){}
- finishVoiceTurn("???????????????????");
+voiceChatStopRequested=true;voiceChatSession++;isVoiceChatActive=false;
+try{voiceChatRecognition?.stop();}catch(e){}
+try{window.speechSynthesis?.cancel();}catch(e){}
+finishVoiceTurn("语音对练已停止。再次点击开始即可继续。");
 }
 
 function coachSystemPrompt(){
- return "You are an English coach. Scenario: "+currentTrainingScenario+". Use simple English (1-2 sentences), ask 1 question. If user makes mistakes, add [AI Coach Feedback / ???????] with brief Chinese tips.";
+return "You are an English coach. Scenario: "+currentTrainingScenario+". Use simple English (1-2 sentences), ask 1 question. If user makes mistakes, add [AI Coach Feedback / 实时纠错与指导] with brief Chinese tips.";
 }
 
 function renderCoachReply(raw,onDone){
- const wrap=document.createElement("div");wrap.className="chat-msg chat-ai";wrap.textContent=raw;
- $("chat-box").append(wrap);$("chat-box").scrollTop=$("chat-box").scrollHeight;
- const clean=raw.split("[AI Coach Feedback")[0].trim();
- if(!autoSpeakAI||!clean){if(typeof onDone==="function")onDone();return;}
- const synth=window.speechSynthesis;
- if(!synth||typeof SpeechSynthesisUtterance==="undefined"){if(typeof onDone==="function")onDone();return;}
- let completed=false;const done=()=>{if(completed)return;completed=true;if(typeof onDone==="function")onDone();};
- try{
-  synth.cancel();const utter=new SpeechSynthesisUtterance(clean);
-  utter.lang="en-US";utter.rate=1;utter.onend=done;utter.onerror=done;synth.speak(utter);
- }catch(e){done();}
+const wrap=document.createElement("div");wrap.className="chat-msg chat-ai";wrap.textContent=raw;
+$("chat-box").append(wrap);$("chat-box").scrollTop=$("chat-box").scrollHeight;
+const clean=raw.split("[AI Coach Feedback")[0].trim();
+if(!autoSpeakAI||!clean){if(typeof onDone==="function")onDone();return;}
+const synth=window.speechSynthesis;
+if(!synth||typeof SpeechSynthesisUtterance==="undefined"){if(typeof onDone==="function")onDone();return;}
+let completed=false;const done=()=>{if(completed)return;completed=true;if(typeof onDone==="function")onDone();};
+try{
+synth.cancel();const utter=new SpeechSynthesisUtterance(clean);
+utter.lang="en-US";utter.rate=1;utter.onend=done;utter.onerror=done;synth.speak(utter);
+}catch(e){done();}
 }
 async function sendChat(fromVoice=false,voiceSession=voiceChatSession){
- const input=$("user-chat-input"),userText=input.value.trim();
- if(!userText||(fromVoice&&voiceChatBusy))return;
- if(fromVoice)voiceChatBusy=true;
- input.value="";appendChat("user",userText);
- const loading=appendChat("ai","AI ????");
- const finishVoice=()=>{
-  if(!fromVoice||voiceSession!==voiceChatSession||voiceChatStopRequested)return;
-  voiceChatBusy=false;
-  if(voiceChatMode==="continuous"){
-   $("voice-status-text").textContent="AI ????????????";startVoiceRecognition(voiceSession);
-  }else finishVoiceTurn("?????????????????????");
- };
- if(!apiKey){loading.textContent="???? DeepSeek API Key?";finishVoice();return;}
- try{
-  const messages=[{role:"system",content:coachSystemPrompt()},...chatHistory.slice(-10),{role:"user",content:userText}];
-  const raw=await apiRequest(messages,{max_tokens:500});
-  loading.remove();renderCoachReply(raw,finishVoice);
-  chatHistory.push({role:"user",content:userText},{role:"assistant",content:raw});saveStorageData();
- }catch(e){loading.textContent="?????"+e.message;finishVoice();}
+const input=$("user-chat-input"),userText=input.value.trim();
+if(!userText||(fromVoice&&voiceChatBusy))return;
+if(fromVoice)voiceChatBusy=true;
+input.value="";appendChat("user",userText);
+const loading=appendChat("ai","AI 思考中…");
+const finishVoice=()=>{
+if(!fromVoice||voiceSession!==voiceChatSession||voiceChatStopRequested)return;
+voiceChatBusy=false;
+if(voiceChatMode==="continuous"){
+$("voice-status-text").textContent="AI 已回复，正在准备下一轮…";startVoiceRecognition(voiceSession);
+}else finishVoiceTurn("本轮完成。点击“开始语音对练”进行下一轮。");
+};
+if(!apiKey){loading.textContent="请先配置 DeepSeek API Key。";finishVoice();return;}
+try{
+const messages=[{role:"system",content:coachSystemPrompt()},...chatHistory.slice(-10),{role:"user",content:userText}];
+const raw=await apiRequest(messages,{max_tokens:500});
+loading.remove();renderCoachReply(raw,finishVoice);
+chatHistory.push({role:"user",content:userText},{role:"assistant",content:raw});saveStorageData();
+}catch(e){loading.textContent="请求失败："+e.message;finishVoice();}
 }
 
 async function generateDailyContent(manual=true){
- if(!apiKey){if(manual)alert("??????? DeepSeek API Key?");return;}
- $("listening-text").textContent="?????????";
- $("reading-text").textContent="?????????";
- try{
-  const [listen,read]=await Promise.all([
-   apiRequest([{role:"user",content:`Write a short VOA-style English news summary (approx 90 words).`}],{max_tokens:400}),
-   apiRequest([{role:"user",content:`Write a short everyday science reading passage (approx 100 words).`}],{max_tokens:400})
-  ]);
-  renderInteractiveText("listening-text",listen);
-  renderInteractiveText("reading-text",read);
-  safeSave("saved_listening",listen);
-  safeSave("saved_reading",read);
-  safeSave("last_gen_date",todayKey());
-  if(manual)alert("??????????");
- }catch(e){
-  renderInteractiveText("listening-text",DEFAULTS.listening);
-  renderInteractiveText("reading-text",DEFAULTS.reading);
-  if(manual)alert("API ??????????"+e.message+"??????????????");
- }
+if(!apiKey){if(manual)alert("请先输入并应用 DeepSeek API Key。");return;}
+$("listening-text").textContent="正在生成听力内容…";
+$("reading-text").textContent="正在生成阅读内容…";
+try{
+const [listen,read]=await Promise.all([
+apiRequest([{role:"user",content:`Write a short VOA-style English news summary (approx 90 words).`}],{max_tokens:400}),
+apiRequest([{role:"user",content:`Write a short everyday science reading passage (approx 100 words).`}],{max_tokens:400})
+]);
+renderInteractiveText("listening-text",listen);
+renderInteractiveText("reading-text",read);
+safeSave("saved_listening",listen);
+safeSave("saved_reading",read);
+safeSave("last_gen_date",todayKey());
+if(manual)alert("今日内容已成功刷新！");
+}catch(e){
+renderInteractiveText("listening-text",DEFAULTS.listening);
+renderInteractiveText("reading-text",DEFAULTS.reading);
+if(manual)alert("API 调用受限或网络波动（"+e.message+"），已自动加载默认精选文稿。");
+}
 }
 
 function doCheckIn(){
- const today=todayKey();
- if(lastCheckinDate===today){alert("????????");return;}
- streak++;lastCheckinDate=today;
- saveStorageData();
- $("streak-text").textContent="?????"+streak+" ?";
- alert("??????????"+streak);
+const today=todayKey();
+if(lastCheckinDate===today){alert("今天已经打卡啦！");return;}
+streak++;lastCheckinDate=today;
+saveStorageData();
+$("streak-text").textContent="连续打卡："+streak+" 天";
+alert("打卡成功！连续天数："+streak);
 }
 
 function startAssessment(){
- const v=prompt("?????????\n1 = L1 ???\n2 = L2 ???\n3 = L3 ???","2");
- if(!v)return;
- userLevel=v==="1"?"L1 (???)":v==="3"?"L3 (???)":"L2 (???)";
- $("user-level-tag").textContent="?????"+userLevel;
- saveStorageData();
+const v=prompt("选择当前英语水平：\n1 = L1 入门级\n2 = L2 基础级\n3 = L3 进阶级","2");
+if(!v)return;
+userLevel=v==="1"?"L1 (入门级)":v==="3"?"L3 (进阶级)":"L2 (基础级)";
+$("user-level-tag").textContent="当前等级："+userLevel;
+saveStorageData();
 }
 
 async function pushToCloud(){
- binId=$("bin-id-input").value.trim();
- binKey=$("bin-key-input").value.trim();
- if(!binId||!binKey){alert("????? JSONBin Bin ID ? Master Key?");return;}
- saveStorageData();
- const payload={
-  userLevel,
-  streak,
-  vocabBook,
-  lastCheckinDate,
-  updatedAt: new Date().toISOString()
- };
- $("cloud-status").textContent="????????";
- try{
-  const res=await fetch(`https://api.jsonbin.io/v3/b/${binId}`,{
-   method:"PUT",
-   headers:{
-    "Content-Type":"application/json",
-    "X-Master-Key":binKey
-   },
-   body:JSON.stringify(payload)
-  });
-  if(!res.ok)throw new Error(`???? (HTTP ${res.status})`);
-  $("cloud-status").textContent="?????????????";
-  alert("?????????????????");
- }catch(e){
-  $("cloud-status").textContent="?????" + e.message;
-  alert("????????" + e.message + "\n??? Bin ID ? Master Key ?????");
- }
+binId=$("bin-id-input").value.trim();
+binKey=$("bin-key-input").value.trim();
+if(!binId||!binKey){alert("请完整填写 JSONBin Bin ID 和 Master Key。");return;}
+saveStorageData();
+const payload={
+userLevel,
+streak,
+vocabBook,
+lastCheckinDate,
+updatedAt: new Date().toISOString()
+};
+$("cloud-status").textContent="正在推送到云端…";
+try{
+const res=await fetch(`https://www.google.com/url?q=https://api.jsonbin.io/v3/b/$%7BbinId%7D%60,%7B&source=gmail&ust=1795412829482000&sa=E
+method:"PUT",
+headers:{
+"Content-Type":"application/json",
+"X-Master-Key":binKey
+},
+body:JSON.stringify(payload)
+});
+if(!res.ok)throw new Error(`同步失败 (HTTP ${res.status})`);
+$("cloud-status").textContent="推送成功！云端数据已更新。";
+alert("生词本与打卡数据已成功推送到云端！");
+}catch(e){
+$("cloud-status").textContent="推送出错：" + e.message;
+alert("推送到云端失败：" + e.message + "\n请检查 Bin ID 与 Master Key 是否正确。");
+}
 }
 
 async function pullFromCloud(){
- binId=$("bin-id-input").value.trim();
- binKey=$("bin-key-input").value.trim();
- if(!binId||!binKey){alert("????? JSONBin Bin ID ? Master Key?");return;}
- saveStorageData();
- $("cloud-status").textContent="????????";
- try{
-  const res=await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`,{
-   method:"GET",
-   headers:{
-    "X-Master-Key":binKey
-   }
-  });
-  if(!res.ok)throw new Error(`???? (HTTP ${res.status})`);
-  const data=await res.json();
-  const record=data.record;
-  if(record){
-   if(record.userLevel){userLevel=record.userLevel;safeSave("user_level",userLevel);}
-   if(typeof record.streak==="number"){streak=record.streak;safeSave("streak",String(streak));}
-   if(Array.isArray(record.vocabBook)){vocabBook=record.vocabBook;safeSave("vocab_book",JSON.stringify(vocabBook));}
-   if(record.lastCheckinDate){lastCheckinDate=record.lastCheckinDate;safeSave("last_checkin_date",lastCheckinDate);}
+binId=$("bin-id-input").value.trim();
+binKey=$("bin-key-input").value.trim();
+if(!binId||!binKey){alert("请完整填写 JSONBin Bin ID 和 Master Key。");return;}
+saveStorageData();
+$("cloud-status").textContent="正在从云端拉取…";
+try{
+const res=await fetch(`https://www.google.com/url?q=https://api.jsonbin.io/v3/b/$%7BbinId%7D/latest%60,%7B&source=gmail&ust=1795412829482000&sa=E
+method:"GET",
+headers:{
+"X-Master-Key":binKey
+}
+});
+if(!res.ok)throw new Error(`拉取失败 (HTTP ${res.status})`);
+const data=await res.json();
+const record=data.record;
+if(record){
+if(record.userLevel){userLevel=record.userLevel;safeSave("user_level",userLevel);}
+if(typeof record.streak==="number"){streak=record.streak;safeSave("streak",String(streak));}
+if(Array.isArray(record.vocabBook)){vocabBook=record.vocabBook;safeSave("vocab_book",JSON.stringify(vocabBook));}
+if(record.lastCheckinDate){lastCheckinDate=record.lastCheckinDate;safeSave("last_checkin_date",lastCheckinDate);}
 
-   $("user-level-tag").textContent="?????"+userLevel;
-   $("streak-text").textContent="?????"+streak+" ?";
-   renderVocabBook();
-   $("cloud-status").textContent="?????????????";
-   alert("????????????");
-  }else{
-   throw new Error("????????");
-  }
- }catch(e){
-  $("cloud-status").textContent="?????" + e.message;
-  alert("????????" + e.message + "\n??? Bin ID ? Master Key?");
- }
+$("user-level-tag").textContent="当前等级："+userLevel;
+$("streak-text").textContent="连续打卡："+streak+" 天";
+renderVocabBook();
+$("cloud-status").textContent="拉取成功！本地数据已同步。";
+alert("成功从云端拉取最新数据！");
+}else{
+throw new Error("云端数据格式无效");
+}
+}catch(e){
+$("cloud-status").textContent="拉取出错：" + e.message;
+alert("从云端拉取失败：" + e.message + "\n请检查 Bin ID 与 Master Key。");
+}
 }
 
 const miniAudio=()=>$("mini-audio");
 let currentObjectUrl="";
 
 function togglePlayerExpanded(){
- const player=$("mini-player");
- const button=$("player-expand");
- const expanded=!player.classList.contains("expanded");
- player.classList.toggle("expanded",expanded);
- button.textContent=expanded?"??":"??";
- button.setAttribute("aria-expanded",expanded?"true":"false");
+const player=$("mini-player");
+const button=$("player-expand");
+const expanded=!player.classList.contains("expanded");
+player.classList.toggle("expanded",expanded);
+button.textContent=expanded?"收起":"展开";
+button.setAttribute("aria-expanded",expanded?"true":"false");
 }
 
 function formatAudioTime(value){
- if(!Number.isFinite(value)||value<0)return "00:00";
- const n=Math.floor(value);
- return String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0");
+if(!Number.isFinite(value)||value<0)return "00:00";
+const n=Math.floor(value);
+return String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0");
 }
 
 function updatePlayerDisplay(){
- const a=miniAudio(),duration=a.duration||0,current=a.currentTime||0;
- $("player-current").textContent=formatAudioTime(current);
- $("player-duration").textContent=formatAudioTime(duration);
- $("player-progress").value=duration?Math.round(current/duration*1000):0;
- $("player-play").textContent=a.paused?"??":"??";
+const a=miniAudio(),duration=a.duration||0,current=a.currentTime||0;
+$("player-current").textContent=formatAudioTime(current);
+$("player-duration").textContent=formatAudioTime(duration);
+$("player-progress").value=duration?Math.round(current/duration*1000):0;
+$("player-play").textContent=a.paused?"播放":"暂停";
 }
 
 function setAudioSource(src,title){
- const a=miniAudio();
- a.pause();a.src=src;a.load();
- $("player-title").textContent=title||"??????";
- updatePlayerDisplay();
+const a=miniAudio();
+a.pause();a.src=src;a.load();
+$("player-title").textContent=title||"英语听力音频";
+updatePlayerDisplay();
 }
 
 function loadAudioUrl(){
- const url=$("player-url").value.trim();
- if(!url){alert("???????????");return;}
- if(currentObjectUrl){URL.revokeObjectURL(currentObjectUrl);currentObjectUrl="";}
- setAudioSource(url, "??????");
- alert("??????????????");
+const url=$("player-url").value.trim();
+if(!url){alert("请先粘贴音频文件直链。");return;}
+if(currentObjectUrl){URL.revokeObjectURL(currentObjectUrl);currentObjectUrl="";}
+setAudioSource(url, "网络音频链接");
+alert("音频直链已加载，请点击播放。");
 }
 
 function toggleMiniPlayer(){
- const a=miniAudio();
- if(!a.src){alert("??????????????? MP3 ???");return;}
- if(a.paused){a.play().catch(e=>alert("?????"+e.message));}
- else{a.pause();}
- updatePlayerDisplay();
+const a=miniAudio();
+if(!a.src){alert("请先选择本地音频文件或加载网络 MP3 链接。");return;}
+if(a.paused){https://www.google.com/url?q=http://a.play&source=gmail&ust=1795412829482000&sa=E().catch(e=>alert("播放失败："+e.message));}
+else{a.pause();}
+updatePlayerDisplay();
 }
 
 function stopMiniPlayer(){
- const a=miniAudio();
- a.pause();try{a.currentTime=0;}catch(e){}
- updatePlayerDisplay();
+const a=miniAudio();
+a.pause();try{a.currentTime=0;}catch(e){}
+updatePlayerDisplay();
 }
 
 function initMiniPlayer(){
- const a=miniAudio();
- $("player-file").addEventListener("change",e=>{
-  const file=e.target.files&&e.target.files[0];
-  if(!file)return;
-  if(currentObjectUrl)URL.revokeObjectURL(currentObjectUrl);
-  currentObjectUrl=URL.createObjectURL(file);
-  setAudioSource(currentObjectUrl,file.name||"????");
- });
- $("player-speed").addEventListener("change",()=>{a.playbackRate=Number($("player-speed").value)||1;});
- $("player-progress").addEventListener("input",()=>{
-  if(Number.isFinite(a.duration)&&a.duration>0){a.currentTime=(Number($("player-progress").value)/1000)*a.duration;}
- });
- a.addEventListener("timeupdate",updatePlayerDisplay);
- a.addEventListener("durationchange",updatePlayerDisplay);
- a.addEventListener("play",updatePlayerDisplay);
- a.addEventListener("pause",updatePlayerDisplay);
- a.addEventListener("ended",updatePlayerDisplay);
+const a=miniAudio();
+$("player-file").addEventListener("change",e=>{
+const file=e.target.files&&e.target.files[0];
+if(!file)return;
+if(currentObjectUrl)URL.revokeObjectURL(currentObjectUrl);
+currentObjectUrl=URL.createObjectURL(file);
+setAudioSource(currentObjectUrl,https://www.google.com/url?q=http://file.name&source=gmail&ust=1795412829482000&sa=E||"本地音频");
+});
+$("player-speed").addEventListener("change",()=>{a.playbackRate=Number($("player-speed").value)||1;});
+$("player-progress").addEventListener("input",()=>{
+if(Number.isFinite(a.duration)&&a.duration>0){a.currentTime=(Number($("player-progress").value)/1000)*a.duration;}
+});
+a.addEventListener("timeupdate",updatePlayerDisplay);
+a.addEventListener("durationchange",updatePlayerDisplay);
+a.addEventListener("play",updatePlayerDisplay);
+a.addEventListener("pause",updatePlayerDisplay);
+a.addEventListener("ended",updatePlayerDisplay);
 }
 
 window.addEventListener("load",()=>{
- initApp();
- initMiniPlayer();
+initApp();
+initMiniPlayer();
 });
 </script>
 </body>
